@@ -65,7 +65,7 @@ body.paused #edge .glow { animation-play-state: paused; }
 /* ───────────────── 레이아웃 ───────────────── */
 #scene { position: fixed; inset: 0; z-index: 4; display: grid; grid-template-columns: 1.05fr 1fr;
   align-items: center; gap: 4vw; padding: 7vh 6vw 17vh; transition: opacity 1.2s ease; }
-body.zen #scene, body.wallpaper #scene { padding-bottom: 8vh; transition: opacity 1.2s ease, padding 1.2s ease; }
+body.wallpaper #scene { padding-bottom: 8vh; }
 #stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 4vh; height: 100%; min-height: 0; }
 body.has-shelf { --disc: min(34vw, 50vh); }
 body.has-shelf #poster { width: calc(min(24vw, 34vh) * var(--ps)); }
@@ -1209,11 +1209,11 @@ body.theme-city { --hb: #00F0FF; --hr: #FF3B3B; --hbg: rgba(3,8,14,.9); }
 body.theme-city #player, body.theme-city #topbar, body.theme-city #chip {
   --cut: 14px; --cs: 6px; background: color-mix(in srgb, var(--hb) 60%, transparent); border: 0; border-radius: 0; box-shadow: none; isolation: isolate;
   clip-path: polygon(var(--cut) 0, calc(100% - var(--cs)) 0, 100% var(--cs), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cs) 100%, 0 calc(100% - var(--cs)), 0 var(--cut));
-  font-family: 'Rajdhani', 'Exo 2', var(--sans); }
+  font-family: 'Rajdhani', 'Exo 2', var(--sans); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 body.theme-city #player::before, body.theme-city #topbar::before, body.theme-city #chip::before {
   content: ''; position: absolute; inset: 1px; z-index: -1; clip-path: inherit;
   background: linear-gradient(90deg, rgba(0,240,255,.07), transparent 30%), repeating-linear-gradient(0deg, rgba(0,240,255,.035) 0 1px, transparent 1px 3px), var(--hbg);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  }
 body.theme-city #player { --cut: 18px; padding: 16px 18px 14px 16px; overflow: visible; width: min(520px, 35vw); }
 body.theme-city #player::after { content: 'AUD://NOW_PLAYING'; position: absolute; left: 24px; top: 3px; font: 600 9px/1 'Rajdhani', 'Exo 2', monospace; letter-spacing: .28em; color: var(--hb); opacity: .7; }
 body.theme-city #player .title { font-weight: 600; font-size: 17px; letter-spacing: .04em; color: #eafcff; }
@@ -3237,7 +3237,9 @@ const city = {
     }
   },
 };
-addEventListener('resize', () => settings.theme === 'city' && city.fit());
+let sceneFitT, sceneFitWH = '';
+addEventListener('resize', () => { clearTimeout(sceneFitT); sceneFitT = setTimeout(() => { const wh = innerWidth + 'x' + innerHeight; if (wh === sceneFitWH) return; sceneFitWH = wh;
+  if (settings.theme === 'city') city.fit(); else if (settings.theme === 'aero') aero.fit(); }, 160); });
 
 /* ═══════════════ 에어로 테마: 맑은 하늘 · 뭉게구름 · 초원 · 비눗방울 · 유리 구슬 ═══════════════ */
 const aero = {
@@ -3476,7 +3478,6 @@ const aero = {
     x.globalAlpha = f.globalAlpha = 1;
   },
 };
-addEventListener('resize', () => settings.theme === 'aero' && aero.fit());
 document.addEventListener('visibilitychange', () => { if (!document.hidden && settings.theme === 'aero') aero.start(); });
 /* 네온룸 HUD: 버튼 숫자 뱃지와 활성(블루)/비활성(레드) 상태 */
 const hud = {
@@ -3954,6 +3955,7 @@ $('#sDemo').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer); d
 addEventListener('keydown', e => {
   if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
+  if (e.repeat && (e.key === 'z' || e.key === 'Z')) return;
   const k = e.key;
   if (k === ' ') { e.preventDefault(); ctl.toggle(); }
   else if (k === 'ArrowRight') ctl.next();
@@ -3973,8 +3975,9 @@ addEventListener('keydown', e => {
 
 /* ═══════════════ Zen · 대기 화면 · 밤 모드 · 번인 방지 · 시계 ═══════════════ */
 let zenTimer;
-function wake() {
+function wake(e) {
   if (WALLPAPER) return;
+  if (e && e.type === 'keydown' && (e.repeat || e.key === 'z' || e.key === 'Z')) return;
   body.classList.remove('zen'); clearTimeout(zenTimer);
   zenTimer = setTimeout(() => { if (!$('#settings').classList.contains('open') && !(lists.isOpen() && !settings.listPin) && !$('#gate').classList.contains('show')) body.classList.add('zen'); }, CONFIG.ZEN_DELAY_MS);
 }
