@@ -3117,10 +3117,11 @@ const city = {
     this.trafficInit();
   },
   onTrack(t) { if (!t) return; $('#holoCap').textContent = (t.album || t.title || '') + '  ·  ' + (t.artist || ''); if (t.cover) $('#roomArt').setAttribute('href', t.cover); },
+  layout() { const sc = innerWidth / 1600, vh = innerHeight / sc, y0 = (900 - vh) * (vh < 900 ? .5 : .45);
+    $('#cityScene .room').setAttribute('viewBox', `0 ${y0.toFixed(1)} 1600 ${vh.toFixed(1)}`);
+    $$('#cityScene .sv').forEach(e => e.style.transform = `translate(0,${(-y0 * sc).toFixed(1)}px) scale(${sc})`); },
   fit() { const c = $('#cityWeather'), d = Math.min(1.5, devicePixelRatio || 1); c.width = innerWidth * d; c.height = innerHeight * d; this.ctx = c.getContext('2d'); this.k = d;
-    { const sc = innerWidth / 1600, vh = innerHeight / sc, y0 = (900 - vh) * (vh < 900 ? .5 : .45);
-      $('#cityScene .room').setAttribute('viewBox', `0 ${y0.toFixed(1)} 1600 ${vh.toFixed(1)}`);
-      $$('#cityScene .sv').forEach(e => e.style.transform = `translate(0,${(-y0 * sc).toFixed(1)}px) scale(${sc})`); } const v = $('#cityV').getBoundingClientRect(); this.tc = [...$$('#cityV .trc')]; this.tc.forEach(t => { t.width = v.width * d; t.height = v.height * d; }); },
+    this.layout(); const v = $('#cityV').getBoundingClientRect(); this.tc = [...$$('#cityV .trc')]; this.tc.forEach(t => { t.width = v.width * d; t.height = v.height * d; }); },
   start() {
     this.build(); this.fit(); this.onTrack(S.track);
     body.classList.toggle('no-flycars', !settings.cityCars); body.classList.toggle('no-skyholo', !settings.skyHolo); body.classList.toggle('no-signs', !settings.citySigns);
@@ -3238,7 +3239,9 @@ const city = {
   },
 };
 let sceneFitT, sceneFitWH = '';
-addEventListener('resize', () => { clearTimeout(sceneFitT); sceneFitT = setTimeout(() => { const wh = innerWidth + 'x' + innerHeight; if (wh === sceneFitWH) return; sceneFitWH = wh;
+let sceneLayRaf;
+addEventListener('resize', () => { if (settings.theme === 'city') { cancelAnimationFrame(sceneLayRaf); sceneLayRaf = requestAnimationFrame(() => city.layout()); }
+  clearTimeout(sceneFitT); sceneFitT = setTimeout(() => { const wh = innerWidth + 'x' + innerHeight; if (wh === sceneFitWH) return; sceneFitWH = wh;
   if (settings.theme === 'city') city.fit(); else if (settings.theme === 'aero') aero.fit(); }, 160); });
 
 /* ═══════════════ 에어로 테마: 맑은 하늘 · 뭉게구름 · 초원 · 비눗방울 · 유리 구슬 ═══════════════ */
