@@ -491,13 +491,14 @@ body.theme-car #carScene { display: block; }
 @keyframes blink { 50% { opacity: .1; } }
 #carScene .road { position: absolute; left: 50%; top: 47vh; width: 300vw; height: 53vh; translate: -50% 0; perspective: 18vh; perspective-origin: 50% 0; overflow: hidden; }
 #carScene .plane { position: absolute; left: 0; right: 0; top: 0; height: 600vh; transform-origin: 50% 0; transform: rotateX(79deg); overflow: hidden;
-  background: linear-gradient(90deg, transparent 0 44%, #19191e 44% 56%, transparent 56%); }
-#carScene .lane { position: absolute; left: 49.85%; width: .3%; top: -20vh; bottom: 0; animation: lane calc(.7s / var(--spd)) linear infinite;
+  background: linear-gradient(90deg, transparent 0 43.6%, #1b1b20 43.6% 52.8%, transparent 52.8%); }
+#carScene .lane { position: absolute; left: 47.9%; width: .26%; top: -20vh; bottom: 0; animation: lane calc(.7s / var(--spd)) linear infinite;
   background: repeating-linear-gradient(180deg, #e9e3c9 0 4vh, transparent 4vh 11vh); }
 @keyframes lane { to { transform: translateY(11vh); } }
 #carScene .edge { position: absolute; top: 0; bottom: 0; width: .15%; background: rgba(240,235,215,.55); }
-#carScene .edge.l { left: 44.6%; } #carScene .edge.r { right: 44.6%; }
-#carScene .tail { position: absolute; left: 51.2vw; top: 46.6vh; display: flex; gap: 1.1vh; animation: tailsway 9s ease-in-out infinite alternate; }
+#carScene .edge.l { left: 44.2%; width: .32%; background: repeating-linear-gradient(90deg, rgba(232,190,70,.75) 0 35%, transparent 35% 65%, rgba(232,190,70,.75) 65%); }
+#carScene .edge.r { left: 51.9%; }
+#carScene .tail { position: absolute; left: 49.4vw; top: 46.6vh; display: flex; gap: 1.1vh; animation: tailsway 9s ease-in-out infinite alternate; }
 #carScene .tail i { width: .7vh; height: .45vh; border-radius: 2px; background: #ff3b30; box-shadow: 0 0 .8vh #ff3b30, 0 0 2vh rgba(255,40,30,.6); }
 @keyframes tailsway { to { transform: translateX(-1.2vw) scale(1.1); } }
 #carScene .lamps i { position: absolute; left: 0; top: 0; width: 12vh; height: 60vh; transform-origin: 0 0; opacity: 0;
