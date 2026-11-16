@@ -369,7 +369,7 @@ body.lists-pinned.pl-right #topbar { top: auto; bottom: 3.6vh; right: 24px; }
 /* ───────────────── 라디오 테마 (도트 커버 + LED 전광판) ───────────────── */
 #stage[data-theme="radio"] #radio, #stage[data-theme="cassette"] #cassette, #stage[data-theme="tv"] #tv, #stage[data-theme="jukebox"] #jukebox { display: block; }
 #segTheme { display: grid; grid-template-columns: repeat(4, 1fr); }
-#themeOpts[data-t="cassette"] [data-for="cassette"], #themeOpts[data-t="tv"] [data-for="tv"], #themeOpts[data-t="jukebox"] [data-for="jukebox"] { display: block; }
+#themeOpts[data-t="car"] [data-for="car"], #themeOpts[data-t="cassette"] [data-for="cassette"], #themeOpts[data-t="tv"] [data-for="tv"], #themeOpts[data-t="jukebox"] [data-for="jukebox"] { display: block; }
 
 /* ───────────────── 카세트 테이프 (80년대 플라스틱) ───────────────── */
 #cassette { --cw: min(42vw, 100vh); width: var(--cw); }
@@ -474,6 +474,120 @@ body.has-shelf #tv { --tw: min(32vw, 60vh); }
   background: linear-gradient(90deg, #24130a, #6a3e1f 45%, #24130a); box-shadow: 0 5px 6px rgba(0,0,0,.5); }
 .tv-legs i::after { content: ''; position: absolute; left: -12%; right: -12%; bottom: 0; height: 20%; border-radius: 1px; background: linear-gradient(90deg, #7d6224, #f3dc93, #7d6224); }
 .tv-legs i.l { left: 14%; transform: rotate(14deg); } .tv-legs i.r { right: 14%; transform: rotate(-14deg); }
+
+/* ───────────────── 80년대 자동차 안 (밤 고속도로) ───────────────── */
+#carScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; --spd: 1; --vfd: #7dffb0; --lc: #ffad4a; }
+body.theme-car #carScene { display: block; }
+#carScene .sky { position: absolute; inset: 0 0 53vh 0;
+  background: radial-gradient(ellipse 70% 40% at 50% 100%, color-mix(in srgb, var(--c1) 22%, rgba(255,120,60,.35)), transparent 70%),
+              linear-gradient(180deg, #02040b 0%, #070b1d 40%, #1a1634 80%, #3a2236 100%); }
+#carScene .stars { position: absolute; left: 0; top: 0; width: 1px; height: 1px; }
+#carScene .ground { position: absolute; left: 0; right: 0; top: 47vh; bottom: 0; background: linear-gradient(180deg, #0c0b10, #050507); }
+#carScene .skyline { position: absolute; left: 0; right: 0; top: 34vh; height: 13.2vh; overflow: hidden; }
+#carScene .skyline .strip { display: flex; width: 200%; height: 100%; animation: drift calc(160s / var(--spd)) linear infinite; }
+#carScene .skyline svg { width: 50%; height: 100%; }
+@keyframes drift { to { transform: translateX(-50%); } }
+#carScene .blink { animation: blink 2.4s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .1; } }
+#carScene .road { position: absolute; left: 50%; top: 47vh; width: 300vw; height: 53vh; translate: -50% 0; perspective: 18vh; perspective-origin: 50% 0; overflow: hidden; }
+#carScene .plane { position: absolute; left: 0; right: 0; top: 0; height: 600vh; transform-origin: 50% 0; transform: rotateX(79deg); overflow: hidden;
+  background: linear-gradient(90deg, transparent 0 44%, #19191e 44% 56%, transparent 56%); }
+#carScene .lane { position: absolute; left: 49.85%; width: .3%; top: -20vh; bottom: 0; animation: lane calc(.7s / var(--spd)) linear infinite;
+  background: repeating-linear-gradient(180deg, #e9e3c9 0 4vh, transparent 4vh 11vh); }
+@keyframes lane { to { transform: translateY(11vh); } }
+#carScene .edge { position: absolute; top: 0; bottom: 0; width: .15%; background: rgba(240,235,215,.55); }
+#carScene .edge.l { left: 44.6%; } #carScene .edge.r { right: 44.6%; }
+#carScene .tail { position: absolute; left: 51.2vw; top: 46.6vh; display: flex; gap: 1.1vh; animation: tailsway 9s ease-in-out infinite alternate; }
+#carScene .tail i { width: .7vh; height: .45vh; border-radius: 2px; background: #ff3b30; box-shadow: 0 0 .8vh #ff3b30, 0 0 2vh rgba(255,40,30,.6); }
+@keyframes tailsway { to { transform: translateX(-1.2vw) scale(1.1); } }
+#carScene .lamps i { position: absolute; left: 0; top: 0; width: 12vh; height: 60vh; transform-origin: 0 0; opacity: 0;
+  animation: var(--an) calc(3.2s / var(--spd)) cubic-bezier(.8,0,1,1) infinite; animation-delay: calc(var(--k) * -.8s / var(--spd)); }
+#carScene .lamps.r i { --an: lampR; }
+#carScene .lamps.l i { --an: lampL; }
+#carScene .lamps i::before { content: ''; position: absolute; left: 1vh; top: 0; width: .8vh; height: 100%; background: linear-gradient(90deg, #1b1b20, #3a3a42, #121216); }
+#carScene .lamps.r i::before { left: 9vh; }
+#carScene .lamps i::after { content: ''; position: absolute; left: 0; top: -1.2vh; width: 10vh; height: 2.4vh; border-radius: 1vh;
+  background: radial-gradient(ellipse at 50% 60%, #fff3d6 0 18%, var(--lc) 32%, transparent 70%); box-shadow: 0 0 6vh 2vh color-mix(in srgb, var(--lc) 45%, transparent); }
+@keyframes lampR { 0% { transform: translate(51vw, 43.6vh) scale(.03); opacity: 0; } 12% { opacity: 1; } 100% { transform: translate(112vw, -40vh) scale(1.7); opacity: 1; } }
+@keyframes lampL { 0% { transform: translate(48.6vw, 43.6vh) scale(.03); opacity: 0; } 12% { opacity: 1; } 100% { transform: translate(-30vw, -40vh) scale(1.7); opacity: 1; } }
+#carScene .sweep { position: absolute; inset: 0 0 38vh 0; overflow: hidden; }
+#carScene .sweep i { position: absolute; top: 0; bottom: 0; width: 50vw; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--lc) 10%, transparent), transparent);
+  animation: sweep calc(.8s / var(--spd)) linear infinite; }
+@keyframes sweep { from { transform: translateX(-50vw); } to { transform: translateX(100vw); } }
+/* 앞유리 틀 */
+#carScene .glassref { position: absolute; inset: 0 0 38vh 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.035) 40%, transparent 48%), linear-gradient(180deg, rgba(120,140,180,.06), transparent 40%); }
+#carScene .pillar { position: absolute; top: -6vh; width: 15vw; height: 76vh; background: linear-gradient(90deg, #040405, #121217 70%, #1b1b21); }
+#carScene .pillar.l { left: -7vw; transform: skewX(-15deg); }
+#carScene .pillar.r { right: -7vw; transform: skewX(15deg); background: linear-gradient(270deg, #040405, #121217 70%, #1b1b21); }
+#carScene .header { position: absolute; left: 0; right: 0; top: 0; height: 7vh; background: linear-gradient(180deg, #050506, #111116 80%, rgba(17,17,22,0)); }
+#carScene .mirror { position: absolute; left: 50%; top: 3.2vh; width: 26vh; height: 7.5vh; translate: -50% 0; border-radius: 2vh; background: #0c0c10; box-shadow: 0 .6vh 1.4vh rgba(0,0,0,.6), inset 0 0 0 .5vh #18181d; }
+#carScene .mirror::before { content: ''; position: absolute; inset: .7vh; border-radius: 1.4vh; background: linear-gradient(160deg, #2a2a38, #0d0d14 60%), radial-gradient(ellipse at 70% 60%, rgba(255,170,90,.25), transparent 60%); }
+#carScene .mirror::after { content: ''; position: absolute; left: 50%; top: -3.2vh; width: 1.2vh; height: 3.4vh; translate: -50% 0; background: #0c0c10; }
+#carScene .fresh { position: absolute; left: calc(50% - 10vh); top: 10.4vh; width: 4vh; transform-origin: 50% 0; animation: freshsway 3.6s ease-in-out infinite alternate; }
+#carScene .fresh::before { content: ''; display: block; margin: 0 auto; width: 1px; height: 4vh; background: #ddd; }
+#carScene .fresh i { display: block; width: 4vh; height: 5.5vh; background: #2f6b3d; clip-path: polygon(50% 0, 75% 30%, 62% 30%, 85% 60%, 66% 60%, 92% 92%, 56% 92%, 56% 100%, 44% 100%, 44% 92%, 8% 92%, 34% 60%, 15% 60%, 38% 30%, 25% 30%); filter: brightness(.6); }
+@keyframes freshsway { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+/* 선바이저 + 커버 사진 */
+#carScene .visor { position: absolute; left: 4vw; top: 0; width: 40vw; height: 17vh; border-radius: 0 0 3vh 3vh;
+  background: linear-gradient(180deg, #2b2a2e, #1d1c20); box-shadow: 0 1vh 2.4vh rgba(0,0,0,.6), inset 0 -.4vh 0 rgba(255,255,255,.04); }
+#carScene .visor::before { content: ''; position: absolute; inset: 1vh; border-radius: 0 0 2.2vh 2.2vh; border: 1px dashed rgba(255,255,255,.13); border-top: none; }
+#carScene .photo { position: absolute; right: 9%; top: 2.2vh; width: 13vh; padding: .7vh .7vh 2.8vh; background: #f4efe3; transform: rotate(-5deg); box-shadow: 0 .6vh 1.2vh rgba(0,0,0,.55); }
+#carScene .photo .cover-bg { aspect-ratio: 1; }
+#carScene .photo span { position: absolute; left: 0; right: 0; bottom: .3vh; text-align: center; font-family: 'Nanum Pen Script', cursive; font-size: 2vh; color: #2f3a66; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 .6vh; }
+#carScene .strap { position: absolute; right: calc(9% + 10.4vh); top: 0; bottom: 0; width: 2.4vh; background: repeating-linear-gradient(180deg, #2d2c31 0 .4vh, #212024 .4vh .8vh); box-shadow: 0 0 .6vh rgba(0,0,0,.6); z-index: 1; }
+/* 대시보드 */
+#carScene .board { position: absolute; left: -6vw; right: -6vw; bottom: 0; height: 40vh; border-radius: 50% 50% 0 0 / 13vh 13vh 0 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, #2a2a31, #141418 65%, #0a0a0c); box-shadow: 0 -1vh 3vh rgba(0,0,0,.65), inset 0 .3vh 0 rgba(255,255,255,.07); }
+#carScene .board::before { content: ''; position: absolute; left: 10%; right: 10%; top: 1.4vh; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--vfd) 45%, transparent), transparent); }
+#carScene .cluster { position: absolute; left: 9vw; bottom: 15vh; display: flex; align-items: flex-end; gap: 1.6vh; padding: 1.4vh 2vh; border-radius: 3vh 3vh 1vh 1vh; background: #08080a; box-shadow: inset 0 1vh 2vh rgba(0,0,0,.9), 0 -1px 0 rgba(255,255,255,.08); }
+#carScene .gauge { position: relative; width: 15vh; aspect-ratio: 1; border-radius: 50%;
+  background: repeating-conic-gradient(from -130deg, color-mix(in srgb, var(--vfd) 80%, #fff) 0 .8deg, transparent .8deg 13deg) , radial-gradient(circle, #0d1512 0 62%, #0a0f0d 63%);
+  -webkit-mask-image: radial-gradient(circle, #000 70%, transparent 71%); mask-image: radial-gradient(circle, #000 70%, transparent 71%);
+  box-shadow: 0 0 2vh color-mix(in srgb, var(--vfd) 25%, transparent); }
+#carScene .gauge.small { width: 11vh; }
+#carScene .gwrap { position: relative; }
+#carScene .gwrap span { position: absolute; left: 0; right: 0; bottom: 18%; text-align: center; font-family: 'VT323', monospace; font-size: 1.5vh; color: var(--vfd); opacity: .8; letter-spacing: .1em; }
+#carScene .needle { position: absolute; left: 50%; bottom: 50%; width: .5vh; height: 42%; margin-left: -.25vh; transform-origin: 50% 100%; border-radius: .3vh; background: #ff5a2a; box-shadow: 0 0 .8vh #ff5a2a;
+  transform: rotate(var(--r, 0deg)); animation: wob 2.3s ease-in-out infinite alternate; }
+@keyframes wob { from { transform: rotate(calc(var(--r) - 2deg)); } to { transform: rotate(calc(var(--r) + 3deg)); } }
+#carScene .stereo { position: absolute; left: 50%; bottom: 15vh; width: 46vh; translate: -50% 0; padding: 1.2vh; border-radius: .8vh;
+  background: linear-gradient(180deg, #1d1d22, #0c0c0f); box-shadow: 0 0 0 .3vh #8a8f93, 0 0 0 .55vh #1a1a1e, 0 1vh 2vh rgba(0,0,0,.7); }
+#carScene .vfd { height: 7.6vh; padding: .5vh 1.2vh; border-radius: .5vh; background: radial-gradient(ellipse at 50% 40%, #06231a, #021108); box-shadow: inset 0 .4vh 1vh rgba(0,0,0,.9);
+  color: var(--vfd); font-family: 'VT323', ui-monospace, monospace; text-shadow: 0 0 .6vh var(--vfd); overflow: hidden; }
+#carScene .vfd .row1 { display: flex; justify-content: space-between; font-size: 1.8vh; line-height: 1; opacity: .85; }
+#carScene .marq { margin-top: .4vh; overflow: hidden; white-space: nowrap; font-size: 3vh; line-height: 1; }
+#carScene .marq span { display: inline-block; padding-left: 100%; animation: marq var(--md, 12s) linear infinite; }
+@keyframes marq { to { transform: translateX(-100%); } }
+body.paused #carScene .marq span { animation-play-state: paused; }
+#carScene .bars { display: flex; gap: .35vh; align-items: flex-end; height: 1.3vh; margin-top: .3vh; }
+#carScene .bars i { width: .9vh; height: 100%; background: currentColor; transform-origin: bottom; animation: eq var(--d) ease-in-out infinite alternate; }
+@keyframes eq { from { transform: scaleY(.15); } to { transform: scaleY(1); } }
+body.paused #carScene .bars i { animation-play-state: paused; transform: scaleY(.1); }
+#carScene .deck { display: flex; align-items: center; gap: 1vh; margin-top: 1vh; }
+#carScene .knob { width: 4.6vh; aspect-ratio: 1; border-radius: 50%; background: repeating-conic-gradient(#e6e6e6 0 6deg, #5d6267 6deg 12deg); position: relative; box-shadow: 0 .3vh .6vh rgba(0,0,0,.7); }
+#carScene .knob::after { content: ''; position: absolute; inset: 18%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #8a8f93 70%); }
+#carScene .slot { flex: 1; height: 5vh; border-radius: .4vh; background: #050506; box-shadow: inset 0 .4vh .8vh rgba(0,0,0,.95); padding: .6vh 1vh; overflow: hidden; }
+#carScene .tape { height: 100%; border-radius: .3vh; background: linear-gradient(180deg, #d9452b 0 20%, #ef7d24 20% 40%, #f4b23a 40% 60%, #efe4c8 60%); display: flex; justify-content: center; gap: 4vh; align-items: center; opacity: .9; }
+#carScene .tape i { width: 2.4vh; aspect-ratio: 1; border-radius: 50%; background: repeating-conic-gradient(#eee 0 25deg, #1a1a1a 25deg 60deg); box-shadow: 0 0 0 .3vh #1a1a1a; animation: reel 1.4s linear infinite; animation-play-state: paused; }
+body.playing #carScene .tape i { animation-play-state: running; }
+@keyframes reel { to { transform: rotate(360deg); } }
+#carScene .btns { display: grid; grid-template-columns: repeat(6, 1fr); gap: .4vh; margin-top: .9vh; }
+#carScene .btns b { height: 2.2vh; border-radius: .3vh; background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); font: 700 1.3vh system-ui; color: #222; display: grid; place-items: center; box-shadow: 0 .2vh 0 #333; }
+#carScene .vent { position: absolute; bottom: 19vh; width: 14vh; height: 6vh; border-radius: 1vh; background: repeating-linear-gradient(180deg, #2a2a30 0 .5vh, #0b0b0d .5vh 1.1vh); box-shadow: inset 0 0 0 .4vh #1a1a1f, 0 0 0 .2vh #6a6f73; }
+#carScene .vent.l { left: calc(50% - 40vh); } #carScene .vent.r { left: calc(50% + 26vh); }
+#carScene .wheel { position: absolute; left: 2vw; bottom: -33vh; width: 60vh; aspect-ratio: 1; border-radius: 50%; border: 5.2vh solid #101013;
+  box-shadow: 0 0 0 .2vh #2a2a30 inset, 0 -1vh 3vh rgba(0,0,0,.7), inset 0 0 2vh rgba(0,0,0,.8); animation: steer 7s ease-in-out infinite alternate; }
+#carScene .wheel::before { content: ''; position: absolute; left: 0; right: 0; top: 33%; height: 7vh; background: linear-gradient(180deg, #1c1c21, #0c0c0f); border-radius: 2vh; }
+#carScene .wheel::after { content: ''; position: absolute; left: 50%; top: 27%; width: 18vh; height: 15vh; translate: -50% 0; border-radius: 4vh; background: radial-gradient(ellipse at 50% 30%, #2a2a31, #0d0d10); box-shadow: inset 0 .3vh 0 rgba(255,255,255,.06); }
+@keyframes steer { from { transform: rotate(-2.5deg); } to { transform: rotate(2.5deg); } }
+#carScene .grain { position: absolute; inset: 0; opacity: .08; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .8 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+/* 차 안일 때 배치: 시계·가사는 앞유리 오른쪽, 재생바는 조수석 쪽 */
+body.theme-car #side { padding-bottom: 40vh; padding-top: 6vh; }
+body.theme-car #lyrics { height: 24vh; }
+body.theme-car #clock .time { font-size: clamp(54px, 6vw, 110px); }
+body.theme-car #player { left: auto; right: 2.5vw; transform: none; width: min(460px, 32vw); }
+body.theme-car #side::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #carScene * { animation: none !important; } }
 
 /* ───────────────── 주크박스 테마: 아메리칸 다이너 (밤) ───────────────── */
 #jbScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; }
@@ -821,6 +935,31 @@ body.theme-flow #shelf { display: none !important; }
     <feDisplacementMap in="SourceGraphic" in2="map" id="tvFishDisp" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
   </filter>
 </svg>
+<div id="carScene" aria-hidden="true">
+  <div class="sky"></div><div class="stars" id="carStars"></div><div class="ground"></div>
+  <div class="skyline"><div class="strip" id="carSkyline"></div></div>
+  <div class="road"><div class="plane"><div class="lane"></div><div class="edge l"></div><div class="edge r"></div></div></div>
+  <div class="tail"><i></i><i></i></div>
+  <div class="lamps l"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><i style="--k:3"></i></div>
+  <div class="lamps r"><i style="--k:.5"></i><i style="--k:1.5"></i><i style="--k:2.5"></i><i style="--k:3.5"></i></div>
+  <div class="sweep"><i></i></div>
+  <div class="glassref"></div>
+  <div class="pillar l"></div><div class="pillar r"></div><div class="header"></div>
+  <div class="mirror"></div><div class="fresh"><i></i></div>
+  <div class="visor"><div class="photo"><div class="cover-bg"></div><span id="carPhotoCap"></span></div><div class="strap"></div></div>
+  <div class="board">
+    <div class="cluster"><div class="gwrap"><div class="gauge"></div><i class="needle" style="--r:-15deg"></i><span>km/h</span></div><div class="gwrap"><div class="gauge small"></div><i class="needle" style="--r:-40deg;animation-duration:1.1s"></i><span>RPM</span></div></div>
+    <div class="vent l"></div><div class="vent r"></div>
+    <div class="stereo">
+      <div class="vfd"><div class="row1"><span id="carMode">TAPE ▶ SIDE A</span><span id="carClock">00:00</span></div><div class="marq"><span id="carMarq"></span></div>
+        <div class="bars"><i style="--d:.32s"></i><i style="--d:.45s"></i><i style="--d:.28s"></i><i style="--d:.5s"></i><i style="--d:.36s"></i><i style="--d:.41s"></i><i style="--d:.3s"></i><i style="--d:.55s"></i><i style="--d:.34s"></i><i style="--d:.47s"></i><i style="--d:.29s"></i><i style="--d:.52s"></i><i style="--d:.38s"></i><i style="--d:.44s"></i></div></div>
+      <div class="deck"><div class="knob"></div><div class="slot"><div class="tape"><i></i><i></i></div></div><div class="knob"></div></div>
+      <div class="btns"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></div>
+    </div>
+  </div>
+  <div class="wheel"></div>
+  <div class="grain"></div>
+</div>
 <div id="jbScene" aria-hidden="true">
   <div class="wall"></div><div class="trim"></div><div class="steel"></div><div class="floor"></div><div class="haze"></div>
   <div class="globe" style="left:79vw;--len:4vh"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
@@ -992,7 +1131,7 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button></div>
   </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
@@ -1051,6 +1190,15 @@ body.theme-flow #shelf { display: none !important; }
       <label class="switch" style="margin-top:10px"><span>빛 색 흐름</span><input type="checkbox" id="cBulbs"></label>
       <label class="switch"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
       <p class="note" style="margin-top:4px">선택판에는 플레이리스트 패널(P)에서 고른 목록이 나와요.</p>
+    </div>
+    <div data-for="car">
+      <div class="slab"><span>달리는 속도</span><span id="vCarSpd"></span></div>
+      <input type="range" id="rCarSpd" min="0.3" max="2" step="0.1">
+      <div class="slab"><span>디스플레이 색</span></div>
+      <div class="seg small" id="segVfd"><button data-v="green">초록</button><button data-v="cyan">청록</button><button data-v="amber">호박</button></div>
+      <div class="slab" style="margin-top:12px"><span>가로등</span></div>
+      <div class="seg small" id="segLamp"><button data-v="sodium">주황 나트륨</button><button data-v="white">흰색</button></div>
+      <p class="note" style="margin-top:6px">분위기 이펙트의 '비 오는 창가'를 같이 켜면 비 오는 밤 드라이브가 돼요.</p>
     </div>
   </section>
   <section>
@@ -1218,7 +1366,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -1453,6 +1601,7 @@ function onTrack(t) {
   if (settings.theme === 'cassette') cassette.update(true);
   if (settings.theme === 'tv') tv.switchChannel();
   if (typeof jukebox !== 'undefined') jukebox.onTrack(t);
+  if (typeof car !== 'undefined') car.update();
   if (typeof lists !== 'undefined') lists.markNow();
 }
 function onPlayState() {
@@ -1462,6 +1611,7 @@ function onPlayState() {
     ? '<path d="M7 5h3.6v14H7zm6.4 0H17v14h-3.6z"/>'
     : '<path d="M8 5.2v13.6a.7.7 0 0 0 1.07.6l10.6-6.8a.7.7 0 0 0 0-1.2L9.07 4.6A.7.7 0 0 0 8 5.2z"/>';
   spin.set(S.playing);
+  $('#carMode').textContent = S.playing ? 'TAPE ▶ SIDE A' : 'TAPE ❚❚ PAUSE';
   fx.updateGain();
   checkIdle();
 }
@@ -1939,7 +2089,7 @@ const shelf = {
     else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
     return true;
   },
-  useShelf() { return !['flow', 'jukebox'].includes(settings.theme); },
+  useShelf() { return !['flow', 'jukebox', 'car'].includes(settings.theme); },
   status(t, msg) {   // 불러오는 중·실패 이유를 선반 자리에 표시
     body.classList.add('has-shelf'); this.row.innerHTML = ''; this.list = null;
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = msg; this.el.classList.add('show');
@@ -2278,6 +2428,35 @@ const radio = {
 };
 addEventListener('resize', () => settings.theme === 'radio' && radio.redraw());
 
+/* ═══════════════ 80년대 자동차 안 ═══════════════ */
+const car = {
+  build() {
+    if (this.built) return; this.built = true;
+    /* 도시 스카이라인 (불 켜진 창문들) */
+    let svg = '<svg viewBox="0 0 1000 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">', x = 0;
+    const r = (a, b) => a + Math.random() * (b - a);
+    while (x < 1000) {
+      const w = r(18, 55), h = r(25, 132), y = 140 - h;
+      svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="#0b0c14"/>`;
+      for (let wy = y + 5; wy < 136; wy += 7) for (let wx = x + 3; wx < x + w - 3; wx += 5)
+        if (Math.random() < .22) svg += `<rect x="${wx.toFixed(1)}" y="${wy.toFixed(1)}" width="2" height="3" fill="${Math.random() < .8 ? '#ffcf7a' : '#bfe3ff'}" opacity="${r(.45, .95).toFixed(2)}"/>`;
+      if (h > 115) svg += `<circle class="blink" cx="${(x + w / 2).toFixed(1)}" cy="${(y - 2).toFixed(1)}" r="1.6" fill="#ff3b30"/>`;
+      x += w + r(0, 6);
+    }
+    svg += '</svg>';
+    $('#carSkyline').innerHTML = svg + svg;
+    /* 별 */
+    const st = []; for (let i = 0; i < 70; i++) st.push(`${r(0, 100).toFixed(1)}vw ${r(0, 36).toFixed(1)}vh 0 ${Math.random() < .2 ? 1 : 0}px rgba(255,255,255,${r(.3, .9).toFixed(2)})`);
+    $('#carStars').style.boxShadow = st.join(',');
+  },
+  update() {
+    const t = S.track; if (!t) return;
+    const msg = `${t.title} — ${t.artist}${t.album ? ' · ' + t.album : ''}`;
+    const m = $('#carMarq'); if (m.textContent !== msg) { m.textContent = msg; m.parentElement.style.setProperty('--md', Math.max(8, msg.length * .32) + 's'); }
+    $('#carPhotoCap').textContent = t.title;
+  },
+};
+
 /* 손글씨·브라운관용 글꼴 (필요할 때만 불러옴) */
 let extraFontsLoaded = false;
 function loadExtraFonts() {
@@ -2581,7 +2760,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox'];
+const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox', 'car'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
@@ -2589,14 +2768,16 @@ function setTheme(t) {
   body.classList.toggle('theme-flow', t === 'flow');
   $$('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
   spin.apply();
-  const noShelf = x => x === 'flow' || x === 'jukebox';
+  const noShelf = x => x === 'flow' || x === 'jukebox' || x === 'car';
   if (noShelf(was) !== noShelf(t) && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
-  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정' }[t]; }
+  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정', car: '자동차 설정' }[t]; }
   if (['cassette', 'tv', 'jukebox', 'radio'].includes(t)) loadExtraFonts();
   if (t === 'tv' && typeof tv !== 'undefined') tv.fisheye();
   body.classList.toggle('theme-jukebox', t === 'jukebox');
+  body.classList.toggle('theme-car', t === 'car');
+  if (t === 'car' && typeof car !== 'undefined') { loadExtraFonts(); car.build(); car.update(); }
   if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
   if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
   if (t === 'jukebox' && typeof jukebox !== 'undefined') jukebox.ensure();
@@ -2636,6 +2817,9 @@ function applyVisualSettings() {
   body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
   body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
   $('#radio').dataset.body = settings.rbody;
+  { const cs = $('#carScene').style; cs.setProperty('--spd', settings.carSpd);
+    cs.setProperty('--vfd', { green: '#7dffb0', cyan: '#6fe8ff', amber: '#ffb347' }[settings.carVfd] || '#7dffb0');
+    cs.setProperty('--lc', settings.carLamp === 'white' ? '#dfe9ff' : '#ffad4a'); }
   $('#cassette').dataset.color = settings.csColor; $('#cassette').classList.toggle('typed', !settings.csHand);
   $('#tv').dataset.body = settings.tvBody; r.setProperty('--tv-scan', settings.tvScan);
   $('#jukebox').dataset.neon = settings.jbNeon; body.classList.toggle('no-bubbles', !settings.jbBubbles); body.classList.toggle('no-bulbs', !settings.jbBulbs);
@@ -2658,6 +2842,9 @@ function syncSettingsUI() {
   $('#rScan').value = settings.tvScan; $('#vScan').textContent = Math.round(settings.tvScan * 100) + '%';
   $('#cStatic').checked = settings.tvStatic; $('#cTvSnd').checked = settings.tvSnd;
   $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles; $('#cBulbs').checked = settings.jbBulbs;
+  $('#rCarSpd').value = settings.carSpd; $('#vCarSpd').textContent = '×' + (+settings.carSpd).toFixed(1);
+  $$('#segVfd button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carVfd));
+  $$('#segLamp button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carLamp));
   $('#rRes').value = settings.radioRes; $('#vRes').textContent = settings.radioRes + '×' + settings.radioRes;
   $$('#segLed button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.led));
   $$('#segBody button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.rbody));
@@ -2696,6 +2883,7 @@ const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.cl
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
 bindSeg('#segTv', 'tvBody'); bindRange('#rFish', 'tvFish', () => tv.fisheye()); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
+bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp', 'carLamp');
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
@@ -2765,7 +2953,7 @@ function clockTick() {
   const s = String(hh).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
   if (s === lastClock) return; lastClock = s;
   const ds = d.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
-  $('#clockTime').textContent = $('#idleTime').textContent = s;
+  $('#clockTime').textContent = $('#idleTime').textContent = $('#carClock').textContent = s;
   $('#clockDate').textContent = $('#idleDate').textContent = ds;
   checkNight();
 }
