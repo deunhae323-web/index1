@@ -1204,6 +1204,52 @@ body.theme-aero #bar .track { height: 8px; border-radius: 6px; background: rgba(
 body.theme-aero #bar:hover .track { height: 10px; }
 body.theme-aero #bar .fill { border-radius: 6px; background: linear-gradient(180deg, #e6fdff 0%, #7fe0ff 45%, #22a9ee 52%, #4cc8ff 100%); box-shadow: 0 0 10px rgba(90,220,255,.85); }
 body.theme-aero #settings, body.theme-aero:not(.lists-pinned) #lists, body.theme-aero #toast { background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.04) 30%), rgba(8,52,118,.72); border-color: rgba(190,235,255,.55); }
+/* ───────────────── 네온룸 HUD 버튼·플레이어 (깎인 팔각 프레임 · 네온 블루=활성 / 네온 레드=비활성) ───────────────── */
+body.theme-city { --hb: #00F0FF; --hr: #FF3B3B; --hbg: rgba(3,8,14,.9); }
+body.theme-city #player, body.theme-city #topbar, body.theme-city #chip {
+  --cut: 14px; --cs: 6px; background: color-mix(in srgb, var(--hb) 60%, transparent); border: 0; border-radius: 0; box-shadow: none; isolation: isolate;
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cs)) 0, 100% var(--cs), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cs) 100%, 0 calc(100% - var(--cs)), 0 var(--cut));
+  font-family: 'Rajdhani', 'Exo 2', var(--sans); }
+body.theme-city #player::before, body.theme-city #topbar::before, body.theme-city #chip::before {
+  content: ''; position: absolute; inset: 1px; z-index: -1; clip-path: inherit;
+  background: linear-gradient(90deg, rgba(0,240,255,.07), transparent 30%), repeating-linear-gradient(0deg, rgba(0,240,255,.035) 0 1px, transparent 1px 3px), var(--hbg);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+body.theme-city #player { --cut: 18px; padding: 16px 18px 14px 16px; overflow: visible; width: min(520px, 35vw); }
+body.theme-city #player::after { content: 'AUD://NOW_PLAYING'; position: absolute; left: 24px; top: 3px; font: 600 9px/1 'Rajdhani', 'Exo 2', monospace; letter-spacing: .28em; color: var(--hb); opacity: .7; }
+body.theme-city #player .title { font-weight: 600; font-size: 17px; letter-spacing: .04em; color: #eafcff; }
+body.theme-city #player .sub { font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: color-mix(in srgb, var(--hb) 70%, #fff); opacity: .8; }
+body.theme-city #player .prog { font: 600 11.5px/1 'Rajdhani', ui-monospace, monospace; letter-spacing: .08em; color: var(--hb); }
+body.theme-city #player .thumb { border-radius: 0; box-shadow: none; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+body.theme-city #bar .track { height: 6px; border-radius: 0; background: repeating-linear-gradient(90deg, rgba(255,59,59,.38) 0 5px, transparent 5px 7px); overflow: visible; }
+body.theme-city #bar:hover .track { height: 8px; }
+body.theme-city #bar .fill { border-radius: 0; background: repeating-linear-gradient(90deg, var(--hb) 0 5px, transparent 5px 7px); box-shadow: none; filter: drop-shadow(0 0 4px var(--hb)); }
+body.theme-city #topbar { --cut: 12px; padding: 7px 8px; gap: 6px; }
+
+/* 버튼: 팔각 프레임 + 단색 아이콘 + 숫자 뱃지 */
+body.theme-city .ui .ibtn { --c: var(--hb); --cut: 9px; position: relative; isolation: isolate; width: 48px; height: 40px; border-radius: 0; opacity: 1; color: var(--c);
+  background: color-mix(in srgb, var(--c) 75%, transparent);
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  transition: color .2s, background .2s, filter .2s; }
+body.theme-city .ui .ibtn::before { content: ''; position: absolute; inset: 1.5px; z-index: -1; clip-path: polygon(calc(var(--cut) - 1px) 0, 100% 0, 100% calc(100% - var(--cut) + 1px), calc(100% - var(--cut) + 1px) 100%, 0 100%, 0 calc(var(--cut) - 1px));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 14%, transparent), transparent 60%), rgba(2,6,12,.88); transition: background .2s; }
+body.theme-city .ui .ibtn::after { content: attr(data-n); position: absolute; right: 3px; top: 3px; font: 700 9px/1 'Rajdhani', ui-monospace, monospace; letter-spacing: .04em;
+  padding: 1px 3px 0; color: #02060c; background: var(--c); }
+body.theme-city .ui .ibtn:not([data-n])::after, body.theme-city .ui .ibtn[data-n='']::after { display: none; }
+body.theme-city .ui .ibtn svg { width: 18px; height: 18px; translate: -4px 3px; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 70%, transparent)); }
+body.theme-city .ui .ibtn:hover { filter: brightness(1.25) drop-shadow(0 0 6px var(--c)); animation: hudGlitch .35s steps(2) 1; }
+body.theme-city .ui .ibtn:active { transform: translateY(1px); }
+@keyframes hudGlitch { 0% { translate: 1px 0; } 50% { translate: -1px 0; } 100% { translate: 0 0; } }
+/* 활성 = 네온 블루 채움, 비활성 = 네온 레드 */
+body.theme-city .ui .ibtn.on, body.theme-city .ui .ibtn.hon { --c: var(--hb); }
+body.theme-city .ui .ibtn.on::before, body.theme-city .ui .ibtn.hon::before { background: linear-gradient(180deg, color-mix(in srgb, var(--hb) 38%, transparent), color-mix(in srgb, var(--hb) 12%, transparent)), rgba(2,6,12,.85); }
+body.theme-city .ui .ibtn.hoff { --c: var(--hr); }
+body.theme-city .ui .ibtn.big { --cut: 12px; width: 60px; height: 46px; }
+body.theme-city .ui .ibtn.big svg { width: 22px; height: 22px; }
+body.theme-city.paused .ui #bPlay { --c: var(--hr); animation: hudBlink 1.6s steps(1) infinite; }
+body.theme-city.playing .ui #bPlay::before { background: linear-gradient(180deg, color-mix(in srgb, var(--hb) 34%, transparent), color-mix(in srgb, var(--hb) 10%, transparent)), rgba(2,6,12,.85); }
+@keyframes hudBlink { 50% { filter: brightness(.7); } }
+body.theme-city #topbar .ibtn { width: 46px; height: 38px; }
+body.theme-city #player .ctrls { gap: 5px; }
 </style>
 </head>
 <body class="paused">
@@ -3432,13 +3478,29 @@ const aero = {
 };
 addEventListener('resize', () => settings.theme === 'aero' && aero.fit());
 document.addEventListener('visibilitychange', () => { if (!document.hidden && settings.theme === 'aero') aero.start(); });
+/* 네온룸 HUD: 버튼 숫자 뱃지와 활성(블루)/비활성(레드) 상태 */
+const hud = {
+  tick() {
+    if (settings.theme !== 'city') return;
+    const p2 = n => String(Math.max(0, Math.floor(n) || 0)).padStart(2, '0');
+    const set = (id, v) => { const el = $(id); if (el && el.dataset.n !== v) el.dataset.n = v; };
+    const fs = !!document.fullscreenElement, lyrOn = !!(settings.lyrics && lyrics.has), d = S.track?.durationMs;
+    set('#bLists', p2($$('#lTracks .tr').length)); set('#bTheme', p2(THEMES.indexOf(settings.theme) + 1));
+    set('#bLyrics', lyrOn ? p2(lyrics.lines?.length) : '00'); set('#bFull', fs ? '01' : '00'); set('#bSet', '05');
+    set('#bPlay', d ? p2(Math.min(99, S.pos() / d * 100)) : '00');
+    $('#bLyrics').classList.toggle('hoff', !lyrOn); $('#bFull').classList.toggle('hoff', !fs); $('#bFull').classList.toggle('hon', fs);
+    $('#bLists').classList.toggle('hon', lists.isOpen());
+  },
+};
+setInterval(() => hud.tick(), 1000);
+document.addEventListener('fullscreenchange', () => hud.tick());
 
 /* 손글씨·브라운관용 글꼴 (필요할 때만 불러옴) */
 let extraFontsLoaded = false;
 function loadExtraFonts() {
   if (extraFontsLoaded) return; extraFontsLoaded = true;
   const l = document.createElement('link'); l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=VT323&family=Pacifico&family=Exo+2:wght@200;300;400&display=swap'; document.head.appendChild(l);
+  l.href = 'https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=VT323&family=Pacifico&family=Exo+2:wght@200;300;400&family=Rajdhani:wght@500;600;700&display=swap'; document.head.appendChild(l);
 }
 
 /* ═══════════════ 카세트 테이프 ═══════════════ */
@@ -3756,7 +3818,7 @@ function setTheme(t) {
   body.classList.toggle('theme-city', t === 'city');
   body.classList.toggle('theme-aero', t === 'aero');
   if (t === 'aero' && typeof aero !== 'undefined') requestAnimationFrame(() => aero.start());
-  if (t === 'city' && typeof city !== 'undefined') { loadExtraFonts(); requestAnimationFrame(() => { city.start(); city.onTrack(S.track); }); }
+  if (t === 'city' && typeof city !== 'undefined') { loadExtraFonts(); requestAnimationFrame(() => { city.start(); city.onTrack(S.track); hud.tick(); }); }
   if (t === 'car' && typeof car !== 'undefined') { loadExtraFonts(); car.build(); car.update(); }
   if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
   if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
