@@ -65,7 +65,7 @@ body.paused #edge .glow { animation-play-state: paused; }
 body.zen #scene, body.wallpaper #scene { padding-bottom: 8vh; transition: opacity 1.2s ease, padding 1.2s ease; }
 #stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; height: 100%; min-height: 0; }
 body.has-shelf { --disc: min(34vw, 50vh); }
-body.has-shelf #poster { width: min(24vw, 34vh); }
+body.has-shelf #poster { width: calc(min(24vw, 34vh) * var(--ps)); }
 body.has-shelf #poster .cap { margin-top: 2vh; padding-top: 1.2vh; }
 body.has-shelf #poster .ptitle { font-size: clamp(22px, 2.2vw, 40px); }
 body.has-shelf #stage { gap: 3vh; }
@@ -165,7 +165,7 @@ body.playing #lp .tonearm { transform: rotate(21deg); }
   -webkit-mask-image: radial-gradient(circle closest-side, transparent 0 28%, #000 28.5% 87.5%, transparent 88%);
           mask-image: radial-gradient(circle closest-side, transparent 0 28%, #000 28.5% 87.5%, transparent 88%); }
 #cd .hole { position: absolute; inset: 46%; border-radius: 50%; background: rgba(20,18,26,.55); }
-#cd .rainbow { position: absolute; left: 50%; top: 50%; width: 84%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; opacity: .85;
+#cd .rainbow { position: absolute; left: 50%; top: 50%; width: 84%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none; opacity: var(--rainbow, .85);
   background:
     conic-gradient(from 210deg, hsla(0,100%,72%,.0), hsla(30,100%,70%,.55), hsla(60,100%,70%,.5), hsla(130,90%,65%,.5), hsla(195,100%,68%,.55), hsla(260,100%,72%,.5), hsla(320,100%,72%,.45), hsla(360,100%,72%,0) 50%,
                    hsla(30,100%,70%,.4) 60%, hsla(130,90%,65%,.4) 68%, hsla(220,100%,70%,.45) 78%, hsla(300,100%,72%,.3) 90%, hsla(0,100%,72%,0));
@@ -175,7 +175,7 @@ body.playing #lp .tonearm { transform: rotate(21deg); }
   background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.16) 28%, transparent 36%, transparent 62%, rgba(255,255,255,.08) 68%, transparent 74%); }
 
 /* 포스터 */
-#poster { width: min(34vw, 56vh); }
+#poster { --ps: 1; width: calc(min(34vw, 56vh) * var(--ps)); }
 #poster .art { width: 100%; aspect-ratio: 1; border-radius: .4vmin; box-shadow: 0 4vmin 9vmin rgba(0,0,0,.45), 0 1vmin 2vmin rgba(0,0,0,.25); transition: opacity .6s; }
 #poster .cap { margin-top: 3.2vh; border-top: 1px solid rgba(255,255,255,.55); padding-top: 1.6vh; }
 #poster .kicker { display: flex; justify-content: space-between; font-size: clamp(9px, .7vw, 12px); letter-spacing: .34em; text-transform: uppercase; opacity: .7; }
@@ -342,9 +342,73 @@ body.lists-pinned .note { font-size: 12px; }
 .pl .pn { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pl .ps { font-size: 12px; opacity: .65; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* 테마별 옵션 */
+body.no-arm #lp .tonearm { display: none; }
+body.no-cap #poster .cap { display: none; }
+#themeOpts [data-for] { display: none; }
+#themeOpts[data-t="lp"] [data-for="lp"], #themeOpts[data-t="cd"] [data-for="cd"], #themeOpts[data-t="poster"] [data-for="poster"],
+#themeOpts[data-t="flow"] [data-for="flow"], #themeOpts[data-t="radio"] [data-for="radio"] { display: block; }
+.seg.small button { padding: 6px 0; font-size: 12px; }
+
+/* 트랙리스트(띄워두기) 옵션 */
+:root { --pl-size: 1; --pl-dim: .4; --pl-weight: 400; }
+body.lists-pinned .tr { opacity: var(--pl-dim); }
+body.lists-pinned .tr.near { opacity: calc(var(--pl-dim) + (1 - var(--pl-dim)) * .45); }
+body.lists-pinned .tr .tn { font-weight: var(--pl-weight); font-size: calc(clamp(13px, .98vw, 17px) * var(--pl-size)); }
+body.lists-pinned .tr .ta { font-size: calc(clamp(10.5px, .78vw, 13px) * var(--pl-size)); }
+body.lists-pinned .tr.now .tn { font-weight: calc(var(--pl-weight) + 150); }
+body.lists-pinned.pl-covers .tr { grid-template-columns: 2.3em calc(34px * var(--pl-size)) 1fr; }
+body.lists-pinned.pl-covers .tr .tc { display: block; width: calc(34px * var(--pl-size)); height: calc(34px * var(--pl-size)); border-radius: 4px; }
+body.lists-pinned.pl-near #lTracks.has-now .tr:not(.now):not(.near) { display: none; }
+body.lists-pinned.pl-near #lTracks { padding: 2vh 0; -webkit-mask-image: none; mask-image: none; }
+body.lists-pinned.pl-right #lists { left: auto; right: 3.2vw; }
+body.lists-pinned.pl-right #scene { padding-left: 6vw; padding-right: calc(min(300px, 24vw) + 5vw); }
+body.lists-pinned.pl-right .lbtns { left: auto; right: -6px; }
+body.lists-pinned.pl-right #topbar { top: auto; bottom: 3.6vh; right: 24px; }
+
+/* ───────────────── 라디오 테마 (도트 커버 + LED 전광판) ───────────────── */
+#stage[data-theme="radio"] #radio { display: block; }
+#radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
+body.has-shelf #radio { --rw: min(36vw, 78vh); }
+.rbody { position: relative; border-radius: calc(var(--rw) * .05); padding: calc(var(--rw) * .04) calc(var(--rw) * .045) calc(var(--rw) * .035);
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(0,0,0,.2)), repeating-linear-gradient(93deg, #7b4a29 0 7px, #6a3e21 7px 10px, #86542f 10px 19px, #73452a 19px 23px);
+  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.42), inset 0 2px 0 rgba(255,255,255,.25), inset 0 -8px 18px rgba(0,0,0,.35); }
+#radio[data-body="cream"] .rbody { background: linear-gradient(180deg, #f1e7d0, #d9c9a6); }
+#radio[data-body="black"] .rbody { background: linear-gradient(180deg, #2b2a30, #141317); color: #d9d2c4; }
+#radio[data-body="wood"] { color: #f3e3c8; }
+.rtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(var(--rw) * .028);
+  font-size: calc(var(--rw) * .024); letter-spacing: .32em; text-transform: uppercase; font-weight: 600; }
+.onair { display: flex; align-items: center; gap: .6em; opacity: .55; transition: opacity .6s; }
+.onair::before { content: ''; width: .9em; height: .9em; border-radius: 50%; background: #5a1e1e; box-shadow: inset 0 0 2px rgba(0,0,0,.6); transition: background .6s, box-shadow .6s; }
+body.playing .onair { opacity: 1; }
+body.playing .onair::before { background: #ff4a3d; box-shadow: 0 0 10px #ff4a3d, 0 0 22px rgba(255,74,61,.6); }
+.rmain { display: grid; grid-template-columns: 1fr 1.08fr; gap: calc(var(--rw) * .035); }
+.grille { border-radius: calc(var(--rw) * .03); box-shadow: inset 0 3px 10px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.2);
+  background: radial-gradient(circle, rgba(0,0,0,.6) 34%, transparent 40%) 0 0 / calc(var(--rw) * .022) calc(var(--rw) * .022),
+              linear-gradient(160deg, color-mix(in srgb, var(--c2) 30%, #4a3c34), color-mix(in srgb, var(--c1) 20%, #2a201b)); }
+.rright { display: flex; flex-direction: column; gap: calc(var(--rw) * .022); }
+.lcd { aspect-ratio: 1; border-radius: calc(var(--rw) * .018); background: #0b0d0a; padding: calc(var(--rw) * .012);
+  box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.18); position: relative; overflow: hidden; }
+.lcd::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.12), transparent 40%); pointer-events: none; }
+.led { height: calc(var(--rw) * .075); border-radius: calc(var(--rw) * .014); background: #0f0b08; padding: calc(var(--rw) * .008) calc(var(--rw) * .012);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.18); }
+.lcd canvas, .led canvas { width: 100%; height: 100%; display: block; }
+.dialrow { display: grid; grid-template-columns: auto 1fr auto; gap: calc(var(--rw) * .03); align-items: center; margin-top: calc(var(--rw) * .035); }
+.knob { width: calc(var(--rw) * .085); aspect-ratio: 1; border-radius: 50%; position: relative;
+  background: radial-gradient(circle at 35% 30%, #f6f2ea, #b9b2a6 55%, #6f685e); box-shadow: 0 4px 10px rgba(0,0,0,.45), inset 0 -3px 6px rgba(0,0,0,.3);
+  transform: rotate(var(--kr, 0deg)); transition: transform 1s linear; }
+.knob::after { content: ''; position: absolute; left: 50%; top: 10%; width: 8%; height: 30%; translate: -50% 0; border-radius: 2px; background: #3b2a1c; }
+.dial { position: relative; height: calc(var(--rw) * .1); border-radius: calc(var(--rw) * .016); overflow: hidden;
+  background: linear-gradient(180deg, #f6edd6, #ddd0ae); box-shadow: inset 0 2px 8px rgba(0,0,0,.35); color: #3b2a1c; }
+.dial .ticks { position: absolute; left: 5%; right: 5%; top: 12%; height: 26%; background: repeating-linear-gradient(90deg, rgba(40,25,10,.55) 0 1px, transparent 1px 2.5%); }
+.dial .nums { position: absolute; left: 3%; right: 3%; bottom: 14%; display: flex; justify-content: space-between; font-size: calc(var(--rw) * .026); font-weight: 600; letter-spacing: .05em; }
+.dial .needle { position: absolute; top: 6%; bottom: 6%; width: 2px; left: var(--np, 10%); background: #d8322a; box-shadow: 0 0 6px rgba(216,50,42,.6); transition: left 1s linear; }
+.dial .glow { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 120% at var(--np, 10%) 50%, rgba(255,190,90,.35), transparent 70%); transition: background 1s linear; }
+.rfreq { text-align: center; margin-top: calc(var(--rw) * .018); font-size: calc(var(--rw) * .028); letter-spacing: .3em; font-weight: 600; opacity: .85; font-variant-numeric: tabular-nums; }
+
 /* ───────────────── 앨범 플로우 (입체 캐러셀) ───────────────── */
 #stage[data-theme="flow"] #flow { display: flex; }
-#flow { --fw: min(21vw, 33vh); width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
+#flow { --fw: calc(min(21vw, 33vh) * var(--fs, 1)); width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
 #flowStage { position: relative; width: 100%; height: calc(var(--fw) * 1.3); perspective: 1500px; touch-action: pan-y; }
 #flowStage::before { content: ''; position: absolute; left: 50%; top: 50%; width: calc(var(--fw) * 2.4); height: calc(var(--fw) * 1.8); translate: -50% -50%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--c1) 40%, transparent), transparent); pointer-events: none; }
@@ -457,6 +521,21 @@ body.theme-flow #shelf { display: none !important; }
         <div class="pmeta"><span id="pArtist"></span><span id="pAlbum"></span></div>
       </div>
     </div>
+    <div id="radio" class="visual" data-body="wood" aria-hidden="true">
+      <div class="rbody">
+        <div class="rtop"><span>Ambient · FM / AM</span><span class="onair">On Air</span></div>
+        <div class="rmain">
+          <div class="grille"></div>
+          <div class="rright"><div class="lcd"><canvas id="dotCover"></canvas></div><div class="led"><canvas id="dotText"></canvas></div></div>
+        </div>
+        <div class="dialrow">
+          <div class="knob" id="knob1"></div>
+          <div class="dial"><div class="glow"></div><div class="ticks"></div><div class="nums"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div><div class="needle"></div></div>
+          <div class="knob" id="knob2"></div>
+        </div>
+        <div class="rfreq" id="rFreq">FM 88.0 MHz</div>
+      </div>
+    </div>
     <div id="flow" class="visual">
       <div id="flowStage"></div>
       <div id="flowDots"></div>
@@ -536,12 +615,45 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="flow">플로우</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="flow">플로우</button><button data-v="radio">라디오</button></div>
+  </section>
+  <section id="themeOpts" data-t="lp">
+    <h3 id="themeOptsTitle">LP 설정</h3>
+    <div data-for="lp">
+      <div class="slab"><span>LP 회전 속도</span><span id="vRpm"></span></div>
+      <input type="range" id="rRpm" min="4" max="33" step="1">
+      <label class="switch"><span>톤암 보이기</span><input type="checkbox" id="cArm"></label>
+    </div>
+    <div data-for="cd">
+      <div class="slab"><span>CD 회전 속도</span><span id="vCdRpm"></span></div>
+      <input type="range" id="rCdRpm" min="1" max="20" step="1">
+      <div class="slab"><span>무지개 반사</span><span id="vRainbow"></span></div>
+      <input type="range" id="rRainbow" min="0" max="1" step="0.05">
+    </div>
+    <div data-for="poster">
+      <div class="slab"><span>포스터 크기</span><span id="vPs"></span></div>
+      <input type="range" id="rPs" min="0.7" max="1.3" step="0.05">
+      <label class="switch"><span>제목·아티스트 캡션</span><input type="checkbox" id="cCap"></label>
+    </div>
+    <div data-for="flow">
+      <div class="slab"><span>카드 크기</span><span id="vFs"></span></div>
+      <input type="range" id="rFs" min="0.7" max="1.3" step="0.05">
+      <div class="slab"><span>카드 기울기</span><span id="vTilt"></span></div>
+      <input type="range" id="rTilt" min="0" max="55" step="1">
+      <div class="slab"><span>지금 앨범으로 돌아오기</span><span id="vBack"></span></div>
+      <input type="range" id="rBack" min="0" max="60" step="5">
+    </div>
+    <div data-for="radio">
+      <div class="slab"><span>도트 크기</span><span id="vRes"></span></div>
+      <input type="range" id="rRes" min="16" max="56" step="4">
+      <div class="slab" style="margin-top:4px"><span>LED 색</span></div>
+      <div class="seg small" id="segLed"><button data-v="amber">앰버</button><button data-v="green">초록</button><button data-v="accent">앨범색</button></div>
+      <div class="slab" style="margin-top:12px"><span>라디오 몸체</span></div>
+      <div class="seg small" id="segBody"><button data-v="wood">원목</button><button data-v="cream">크림</button><button data-v="black">블랙</button></div>
+    </div>
   </section>
   <section>
     <h3>움직임 · 빛</h3>
-    <div class="slab"><span>디스크 회전 속도</span><span id="vRpm"></span></div>
-    <input type="range" id="rRpm" min="4" max="33" step="1">
     <div class="slab"><span>배경 블러</span><span id="vBlur"></span></div>
     <input type="range" id="rBlur" min="0" max="3" step="1">
     <div class="slab"><span>배경 흐름 속도</span><span id="vMotion"></span></div>
@@ -568,9 +680,22 @@ body.theme-flow #shelf { display: none !important; }
     <p class="note" style="margin-top:4px">효과음은 음악 위에 겹쳐지는 배경 소리예요. 스포티파이 음악 자체를 바꾸지는 않아요.</p>
   </section>
   <section>
+    <h3>플레이리스트 띄워두기</h3>
+    <label class="switch"><span>트랙리스트로 띄워두기</span><input type="checkbox" id="cListPin"></label>
+    <div class="slab" style="margin-top:6px"><span>위치</span></div>
+    <div class="seg small" id="segPlSide"><button data-v="left">왼쪽</button><button data-v="right">오른쪽</button></div>
+    <div class="slab" style="margin-top:12px"><span>글씨 굵기</span></div>
+    <div class="seg small" id="segPlW"><button data-v="300">얇게</button><button data-v="400">보통</button><button data-v="500">진하게</button></div>
+    <div class="slab" style="margin-top:12px"><span>글씨 크기</span><span id="vPlSize"></span></div>
+    <input type="range" id="rPlSize" min="0.8" max="1.5" step="0.05">
+    <div class="slab"><span>다른 곡 밝기</span><span id="vPlDim"></span></div>
+    <input type="range" id="rPlDim" min="0.15" max="0.9" step="0.05">
+    <label class="switch"><span>작은 커버 보이기</span><input type="checkbox" id="cPlCov"></label>
+    <label class="switch"><span>지금 곡 주변 5곡만</span><input type="checkbox" id="cPlNear"></label>
+  </section>
+  <section>
     <h3>화면 구성</h3>
     <label class="switch"><span>아티스트의 다른 앨범 선반</span><input type="checkbox" id="cShelf"></label>
-    <label class="switch"><span>플레이리스트 띄워두기 (트랙리스트)</span><input type="checkbox" id="cListPin"></label>
     <label class="switch"><span>밤 모드 (23~7시 자동으로 어둡게)</span><input type="checkbox" id="cNight"></label>
   </section>
   <section>
@@ -692,7 +817,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -841,6 +966,7 @@ async function applyArt(url, seed) {
   if (!img) { setPalette(moodPalette(seed), .4); return; }
   try { info = analyzeImage(img); } catch { info = null; }   // CORS 막히면 무드 팔레트
   bg.setImage(img, seed);
+  if (typeof radio !== 'undefined') radio.setArt(img, !!info);
   if (info) setPalette(info.cols, info.lum); else setPalette(moodPalette(seed), .4);
 }
 function setPalette(cols, lum) {
@@ -876,7 +1002,7 @@ const spin = {
     if (k < 1 && !document.hidden) this.raf = requestAnimationFrame(t => this.step(t));
     else { this.raf = 0; this.rate = this.target; this.apply(); }
   },
-  factor(name) { return (settings.rpm / 33.3) * (name === 'cd' ? CONFIG.CD_RATIO : 1); },
+  factor(name) { return (name === 'cd' ? settings.cdRpm : settings.rpm) / 33.3; },
   apply() { for (const [name, a] of Object.entries(this.anims)) a.playbackRate = name === settings.theme ? this.rate * this.factor(name) : 0; },
 };
 
@@ -917,6 +1043,7 @@ function onTrack(t) {
   lyrics.load(t);
   shelf.load(t);
   fx.onTrack();
+  if (settings.theme === 'radio') { radio.buildText(); radio.drawText(); }
   if (typeof lists !== 'undefined') lists.markNow();
 }
 function onPlayState() {
@@ -1465,7 +1592,7 @@ const flow = {
     cards.forEach((c, k) => {
       const d = k - this.idx, ad = Math.abs(d), sg = Math.sign(d);
       const x = d === 0 ? 0 : sg * (W * .8 + (ad - 1) * W * .46);
-      c.style.transform = `translateX(${x}px) translateZ(${-ad * 130}px) rotateY(${sg * 32}deg)`;
+      c.style.transform = `translateX(${x}px) translateZ(${-ad * 130}px) rotateY(${sg * settings.tilt}deg)`;
       c.style.opacity = ad > 3 ? 0 : [1, .97, .8, .5][ad];
       c.style.zIndex = 20 - ad; c.style.pointerEvents = ad > 3 ? 'none' : '';
       c.classList.toggle('center', d === 0);
@@ -1477,7 +1604,7 @@ const flow = {
     const on = n <= 12 ? this.idx : Math.round(this.idx / (n - 1) * (D - 1));
     [...this.dots.children].forEach((d, k) => d.classList.toggle('on', k === on));
   },
-  touch() { clearTimeout(this.idleT); this.idleT = setTimeout(() => this.focusCurrent(), 12000); },   // 12초 가만두면 지금 앨범으로 돌아옴
+  touch() { clearTimeout(this.idleT); if (settings.back > 0) this.idleT = setTimeout(() => this.focusCurrent(), settings.back * 1000); },   // 가만두면 지금 앨범으로 돌아옴 (0 = 안 돌아옴)
   play(a) {
     if (S.source === 'spotify' && a.uri) { toast(`'${a.name}' 재생`); sp.playContext(a.uri); }
     else if (S.source === 'demo') { toast(`샘플 모드라 '${a.name}' 대신 다음 샘플 곡을 틀게요`); demo.next(); }
@@ -1591,6 +1718,7 @@ const lists = {
     const id = S.track?.id, rows = $$('#lTracks .tr'); let ni = -1;
     rows.forEach((n, i) => { const on = !!id && n.dataset.id === id; n.classList.toggle('now', on); if (on) ni = i; });
     rows.forEach((n, i) => n.classList.toggle('near', ni >= 0 && Math.abs(i - ni) <= 2 && i !== ni));
+    $('#lTracks').classList.toggle('has-now', ni >= 0);
     if (settings.listPin && ni >= 0) {   // 띄워둘 땐 지금 곡이 가운데 오도록 천천히 스크롤
       const box = $('#lTracks'), r = rows[ni];
       box.scrollTo({ top: r.offsetTop - box.clientHeight * .42, behavior: smooth ? 'smooth' : 'auto' });
@@ -1647,6 +1775,84 @@ $('#lPlay').onclick = () => lists.play(null);
 $('#lShuf').onclick = () => { settings.shuffle = !settings.shuffle; saveSettings(); $('#lShuf').classList.toggle('on', settings.shuffle); toast(settings.shuffle ? '셔플 켜짐' : '셔플 꺼짐', 1200); };
 $('#lPin').onclick = () => lists.pin(!settings.listPin);
 $('#lTracks').addEventListener('click', e => { const r = e.target.closest('.tr'); if (r) lists.play(+r.dataset.i); });
+
+/* ═══════════════ 라디오 테마: 도트 커버 · LED 전광판 · 다이얼 ═══════════════ */
+const LED_COLORS = { amber: [255, 176, 70], green: [120, 255, 150] };
+const radio = {
+  img: null, ok: false, msg: '', bits: null, off: 0, last: 0, lastStep: 0,
+  setArt(img, ok) { this.img = img; this.ok = ok; if (settings.theme === 'radio') this.drawCover(); },
+  ledRGB() {
+    if (settings.led !== 'accent') return LED_COLORS[settings.led] || LED_COLORS.amber;
+    const m = getComputedStyle(document.documentElement).getPropertyValue('--accent').match(/\d+/g); return m ? m.slice(0, 3).map(Number) : LED_COLORS.amber;
+  },
+  fit(cv) { const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); cv.width = Math.max(10, Math.round(r.width * d)); cv.height = Math.max(10, Math.round(r.height * d)); return cv.getContext('2d'); },
+  /* 커버를 N×N 점으로 (레트로 팔레트로 색 단순화) */
+  drawCover() {
+    const cv = $('#dotCover'); if (!cv.isConnected || !this.img) return;
+    const x = this.fit(cv), W = cv.width, H = cv.height, N = settings.radioRes;
+    x.fillStyle = '#0b0d0a'; x.fillRect(0, 0, W, H);
+    const o = document.createElement('canvas'); o.width = o.height = N; const ox = o.getContext('2d');
+    ox.drawImage(this.img, 0, 0, N, N);
+    const cell = W / N;
+    if (this.ok) {
+      let d; try { d = ox.getImageData(0, 0, N, N).data; } catch { d = null; }
+      if (d) {
+        for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+          const k = (j * N + i) * 4, q = v => Math.min(255, (v >> 5) * 36 + 22);
+          x.fillStyle = `rgb(${q(d[k])},${q(d[k + 1])},${q(d[k + 2])})`;
+          x.beginPath(); x.arc((i + .5) * cell, (j + .5) * cell, cell * .42, 0, Math.PI * 2); x.fill();
+        }
+        return;
+      }
+    }
+    /* 색을 못 읽는 커버면: 픽셀 확대 + 격자로 도트 느낌 */
+    x.imageSmoothingEnabled = false; x.drawImage(o, 0, 0, W, H);
+    x.strokeStyle = '#0b0d0a'; x.lineWidth = cell * .18; x.beginPath();
+    for (let i = 0; i <= N; i++) { x.moveTo(i * cell, 0); x.lineTo(i * cell, H); x.moveTo(0, i * cell); x.lineTo(W, i * cell); }
+    x.stroke();
+  },
+  /* 제목을 14줄짜리 점 글자로 변환 */
+  buildText() {
+    const t = S.track; this.msg = t ? `${t.title}  ·  ${t.artist}${t.album ? '  ·  ' + t.album : ''}      ` : 'AMBIENT FM      ';
+    const rows = 14, c = document.createElement('canvas'), x = c.getContext('2d');
+    x.font = `bold 13px "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`;
+    const w = Math.ceil(x.measureText(this.msg).width) + 4; c.width = w; c.height = rows;
+    x.font = `bold 13px "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`; x.textBaseline = 'middle'; x.fillStyle = '#fff'; x.fillText(this.msg, 0, rows / 2 + 1);
+    const d = x.getImageData(0, 0, w, rows).data; this.bits = { w, rows, on: new Uint8Array(w * rows) };
+    for (let i = 0; i < w * rows; i++) this.bits.on[i] = d[i * 4 + 3] > 110 ? 1 : 0;
+    this.off = 0; this.ledCtx = null;
+  },
+  drawText() {
+    const cv = $('#dotText'); if (!this.bits) this.buildText();
+    if (!this.ledCtx || cv.width !== Math.round(cv.getBoundingClientRect().width * Math.min(2, devicePixelRatio || 1))) this.ledCtx = this.fit(cv);
+    const x = this.ledCtx, W = cv.width, H = cv.height, { w, rows, on } = this.bits;
+    const cell = H / rows, cols = Math.floor(W / cell), [r, g, b] = this.ledRGB();
+    x.fillStyle = '#0f0b08'; x.fillRect(0, 0, W, H);
+    const lit = `rgb(${r},${g},${b})`, dim = `rgba(${r},${g},${b},.09)`;
+    for (let c = 0; c < cols; c++) {
+      const sc = (c + this.off) % w;
+      for (let j = 0; j < rows; j++) {
+        const L = on[j * w + sc];
+        x.fillStyle = L ? lit : dim;
+        x.beginPath(); x.arc((c + .5) * cell, (j + .5) * cell, cell * .36, 0, Math.PI * 2); x.fill();
+      }
+    }
+  },
+  redraw() { if (settings.theme !== 'radio') return; this.ledCtx = null; this.drawCover(); this.buildText(); this.drawText(); this.dial(); },
+  dial() {
+    const p = S.track ? clamp(S.pos() / (S.track.durationMs || 1), 0, 1) : 0, np = 5 + p * 90;
+    const st = $('#radio').style; st.setProperty('--np', np.toFixed(2) + '%');
+    $('#knob2').style.setProperty('--kr', (p * 300 - 150).toFixed(1) + 'deg');
+    $('#knob1').style.setProperty('--kr', (settings.fxVol * 270 - 135).toFixed(1) + 'deg');
+    const f = (88 + p * 20).toFixed(1); if (this.lastF !== f) { this.lastF = f; $('#rFreq').textContent = `FM ${f} MHz`; }
+  },
+  tick(ts) {
+    if (ts - this.last < 66) return; this.last = ts;   // 약 15프레임
+    if (S.playing && ts - this.lastStep > 90) { this.lastStep = ts; this.off = (this.off + 1) % (this.bits?.w || 1); this.drawText(); }
+    if (ts - (this.lastDial || 0) > 1000) { this.lastDial = ts; this.dial(); }
+  },
+};
+addEventListener('resize', () => settings.theme === 'radio' && radio.redraw());
 
 /* ═══════════════ 분위기 이펙트 (화면 연출 + 직접 합성한 배경 소리) ═══════════════
    스포티파이 소리는 DRM·다른 앱이라 가공할 수 없어서, 음악 위에 '겹치는' 방식이에요. */
@@ -1824,7 +2030,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'flow'];
+const THEMES = ['lp', 'cd', 'poster', 'flow', 'radio'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
@@ -1834,6 +2040,8 @@ function setTheme(t) {
   spin.apply();
   if ((was === 'flow') !== (t === 'flow') && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
+  if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
+  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정' }[t]; }
   if (typeof lyrics !== 'undefined') setTimeout(() => lyrics.update(S.pos(), true), 60);
 }
 function setLyricsOn(on) {
@@ -1865,10 +2073,31 @@ const BLUR_NAMES = ['형태 보임', '약하게', '보통', '완전히'];
 function applyVisualSettings() {
   const r = document.documentElement.style;
   r.setProperty('--edgeK', settings.edge); r.setProperty('--ls', settings.ls);
+  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--fs', settings.fs);
+  r.setProperty('--pl-size', settings.plSize); r.setProperty('--pl-dim', settings.plDim); r.setProperty('--pl-weight', settings.plW);
+  body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
+  body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
+  $('#radio').dataset.body = settings.rbody;
+  if (settings.theme === 'flow' && typeof flow !== 'undefined') flow.go(flow.idx, true);
   spin.apply(); checkNight(); lastClock = ''; clockTick();
 }
 function syncSettingsUI() {
   $('#rRpm').value = settings.rpm; $('#vRpm').textContent = settings.rpm + ' rpm' + (settings.rpm === 33 ? ' (실제 LP)' : '');
+  $('#cArm').checked = settings.arm;
+  $('#rCdRpm').value = settings.cdRpm; $('#vCdRpm').textContent = settings.cdRpm + ' rpm';
+  $('#rRainbow').value = settings.rainbow; $('#vRainbow').textContent = Math.round(settings.rainbow * 100) + '%';
+  $('#rPs').value = settings.ps; $('#vPs').textContent = '×' + (+settings.ps).toFixed(2); $('#cCap').checked = settings.cap;
+  $('#rFs').value = settings.fs; $('#vFs').textContent = '×' + (+settings.fs).toFixed(2);
+  $('#rTilt').value = settings.tilt; $('#vTilt').textContent = settings.tilt + '°';
+  $('#rBack').value = settings.back; $('#vBack').textContent = settings.back ? settings.back + '초 뒤' : '안 돌아옴';
+  $('#rRes').value = settings.radioRes; $('#vRes').textContent = settings.radioRes + '×' + settings.radioRes;
+  $$('#segLed button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.led));
+  $$('#segBody button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.rbody));
+  $$('#segPlSide button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.plSide));
+  $$('#segPlW button').forEach(b => b.classList.toggle('on', +b.dataset.v === +settings.plW));
+  $('#rPlSize').value = settings.plSize; $('#vPlSize').textContent = '×' + (+settings.plSize).toFixed(2);
+  $('#rPlDim').value = settings.plDim; $('#vPlDim').textContent = Math.round(settings.plDim * 100) + '%';
+  $('#cPlCov').checked = !!settings.plCov; $('#cPlNear').checked = !!settings.plNear;
   $('#vBlur').textContent = BLUR_NAMES[settings.blur];
   $('#rMotion').value = settings.motion; $('#vMotion').textContent = settings.motion === 0 ? '멈춤' : '×' + settings.motion;
   $('#rEdge').value = settings.edge; $('#vEdge').textContent = settings.edge === 0 ? '끔' : Math.round(settings.edge * 100) + '%';
@@ -1891,6 +2120,13 @@ function renderFonts() {
 }
 const bindRange = (id, key, after) => $(id).oninput = e => { settings[key] = +e.target.value; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 'edge');
+bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
+bindRange('#rRes', 'radioRes', () => radio.redraw()); bindRange('#rPlSize', 'plSize', () => lists.markNow(false)); bindRange('#rPlDim', 'plDim');
+const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.target.checked; saveSettings(); applyVisualSettings(); after && after(); };
+bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
+const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.closest('button')?.dataset.v; if (v == null) return;
+  settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
+bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
@@ -1968,6 +2204,7 @@ function loop(ts) {
   if (document.hidden) { looping = false; return; }
   requestAnimationFrame(loop);
   fx.render(ts);
+  if (settings.theme === 'radio') radio.tick(ts);
   const fps = WALLPAPER ? CONFIG.FPS_WALLPAPER : CONFIG.FPS;
   if (ts - lastFrame < 1000 / fps - 3) return;
   lastFrame = ts;
