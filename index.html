@@ -455,27 +455,55 @@ body.has-shelf #tv { --tw: min(32vw, 62vh); }
 .tv-legs { display: flex; justify-content: space-between; padding: 0 16%; }
 .tv-legs i { width: calc(var(--tw) * .05); height: calc(var(--tw) * .06); background: #2a2420; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
 
-/* ───────────────── 주크박스 테마: 화면 전체 다이너 무드 ───────────────── */
-#jbScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; --jx: 28vw; --jy: 40vh; }
+/* ───────────────── 주크박스 테마: 80년대 미국 바 ───────────────── */
+#jbScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; }
 body.theme-jukebox #jbScene { display: block; }
-#jbScene .tint { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at var(--jx) var(--jy), rgba(255,140,60,.22), transparent 60%), radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(30,6,24,.55)); }
-#jbScene .rays { position: absolute; left: var(--jx); top: var(--jy); width: 230vmax; aspect-ratio: 1; translate: -50% -50%;
-  background: repeating-conic-gradient(rgba(255,214,140,.13) 0 4deg, transparent 4deg 11deg); animation: rays 90s linear infinite;
-  -webkit-mask-image: radial-gradient(circle, #000 4%, transparent 40%); mask-image: radial-gradient(circle, #000 4%, transparent 40%); }
-#jbScene .spot { position: absolute; top: -6vh; width: 120vh; height: 140vh; transform-origin: 50% 0; opacity: .32; animation: spotsweep 9s ease-in-out infinite alternate;
-  background: conic-gradient(from 165deg at 50% 0%, transparent 0deg, var(--sc) 12deg 18deg, transparent 30deg);
-  -webkit-mask-image: linear-gradient(#000 10%, transparent 85%); mask-image: linear-gradient(#000 10%, transparent 85%); }
-#jbScene .spot.l { left: -45vh; --sc: rgba(255,80,170,.75); --a: 18deg; }
-#jbScene .spot.r { right: -45vh; --sc: rgba(80,210,255,.7); --a: -18deg; animation-delay: -4.5s; }
-@keyframes spotsweep { from { transform: rotate(calc(var(--a) * -1)); } to { transform: rotate(var(--a)); } }
-#jbScene .floor { position: absolute; left: -40%; right: -40%; bottom: -2vh; height: 46vh; transform-origin: 50% 100%; transform: perspective(55vh) rotateX(64deg); opacity: .32;
-  background: repeating-conic-gradient(#f4ead2 0 25%, #18121a 0 50%) 0 0 / 9vh 9vh;
-  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 90%); mask-image: linear-gradient(to top, #000 10%, transparent 90%); }
-#jbMarquee i { position: absolute; width: 11px; height: 11px; translate: -50% -50%; border-radius: 50%;
-  background: radial-gradient(circle at 38% 35%, #fff, var(--bc) 62%); box-shadow: 0 0 6px var(--bc), 0 0 14px var(--bc); opacity: .3;
-  animation: chase 1.8s linear infinite; animation-delay: var(--dl); }
-body.paused #jbMarquee i { animation-duration: 5s; }
-body.no-bulbs #jbMarquee i { animation: none; opacity: .7; }
+/* 벽돌 벽 (앨범 색이 은은하게 비치도록 살짝 투명) */
+#jbScene .wall { position: absolute; inset: 0; opacity: .84;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 35%, rgba(255,150,80,.18), transparent 70%),
+    linear-gradient(180deg, rgba(20,6,6,.55), rgba(8,3,3,.35) 55%, rgba(8,3,3,.75)),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><rect width='120' height='60' fill='%23241210'/><g fill='%236e2f22'><rect x='1' y='1' width='57' height='27' rx='2'/><rect x='61' y='1' width='58' height='27' rx='2' fill='%23642a1f'/><rect x='-29' y='31' width='58' height='27' rx='2' fill='%23743325'/><rect x='31' y='31' width='57' height='27' rx='2'/><rect x='91' y='31' width='58' height='27' rx='2' fill='%23602920'/></g></svg>") 0 0 / 120px 60px; }
+#jbScene .wood { position: absolute; left: 0; right: 0; bottom: 0; height: 30vh;
+  background: linear-gradient(180deg, #2a160c 0 1.2vh, #4a2a16 1.2vh 1.8vh, transparent 1.8vh),
+              repeating-linear-gradient(90deg, #3a2012 0 13vh, #2c170c 13vh 13.3vh), #3a2012;
+  box-shadow: 0 -1.5vh 3vh rgba(0,0,0,.5); opacity: .92; }
+#jbScene .wood::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,180,100,.08), rgba(0,0,0,.55)); }
+/* 바 카운터 */
+#jbScene .counter { position: absolute; left: -2vw; right: -2vw; bottom: 0; height: 9vh;
+  background: linear-gradient(180deg, #8a5a32 0 .9vh, #5b3519 .9vh 2.2vh, #2a170b 2.2vh); box-shadow: 0 -.6vh 2vh rgba(0,0,0,.6); }
+#jbScene .counter::before { content: ''; position: absolute; left: 0; right: 0; top: 3.4vh; height: .8vh; border-radius: 1vh;
+  background: linear-gradient(180deg, #fff, #a9a9a9 40%, #6d6d6d); box-shadow: 0 0 1vh rgba(255,220,170,.4); }
+#jbScene .stool { position: absolute; bottom: 0; width: 9vh; height: 13vh; }
+#jbScene .stool::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3vh; border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 35%, #e0423a, #8e1a16 70%); box-shadow: 0 .5vh 0 #c9c9c9, 0 1vh 1.5vh rgba(0,0,0,.6); }
+#jbScene .stool::after { content: ''; position: absolute; left: 44%; width: 12%; top: 3vh; bottom: 0; background: linear-gradient(90deg, #777, #eee, #888); }
+/* 매달린 조명 */
+#jbScene .lamp { position: absolute; top: 0; width: 14vh; translate: -50% 0; transform-origin: 50% 0; animation: sway 9s ease-in-out infinite alternate; }
+#jbScene .lamp .cord { margin: 0 auto; width: 2px; height: var(--len, 12vh); background: #111; }
+#jbScene .lamp .shade { margin: 0 auto; width: 100%; height: 5vh; border-radius: 50% 50% 8% 8% / 100% 100% 8% 8%;
+  background: linear-gradient(180deg, #1f4a35, #0f2a1d); box-shadow: inset 0 -.4vh 0 #c9a34a; position: relative; }
+#jbScene .lamp .shade::after { content: ''; position: absolute; left: 50%; bottom: -1.2vh; width: 3vh; height: 2.4vh; translate: -50% 0; border-radius: 50%;
+  background: radial-gradient(circle, #fff8e0, #ffcf7a 60%, transparent 70%); box-shadow: 0 0 3vh 1vh rgba(255,200,110,.6); }
+#jbScene .lamp .cone { position: absolute; left: 50%; top: calc(var(--len, 12vh) + 4vh); width: 90vh; height: 85vh; translate: -50% 0;
+  background: conic-gradient(from 160deg at 50% 0%, transparent 0deg, rgba(255,196,120,.16) 12deg 28deg, transparent 40deg);
+  -webkit-mask-image: linear-gradient(#000 20%, transparent 95%); mask-image: linear-gradient(#000 20%, transparent 95%); }
+@keyframes sway { from { transform: rotate(-1.2deg); } to { transform: rotate(1.2deg); } }
+/* 연기 */
+#jbScene .haze { position: absolute; inset: -10%; opacity: .45;
+  background: radial-gradient(ellipse 40% 25% at 30% 40%, rgba(255,220,190,.12), transparent 70%), radial-gradient(ellipse 50% 30% at 75% 55%, rgba(255,200,170,.1), transparent 70%);
+  animation: haze 40s ease-in-out infinite alternate; }
+@keyframes haze { to { transform: translate(4%, -3%) scale(1.08); } }
+/* 네온 간판 */
+#jbScene .sign { position: absolute; font-weight: 700; white-space: nowrap; animation: neonflick var(--f, 8s) infinite; }
+#jbScene .open { left: 3vw; top: 7vh; padding: .3em .6em; border-radius: .6em; font-family: system-ui, sans-serif; font-size: 3.2vh; letter-spacing: .18em; color: #ffe9ea;
+  border: .35vh solid #ff3b3b; text-shadow: 0 0 .4vh #fff, 0 0 1.2vh #ff3b3b, 0 0 2.6vh #ff1a1a; box-shadow: 0 0 1.4vh #ff3b3b, inset 0 0 1.4vh #ff3b3b; --f: 11s; }
+#jbScene .live { left: 4.5vw; top: 22vh; writing-mode: vertical-rl; font-family: system-ui, sans-serif; font-size: 2.6vh; letter-spacing: .3em; color: #e9f6ff;
+  text-shadow: 0 0 .4vh #fff, 0 0 1.2vh #3aa7ff, 0 0 2.8vh #1a6dff; --f: 6.5s; }
+#jbScene .script { right: 4vw; bottom: 32vh; font-family: 'Pacifico', cursive; font-weight: 400; font-size: 4.2vh; color: #fff0f8;
+  text-shadow: 0 0 .4vh #fff, 0 0 1.4vh #ff4fa3, 0 0 3vh #ff2d6f; transform: rotate(-6deg); --f: 13s; opacity: .9; }
+#jbScene .cocktail { left: 49%; top: 10vh; width: 7vh; translate: -50% 0; --f: 9s; }
+#jbScene .cocktail svg { width: 100%; filter: drop-shadow(0 0 .5vh #5ff0ff) drop-shadow(0 0 1.4vh #22c8ff); }
 /* 시계·제목·가사를 네온사인처럼 */
 body.theme-jukebox #clock .time { color: #fff3f8; text-shadow: 0 0 4px #fff, 0 0 12px #ff4fa3, 0 0 28px #ff2d6f, 0 0 52px #ff2d6f; animation: neonflick 9s infinite; }
 body.theme-jukebox #clock .date { color: #bff6ff; opacity: 1; text-shadow: 0 0 6px #4fd8ff, 0 0 16px #2ab8ff; }
@@ -486,30 +514,28 @@ body.theme-jukebox #lyrics .line.near { text-shadow: 0 0 10px rgba(80,210,255,.6
 body.theme-jukebox #player { background: rgba(40,10,24,.45); border-color: rgba(255,140,200,.45); box-shadow: 0 0 24px rgba(255,80,170,.35), inset 0 1px 0 rgba(255,255,255,.2); }
 @media (prefers-reduced-motion: reduce) { #jbScene * { animation: none !important; } }
 
-/* ───────────────── 주크박스 (50년대 화려한 불빛) ───────────────── */
-#jukebox { --jw: min(26vw, 38vh); width: var(--jw); position: relative; }
-.jb { position: relative; padding: 0 7% 3.5%; border-radius: 50% 50% 4% 4% / 30% 30% 3% 3%;
-  background: linear-gradient(180deg, #5a1d10, #3a0f07 55%, #210804);
-  box-shadow: 0 4vmin 9vmin rgba(0,0,0,.5), 0 0 8vmin rgba(255,150,50,.38), inset 0 0 0 calc(var(--jw) * .014) #d8c08a, inset 0 0 0 calc(var(--jw) * .022) #6b3a14; }
-.jb::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.08) 38%, transparent 46%); }
-.jb-crown { position: relative; height: calc(var(--jw) * .5); margin: 0 -7.8%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden; }
+/* ───────────────── 주크박스 (40년대 황금기 스타일, 오리지널 디자인) ───────────────── */
+#jukebox { --jw: min(25vw, 36vh); width: var(--jw); position: relative; }
+.jb { position: relative; padding: 0 9% 0; border-radius: 50% 50% 6% 6% / 28% 28% 3% 3%;
+  background: linear-gradient(90deg, rgba(0,0,0,.35), transparent 18%, transparent 82%, rgba(0,0,0,.35)),
+              repeating-linear-gradient(92deg, #6a3a1c 0 6px, #5a2f15 6px 9px, #7a4524 9px 15px, #643619 15px 19px);
+  box-shadow: 0 4vmin 9vmin rgba(0,0,0,.6), 0 0 9vmin rgba(255,150,50,.35), inset 0 0 0 calc(var(--jw) * .012) #c9a26a, inset 0 3px 0 rgba(255,255,255,.2); }
+.jb::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.07) 38%, transparent 46%); }
+/* 꼭대기: 무지개 아치 + 빛살 + 네온 + 전구 */
+.jb-crown { position: relative; height: calc(var(--jw) * .44); margin: 0 -9.8%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden; }
 .jb-crown .band { position: absolute; inset: 0; border-radius: inherit;
-  background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
-              linear-gradient(90deg, #ff3b2f, #ff9a1f, #ffe25a, #5ee38f, #3aa7ff, #b65bff, #ff3b2f);
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px), linear-gradient(90deg, #ff3b2f, #ff9a1f, #ffe25a, #5ee38f, #3aa7ff, #b65bff, #ff3b2f);
   background-size: 100% 100%, 300% 100%; animation: peacock 16s linear infinite; }
-#jukebox[data-neon="album"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
-  linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c2), var(--c1)); background-size: 100% 100%, 300% 100%; }
-#jukebox[data-neon="pink"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
-  linear-gradient(90deg, #ff2e88, #ff9ccf, #ffd6ec, #ff9ccf, #ff2e88); background-size: 100% 100%, 300% 100%; }
+#jukebox[data-neon="album"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px), linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c2), var(--c1)); background-size: 100% 100%, 300% 100%; }
+#jukebox[data-neon="pink"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px), linear-gradient(90deg, #ff2e88, #ff9ccf, #ffd6ec, #ff9ccf, #ff2e88); background-size: 100% 100%, 300% 100%; }
 @keyframes peacock { to { background-position: 0 0, 300% 0; } }
-.jb-crown .well { position: absolute; left: 13%; right: 13%; top: 20%; bottom: -2%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden;
-  background: radial-gradient(ellipse at 50% 100%, #7a2e10, #2a0b04 70%); box-shadow: inset 0 0 calc(var(--jw) * .04) rgba(0,0,0,.8), 0 0 0 calc(var(--jw) * .01) #d8c08a; }
+.jb-crown .well { position: absolute; left: 14%; right: 14%; top: 22%; bottom: -2%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 100%, #ffb357, #c25a12 35%, #3a1306 75%); box-shadow: inset 0 0 calc(var(--jw) * .05) rgba(0,0,0,.75), 0 0 0 calc(var(--jw) * .012) #e8cf95; }
 .jb-crown .rays { position: absolute; left: 50%; bottom: -60%; width: 170%; aspect-ratio: 1; translate: -50% 0;
-  background: repeating-conic-gradient(rgba(255,214,130,.24) 0 5deg, transparent 5deg 14deg); animation: rays 50s linear infinite;
+  background: repeating-conic-gradient(rgba(255,240,190,.3) 0 4deg, transparent 4deg 12deg); animation: rays 50s linear infinite;
   -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 62%); mask-image: radial-gradient(circle, #000 20%, transparent 62%); }
 @keyframes rays { to { transform: rotate(360deg); } }
-.jb-title { position: absolute; left: 0; right: 0; top: 34%; text-align: center; font-family: 'Pacifico', 'Nanum Pen Script', cursive; font-size: calc(var(--jw) * .07);
+.jb-title { position: absolute; left: 0; right: 0; top: 46%; text-align: center; font-family: 'Pacifico', 'Nanum Pen Script', cursive; font-size: calc(var(--jw) * .075);
   color: #fff6dc; text-shadow: 0 0 4px #ffb066, 0 0 12px #ff6a1f, 0 0 26px #ff2d6f; animation: neonflick 7s infinite; }
 @keyframes neonflick { 0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; } 20%, 63% { opacity: .55; } }
 .jb-bulb { position: absolute; width: calc(var(--jw) * .03); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
@@ -518,24 +544,41 @@ body.theme-jukebox #player { background: rgba(40,10,24,.45); border-color: rgba(
 @keyframes chase { 0%, 100% { opacity: .28; } 8% { opacity: 1; } 30% { opacity: .55; } }
 body.paused .jb-bulb { animation-duration: 5s; }
 body.no-bulbs .jb-bulb { animation: none; opacity: .75; }
-.jb-top { position: relative; display: grid; justify-items: center; margin: -10% 0 3%; z-index: 2; }
-.jb-cover { width: 32%; aspect-ratio: 1; border-radius: 4px;
-  box-shadow: 0 0 0 calc(var(--jw) * .01) #f2e3b5, 0 0 0 calc(var(--jw) * .02) #8a6a2a, 0 0 calc(var(--jw) * .06) rgba(255,170,70,.75); }
-.jb-now { margin-top: 3.5%; padding: .3em 1em; border-radius: 999px; font-size: calc(var(--jw) * .03); letter-spacing: .16em; text-transform: uppercase; color: #3a1608;
-  background: linear-gradient(180deg, #fff3c9, #e6c56d); box-shadow: 0 0 calc(var(--jw) * .03) rgba(255,190,90,.7); max-width: 86%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jb-tube { position: absolute; top: 34%; bottom: 13%; width: 5%; border-radius: 999px; overflow: hidden; opacity: .92; z-index: 1;
-  background: linear-gradient(180deg, #ff4d3a, #ffb02e, #ffe866, #4be08a, #3aa7ff, #c45bff, #ff4d3a); background-size: 100% 300%; animation: tubeflow 9s linear infinite;
-  box-shadow: 0 0 calc(var(--jw) * .035) rgba(255,160,60,.65), inset 0 0 0 1px rgba(255,255,255,.35); }
-.jb-tube::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.45), transparent 40%, rgba(0,0,0,.2)); }
+/* 양옆: 색이 흐르는 빛 기둥 + 기포관 */
+.jb-pillar { position: absolute; top: 21%; bottom: 2%; width: 10%; border-radius: 999px 999px 10px 10px; overflow: hidden; z-index: 1;
+  background: linear-gradient(180deg, #ff4d3a, #ffb02e, #ffe866, #4be08a, #3aa7ff, #c45bff, #ff4d3a); background-size: 100% 300%; animation: tubeflow 10s linear infinite;
+  box-shadow: 0 0 calc(var(--jw) * .05) rgba(255,160,60,.7), inset 0 0 0 calc(var(--jw) * .006) rgba(255,255,255,.4); }
+.jb-pillar::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 1px, transparent 1px 22%),
+  linear-gradient(90deg, rgba(0,0,0,.25), rgba(255,255,255,.35) 40%, rgba(0,0,0,.25)); }
+.jb-pillar.l { left: -3.5%; } .jb-pillar.r { right: -3.5%; }
+#jukebox[data-neon="album"] .jb-pillar { background: linear-gradient(180deg, var(--c1), var(--c2), var(--c3), var(--c1)); background-size: 100% 300%; }
+#jukebox[data-neon="pink"] .jb-pillar { background: linear-gradient(180deg, #ff2e88, #ff9ccf, #ffe0f0, #ff2e88); background-size: 100% 300%; }
 @keyframes tubeflow { to { background-position: 0 300%; } }
-.jb-tube.l { left: 1.2%; } .jb-tube.r { right: 1.2%; }
-.jb-tube i { position: absolute; left: 22%; width: 56%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.9); bottom: -10%; animation: bubble var(--d) linear infinite; animation-delay: var(--dl); }
-@keyframes bubble { to { transform: translateY(calc(var(--jw) * -1.1)); } }
-body.no-bubbles .jb-tube i { display: none; }
-.jb-head { display: flex; justify-content: space-between; align-items: center; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 1.6%;
-  text-shadow: 0 0 8px rgba(255,170,60,.7); }
+.jb-pillar .tube { position: absolute; left: 32%; width: 36%; top: 6%; bottom: 4%; border-radius: 999px; background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.5); overflow: hidden; }
+.jb-pillar i { position: absolute; left: 18%; width: 64%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.95); bottom: -10%; animation: bubble var(--d) linear infinite; animation-delay: var(--dl); }
+@keyframes bubble { to { transform: translateY(calc(var(--jw) * -1.4)); } }
+body.no-bubbles .jb-pillar i { display: none; }
+/* 레코드가 도는 유리창 */
+.jb-rec { position: relative; height: calc(var(--jw) * .34); margin: -1% 2% 0; border-radius: 46% 46% 8px 8px / 60% 60% 8px 8px; overflow: hidden; z-index: 2;
+  background: radial-gradient(ellipse at 50% 20%, #5a2a14, #160704 75%); box-shadow: inset 0 0 calc(var(--jw) * .05) rgba(0,0,0,.9), 0 0 0 calc(var(--jw) * .012) #e8cf95, 0 0 calc(var(--jw) * .05) rgba(255,170,70,.5); }
+.jb-rec::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(255,255,255,.18), transparent 35%), radial-gradient(ellipse at 50% 110%, rgba(255,170,70,.35), transparent 60%); }
+.jb-rec .stack { position: absolute; left: 50%; width: 70%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; transform: rotateX(70deg); background: #0b0b0c; box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+.jb-disc { position: absolute; left: 50%; top: 62%; width: 70%; aspect-ratio: 1; translate: -50% -50%; transform: perspective(calc(var(--jw) * 1.2)) rotateX(64deg); }
+#jbSpin { width: 100%; height: 100%; border-radius: 50%; will-change: transform;
+  background: radial-gradient(circle, transparent 0 32%, rgba(255,255,255,.07) 33%, transparent 34%), repeating-radial-gradient(circle, #121214 0 1px, #1c1c20 1.5px, #111113 2.2px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 calc(var(--jw) * .02) calc(var(--jw) * .03) rgba(0,0,0,.8); position: relative; }
+#jbSpin .lbl { position: absolute; inset: 33%; border-radius: 50%; }
+.jb-arm { position: absolute; right: 10%; top: 26%; width: 34%; height: 3%; border-radius: 4px; transform-origin: 100% 50%; transform: rotate(-24deg);
+  background: linear-gradient(180deg, #fff3c0, #c9a24a, #8a6a2a); box-shadow: 0 2px 4px rgba(0,0,0,.6); z-index: 2; }
+.jb-arm::before { content: ''; position: absolute; right: -4%; top: 50%; width: 14%; aspect-ratio: 1; translate: 0 -50%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff3c0, #8a6a2a); }
+.jb-now { position: relative; z-index: 2; margin: 3% auto 3%; width: fit-content; max-width: 86%; padding: .3em 1em; border-radius: 999px; font-size: calc(var(--jw) * .03); letter-spacing: .16em;
+  text-transform: uppercase; color: #3a1608; background: linear-gradient(180deg, #fff3c9, #e6c56d); box-shadow: 0 0 calc(var(--jw) * .03) rgba(255,190,90,.7);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 선택판 */
+.jb-head { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em;
+  text-transform: uppercase; margin-bottom: 1.6%; text-shadow: 0 0 8px rgba(255,170,60,.7); }
 .jb-head button { border: 0; background: none; color: inherit; cursor: pointer; font: inherit; letter-spacing: .05em; text-transform: none; max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: inherit; }
-.jb-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5% 2.2%; padding: 2.6%; border-radius: 6px; min-height: calc(var(--jw) * .4);
+.jb-panel { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5% 2.2%; padding: 2.6%; border-radius: 6px; min-height: calc(var(--jw) * .4);
   background: linear-gradient(180deg, #fff2cf, #f1d996); border: calc(var(--jw) * .012) solid; border-color: #f4f4f4 #8d8d8d #6f6f6f #e2e2e2;
   box-shadow: 0 0 calc(var(--jw) * .05) rgba(255,190,90,.6), inset 0 0 calc(var(--jw) * .04) rgba(255,160,40,.45); }
 .jbs { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4%; padding: 2.2% 3%; background: #fffaf0; cursor: pointer; color: #1c1209; min-width: 0;
@@ -548,18 +591,21 @@ body.no-bubbles .jb-tube i { display: none; }
 .jbs.now b { background: #c8312a; color: #fff; }
 .jb-msg { grid-column: 1 / -1; font-size: calc(var(--jw) * .028); color: #3a2414; text-align: center; padding: 6% 4%; }
 .jb-msg .note { color: #3a2414; opacity: .8; }
-.jb-nav { display: flex; justify-content: center; align-items: center; gap: 5%; margin-top: 3%; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em;
-  text-shadow: 0 0 8px rgba(255,170,60,.7); }
+.jb-nav { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; gap: 5%; margin-top: 3%; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em; text-shadow: 0 0 8px rgba(255,170,60,.7); }
 .jb-nav button { width: calc(var(--jw) * .1); height: calc(var(--jw) * .055); border-radius: 4px; border: 0; cursor: pointer; font-size: calc(var(--jw) * .026); color: #3a1608;
   background: linear-gradient(180deg, #fafafa, #b9b9b9 55%, #8a8a8a); box-shadow: 0 3px 0 #555, 0 0 calc(var(--jw) * .025) rgba(255,90,60,.6); }
 .jb-nav button:active { transform: translateY(2px); box-shadow: 0 1px 0 #555; }
-.jb-grille { position: relative; margin-top: 3.5%; height: calc(var(--jw) * .14); border-radius: 50% 50% 6px 6px / 80% 80% 6px 6px; overflow: hidden;
-  background: repeating-conic-gradient(from 270deg at 50% 100%, #efe7d6 0 1.6deg, #3a1608 1.6deg 6deg); box-shadow: inset 0 3px 10px rgba(0,0,0,.6), 0 0 0 calc(var(--jw) * .008) #d8c08a; }
-.jb-grille::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(255,150,40,.85), transparent 70%); opacity: .45; }
+/* 크롬 격자 스피커 그릴 + 받침 */
+.jb-grille { position: relative; z-index: 2; margin-top: 4%; height: calc(var(--jw) * .2); border-radius: calc(var(--jw) * .04); overflow: hidden;
+  background: repeating-linear-gradient(45deg, #efe6d2 0 2px, transparent 2px 14px), repeating-linear-gradient(-45deg, #efe6d2 0 2px, transparent 2px 14px),
+              radial-gradient(ellipse at 50% 60%, #ff9a3c, #8a2a0c 60%, #2a0b04);
+  box-shadow: inset 0 3px 10px rgba(0,0,0,.6), 0 0 0 calc(var(--jw) * .012) #e8cf95, 0 0 calc(var(--jw) * .05) rgba(255,150,40,.5); }
+.jb-grille::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 70%, rgba(255,200,90,.9), transparent 60%); opacity: .35; }
 body.playing .jb-grille::after { animation: thrum .48s ease-in-out infinite alternate; }
-@keyframes thrum { to { opacity: .9; } }
-.jb-plate { margin-top: 2.4%; text-align: center; font-size: calc(var(--jw) * .022); letter-spacing: .4em; color: #3a1608; padding: .35em 0; border-radius: 3px;
+@keyframes thrum { to { opacity: .85; } }
+.jb-plate { position: relative; z-index: 2; margin: 3% 0 0; text-align: center; font-size: calc(var(--jw) * .022); letter-spacing: .4em; color: #3a1608; padding: .35em 0; border-radius: 3px;
   background: linear-gradient(180deg, #fafafa, #bdbdbd 50%, #8f8f8f); text-transform: uppercase; font-weight: 700; }
+.jb-base { height: calc(var(--jw) * .05); margin: 3% -9% 0; border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #3a1d0c, #1a0b04); }
 
 #radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
 body.has-shelf #radio { --rw: min(36vw, 78vh); }
@@ -696,7 +742,17 @@ body.theme-flow #shelf { display: none !important; }
     <feDisplacementMap in="SourceGraphic" in2="map" id="tvFishDisp" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
   </filter>
 </svg>
-<div id="jbScene" aria-hidden="true"><div class="tint"></div><div class="rays"></div><div class="spot l"></div><div class="spot r"></div><div class="floor"></div><div class="mq" id="jbMarquee"></div></div>
+<div id="jbScene" aria-hidden="true">
+  <div class="wall"></div><div class="haze"></div><div class="wood"></div>
+  <div class="lamp" style="left:79vw;--len:5vh"><div class="cord"></div><div class="shade"></div><div class="cone"></div></div>
+  <div class="lamp" style="left:94vw;--len:13vh;animation-delay:-4s"><div class="cord"></div><div class="shade"></div><div class="cone"></div></div>
+  <div class="sign open">OPEN</div>
+  <div class="sign live">LIVE MUSIC</div>
+  <div class="sign cocktail"><svg viewBox="0 0 60 70" fill="none" stroke="#bff9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h48L30 36z"/><path d="M30 36v24M18 62h24"/><path d="M40 4l-8 14" stroke="#ffd0ec"/><circle cx="24" cy="18" r="4" stroke="#7dff8c"/></svg></div>
+  <div class="sign script">Cocktails</div>
+  <div class="counter"></div>
+  <div class="stool" style="left:3vw"></div><div class="stool" style="left:12vw"></div><div class="stool" style="right:4vw"></div>
+</div>
 <div id="edge" aria-hidden="true"><div class="glow"></div><div class="pulse"></div></div>
 
 <main id="scene">
@@ -759,14 +815,17 @@ body.theme-flow #shelf { display: none !important; }
     <div id="jukebox" class="visual" data-neon="rainbow">
       <div class="jb">
         <div class="jb-crown" id="jbCrown"><div class="band"></div><div class="well"><div class="rays"></div></div><div class="jb-title">Ambient-o-Matic</div></div>
-        <div class="jb-tube l"><i style="--d:5s;--dl:0s"></i><i style="--d:6.5s;--dl:-2s"></i><i style="--d:4.5s;--dl:-3.5s"></i><i style="--d:5.8s;--dl:-1.2s"></i></div>
-        <div class="jb-tube r"><i style="--d:6s;--dl:-1s"></i><i style="--d:5.2s;--dl:-4s"></i><i style="--d:7s;--dl:-2.5s"></i><i style="--d:4.8s;--dl:-3s"></i></div>
-        <div class="jb-top"><div class="jb-cover cover-bg"></div><div class="jb-now" id="jbNow"></div></div>
+        <div class="jb-pillar l"><div class="tube"><i style="--d:5s;--dl:0s"></i><i style="--d:6.5s;--dl:-2s"></i><i style="--d:4.5s;--dl:-3.5s"></i><i style="--d:5.8s;--dl:-1.2s"></i></div></div>
+        <div class="jb-pillar r"><div class="tube"><i style="--d:6s;--dl:-1s"></i><i style="--d:5.2s;--dl:-4s"></i><i style="--d:7s;--dl:-2.5s"></i><i style="--d:4.8s;--dl:-3s"></i></div></div>
+        <div class="jb-rec"><div class="stack" style="top:44%"></div><div class="stack" style="top:50%;opacity:.8"></div>
+          <div class="jb-disc"><div id="jbSpin"><div class="lbl cover-bg"></div></div></div><div class="jb-arm"></div></div>
+        <div class="jb-now" id="jbNow"></div>
         <div class="jb-head"><span>★ Select ★</span><button id="jbList" title="플레이리스트 고르기">플레이리스트 ▾</button></div>
         <div class="jb-panel" id="jbPanel"></div>
         <div class="jb-nav"><button id="jbPrev">◀</button><span id="jbPage">A1 – A10</span><button id="jbNext">▶</button></div>
         <div class="jb-grille"></div>
         <div class="jb-plate">Select-o-Matic · 100</div>
+        <div class="jb-base"></div>
       </div>
     </div>
     <div id="flow" class="visual">
@@ -1245,6 +1304,7 @@ const spin = {
     this.anims.lp = mk($('#lp .vinyl'), 33.3);   // 기준 33.3rpm, 실제 속도는 playbackRate로 조절
     this.anims.cd = mk($('#cd .disc'), 33.3);
     this.anims.cassette = [mk($('#csHubL'), 33.3), mk($('#csHubR'), 33.3)];
+    this.anims.jukebox = mk($('#jbSpin'), 33.3);
     this.rate = 0;
   },
   set(playing) {
@@ -1261,7 +1321,7 @@ const spin = {
     if (k < 1 && !document.hidden) this.raf = requestAnimationFrame(t => this.step(t));
     else { this.raf = 0; this.rate = this.target; this.apply(); }
   },
-  factor(name) { return ({ cd: settings.cdRpm, cassette: settings.reelRpm }[name] ?? settings.rpm) / 33.3; },
+  factor(name) { return ({ cd: settings.cdRpm, cassette: settings.reelRpm, jukebox: 33.3 }[name] ?? settings.rpm) / 33.3; },
   apply() { for (const [name, a] of Object.entries(this.anims)) [].concat(a).forEach(x => x.playbackRate = name === settings.theme ? this.rate * this.factor(name) : 0); },
 };
 
@@ -2210,37 +2270,7 @@ const tv = {
 /* ═══════════════ 주크박스 ═══════════════ */
 const JB_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 /* 주크박스 테마일 때 화면 전체: 가장자리 전구, 빛살, 스포트라이트, 체크 바닥 */
-const jbScene = {
-  build() {
-    if (settings.theme !== 'jukebox') return;
-    const jr = $('#jukebox').getBoundingClientRect();
-    if (jr.width) { const st = $('#jbScene').style; st.setProperty('--jx', (jr.left + jr.width / 2) + 'px'); st.setProperty('--jy', (jr.top + jr.height * .3) + 'px'); }
-    const W = innerWidth, H = innerHeight, gap = 54, m = 16, pts = [];
-    const nx = Math.round((W - 2 * m) / gap), ny = Math.round((H - 2 * m) / gap);
-    for (let i = 0; i <= nx; i++) pts.push([m + i * (W - 2 * m) / nx, m]);
-    for (let j = 1; j <= ny; j++) pts.push([W - m, m + j * (H - 2 * m) / ny]);
-    for (let i = nx - 1; i >= 0; i--) pts.push([m + i * (W - 2 * m) / nx, H - m]);
-    for (let j = ny - 1; j >= 1; j--) pts.push([m, m + j * (H - 2 * m) / ny]);
-    if (this.n === pts.length && this.w === W) return; this.n = pts.length; this.w = W;
-    const box = $('#jbMarquee'), cols = ['#fff4cf', '#ffb347', '#ff5b6e', '#ffe36e'], frag = document.createDocumentFragment();
-    box.innerHTML = '';
-    pts.forEach(([x, y], i) => {
-      const b = document.createElement('i'); b.style.left = x + 'px'; b.style.top = y + 'px';
-      b.style.setProperty('--bc', cols[i % cols.length]); b.style.setProperty('--dl', (-(i % 12) * .15).toFixed(2) + 's'); frag.appendChild(b);
-    });
-    box.appendChild(frag);
-  },
-};
-addEventListener('resize', () => { if (settings.theme === 'jukebox') { jbScene.n = 0; jbScene.build(); } });
-(function buildBulbs() {   // 아치를 따라 도는 전구 24개
-  const cr = $('#jbCrown'), N = 24, cols = ['#fff3c4', '#ffb347', '#ff5b4a', '#ffe36e'];
-  for (let i = 0; i < N; i++) {
-    const a = Math.PI * (1 - i / (N - 1)), b = document.createElement('i'); b.className = 'jb-bulb';
-    b.style.left = (50 + Math.cos(a) * 46.5) + '%'; b.style.top = (100 - Math.sin(a) * 92) + '%';
-    b.style.setProperty('--bc', cols[i % cols.length]); b.style.setProperty('--dl', (-(N - i) * 0.075).toFixed(3) + 's');
-    cr.appendChild(b);
-  }
-})();
+const jbScene = { build() {} };   // 바 배경은 고정 HTML이라 따로 만들 것 없음
 const jukebox = {
   page: 0, per: 10, follow: true,
   code(i) { return JB_LETTERS[Math.floor(i / 10) % JB_LETTERS.length] + (i % 10 + 1); },
