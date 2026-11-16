@@ -491,7 +491,7 @@ body.theme-jukebox #jbScene { display: block; }
 #jbScene .floor { position: absolute; left: -40%; right: -40%; bottom: -1vh; height: 26vh; transform-origin: 50% 100%; transform: perspective(50vh) rotateX(62deg);
   background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.15)), repeating-conic-gradient(#ebe4d2 0 25%, #141414 0 50%) 0 0 / 10vh 10vh;
   -webkit-mask-image: linear-gradient(to top, #000 55%, transparent); mask-image: linear-gradient(to top, #000 55%, transparent); }
-#jbScene .counter { position: absolute; right: -2vw; width: 47vw; bottom: 8vh; height: 17vh;
+#jbScene .counter { position: absolute; right: -2vw; width: 47vw; bottom: 5vh; height: 11vh;
   background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.6)), repeating-linear-gradient(90deg, #b9c1c5 0 .3vh, #5f686d .3vh 1.2vh, #d0d6d9 1.2vh 1.5vh);
   box-shadow: 0 2vh 3vh rgba(0,0,0,.5); }
 #jbScene .counter::before { content: ''; position: absolute; left: -1vh; right: 0; top: -2.4vh; height: 2.6vh; border-radius: .6vh .6vh 0 0;
@@ -547,6 +547,18 @@ body.theme-jukebox #player { background: rgba(40,10,24,.45); border-color: rgba(
 
 /* ───────────────── 주크박스 (40년대 황금기 스타일, 오리지널 디자인) ───────────────── */
 #jukebox { --jw: min(25vw, 36vh); width: var(--jw); position: relative; }
+/* 주크박스를 다이너 바닥 위에 세우기 */
+body.theme-jukebox #scene { padding-bottom: 3.5vh; padding-top: 5vh; }
+body.theme-jukebox #stage { justify-content: flex-end; }
+body.theme-jukebox #side { padding-bottom: 16vh; }
+body.theme-jukebox #jukebox { --jw: min(27vw, 41vh); }
+body.theme-jukebox .jb-base { position: relative; }
+body.theme-jukebox .jb-base::after { content: ''; position: absolute; left: -12%; right: -12%; top: 60%; height: calc(var(--jw) * .12); z-index: -1;
+  background: radial-gradient(ellipse 50% 50% at 50% 30%, rgba(0,0,0,.75), transparent 75%); }
+.jb-feet { display: flex; justify-content: space-between; margin: 0 -5%; height: calc(var(--jw) * .03); }
+.jb-feet i { width: 14%; height: 100%; border-radius: 0 0 4px 4px; background: linear-gradient(180deg, #e9ebec, #7d8286); box-shadow: 0 2px 3px rgba(0,0,0,.6); }
+/* 재생바는 카운터 쪽(오른쪽)으로 옮겨서 주크박스를 가리지 않게 */
+body.theme-jukebox #player { left: auto; right: 3vw; transform: none; width: min(560px, 44vw); }
 .jb { position: relative; padding: 0 9% 0; border-radius: 50% 50% 6% 6% / 28% 28% 3% 3%;
   background: linear-gradient(90deg, rgba(0,0,0,.35), transparent 18%, transparent 82%, rgba(0,0,0,.35)),
               repeating-linear-gradient(92deg, #6a3a1c 0 6px, #5a2f15 6px 9px, #7a4524 9px 15px, #643619 15px 19px);
@@ -811,8 +823,8 @@ body.theme-flow #shelf { display: none !important; }
 </svg>
 <div id="jbScene" aria-hidden="true">
   <div class="wall"></div><div class="trim"></div><div class="steel"></div><div class="floor"></div><div class="haze"></div>
-  <div class="globe" style="left:68vw;--len:4vh"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
-  <div class="globe" style="left:88vw;--len:9vh;animation-delay:-5s"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
+  <div class="globe" style="left:79vw;--len:4vh"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
+  <div class="globe" style="left:95vw;--len:12vh;animation-delay:-5s"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
   <div class="sign diner">DINER</div>
   <div class="sign h24">OPEN 24 HRS</div>
   <div class="sign cup"><svg viewBox="0 0 80 70" fill="none" stroke="#ffe0b0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30h40v10a20 20 0 0 1-20 20 20 20 0 0 1-20-20z"/><path d="M54 34h6a7 7 0 0 1 0 14h-8"/><path d="M8 64h56"/><g class="steam"><path d="M26 22c-4-5 4-8 0-14"/><path d="M36 22c-4-5 4-8 0-14"/><path d="M46 22c-4-5 4-8 0-14"/></g></svg></div>
@@ -898,6 +910,7 @@ body.theme-flow #shelf { display: none !important; }
         <div class="jb-grille"></div>
         <div class="jb-plate">Select-o-Matic · 100</div>
         <div class="jb-base"></div>
+        <div class="jb-feet"><i></i><i></i></div>
       </div>
     </div>
     <div id="flow" class="visual">
@@ -979,7 +992,7 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="flow">플로우</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button></div>
   </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
@@ -1227,6 +1240,7 @@ function applyFont(k) {
   r.setProperty('--title-style', f.style); r.setProperty('--clock-weight', f.weight);
 }
 const saveSettings = () => store.set('settings', settings);
+if (settings.theme === 'flow') settings.theme = 'lp';   // 플로우 테마는 없어짐
 if (settings.csColor === 'clear') settings.csColor = 'black'; if (settings.csColor === 'white') settings.csColor = 'cream';   // 예전 값 정리
 
 /* ───────────────── 색 유틸 ───────────────── */
@@ -2567,7 +2581,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'flow', 'radio', 'cassette', 'tv', 'jukebox'];
+const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
