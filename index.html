@@ -367,7 +367,126 @@ body.lists-pinned.pl-right .lbtns { left: auto; right: -6px; }
 body.lists-pinned.pl-right #topbar { top: auto; bottom: 3.6vh; right: 24px; }
 
 /* ───────────────── 라디오 테마 (도트 커버 + LED 전광판) ───────────────── */
-#stage[data-theme="radio"] #radio { display: block; }
+#stage[data-theme="radio"] #radio, #stage[data-theme="cassette"] #cassette, #stage[data-theme="tv"] #tv, #stage[data-theme="jukebox"] #jukebox { display: block; }
+#segTheme { display: grid; grid-template-columns: repeat(4, 1fr); }
+#themeOpts[data-t="cassette"] [data-for="cassette"], #themeOpts[data-t="tv"] [data-for="tv"], #themeOpts[data-t="jukebox"] [data-for="jukebox"] { display: block; }
+
+/* ───────────────── 카세트 테이프 ───────────────── */
+#cassette { --cw: min(42vw, 100vh); width: var(--cw); }
+body.has-shelf #cassette { --cw: min(37vw, 82vh); }
+.cs { position: relative; aspect-ratio: 1.58; border-radius: calc(var(--cw) * .035);
+  background: linear-gradient(135deg, rgba(255,255,255,.3), rgba(255,255,255,.08) 55%, rgba(255,255,255,.18)); border: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.5); }
+#cassette[data-color="white"] .cs { background: linear-gradient(160deg, #f4f2ec, #d9d6cd); border-color: rgba(0,0,0,.08); }
+#cassette[data-color="black"] .cs { background: linear-gradient(160deg, #2c2b30, #151418); border-color: rgba(255,255,255,.12); }
+#cassette[data-color="album"] .cs { background: linear-gradient(160deg, color-mix(in srgb, var(--c1) 75%, #222), color-mix(in srgb, var(--c2) 65%, #111)); }
+.cs .screw { position: absolute; width: calc(var(--cw) * .022); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #eee, #8d8d8d); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3); }
+.cs .screw::after { content: ''; position: absolute; left: 20%; right: 20%; top: 45%; height: 10%; background: rgba(0,0,0,.45); rotate: 35deg; }
+.cs-label { position: absolute; left: 6%; right: 6%; top: 7%; height: 63%; border-radius: calc(var(--cw) * .018); overflow: hidden;
+  background: repeating-linear-gradient(180deg, transparent 0 calc(var(--cw) * .034), rgba(70,110,170,.18) calc(var(--cw) * .034) calc(var(--cw) * .036)), #f3ead3;
+  box-shadow: 0 1px 2px rgba(0,0,0,.25); color: #2b2620; }
+.cs-label .band { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, color-mix(in srgb, var(--c1) 80%, #fff), color-mix(in srgb, var(--c2) 70%, #fff)); }
+.cs-label .side { position: absolute; left: 3%; top: 7%; width: calc(var(--cw) * .065); aspect-ratio: 1; border: 2px solid #2b2620; border-radius: 4px; display: grid; place-items: center;
+  font-weight: 700; font-size: calc(var(--cw) * .045); }
+.cs-label .title { position: absolute; left: 14%; right: 4%; top: 4%; font-family: 'Nanum Pen Script', var(--serif-kr), cursive; font-size: calc(var(--cw) * .062); line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1f2a55; }
+#cassette.typed .cs-label .title { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .036); top: 7%; letter-spacing: .04em; }
+.cs-label .sub { position: absolute; left: 14%; right: 4%; top: 22%; font-family: 'Nanum Pen Script', var(--serif-kr), cursive; font-size: calc(var(--cw) * .04);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #2f3a66; opacity: .85; }
+#cassette.typed .cs-label .sub { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .024); top: 24%; }
+.cs-label .brand { position: absolute; right: 4%; bottom: 5%; font-size: calc(var(--cw) * .022); font-weight: 700; letter-spacing: .2em; color: rgba(255,255,255,.9); }
+.cs-label .brand2 { position: absolute; left: 4%; bottom: 5%; font-size: calc(var(--cw) * .022); font-weight: 600; letter-spacing: .15em; color: rgba(255,255,255,.9); }
+.cs-win { position: absolute; left: 22%; right: 22%; top: 36%; height: 30%; border-radius: calc(var(--cw) * .03);
+  background: rgba(25,18,14,.72); box-shadow: inset 0 2px 8px rgba(0,0,0,.6), 0 0 0 calc(var(--cw) * .006) rgba(0,0,0,.25); overflow: hidden; }
+.cs-win::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,.2), transparent 45%); z-index: 2; pointer-events: none; }
+.cs-pack { position: absolute; top: 50%; width: var(--pk); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle, #3a2414 0 58%, #4a2e1a 59% 100%); box-shadow: 0 0 0 1px rgba(0,0,0,.4); transition: width 1s linear; }
+.cs-pack.l { left: 20.5%; } .cs-pack.r { left: 79.5%; }
+.cs-hub { position: absolute; top: 50%; width: calc(var(--cw) * .1); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; will-change: transform;
+  background: radial-gradient(circle, #1a1410 0 22%, transparent 23%), repeating-conic-gradient(#f2f0ea 0 22deg, transparent 22deg 60deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 64%, transparent 65%); mask-image: radial-gradient(circle, #000 0 64%, transparent 65%); }
+.cs-hub::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 calc(var(--cw) * .009) #f2f0ea; }
+.cs-hub.l { left: 20.5%; } .cs-hub.r { left: 79.5%; }
+.cs-bottom { position: absolute; left: 20%; right: 20%; bottom: 0; height: 19%; clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32)); }
+.cs-bottom i { position: absolute; bottom: 28%; width: calc(var(--cw) * .03); aspect-ratio: 1; border-radius: 50%; background: rgba(0,0,0,.55); }
+.cs-count { position: absolute; right: 7%; bottom: 6%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .026); letter-spacing: .12em;
+  background: #111; color: #e8e2d0; padding: .15em .45em; border-radius: 3px; }
+
+/* ───────────────── 브라운관 TV ───────────────── */
+#tv { --tw: min(38vw, 82vh); width: var(--tw); position: relative; margin-top: calc(var(--tw) * .12); }
+body.has-shelf #tv { --tw: min(32vw, 62vh); }
+.tv-ant { position: absolute; left: 50%; bottom: 100%; width: 0; height: 0; }
+.tv-ant::before, .tv-ant::after { content: ''; position: absolute; bottom: 0; left: 0; width: 2px; height: calc(var(--tw) * .2); background: linear-gradient(#ddd, #888); transform-origin: bottom; }
+.tv-ant::before { rotate: -30deg; } .tv-ant::after { rotate: 26deg; }
+.tv-ant i { position: absolute; bottom: -4px; left: calc(var(--tw) * -.05); width: calc(var(--tw) * .1); height: calc(var(--tw) * .04); border-radius: 50% 50% 0 0; background: #3a3a3e; }
+.tv-body { position: relative; display: grid; grid-template-columns: 1fr 17%; gap: 3.5%; padding: 4.5%; border-radius: calc(var(--tw) * .06);
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.22)), repeating-linear-gradient(92deg, #6e4224 0 8px, #5f381e 8px 11px, #7b4b2a 11px 20px);
+  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.42), inset 0 2px 0 rgba(255,255,255,.22), inset 0 -8px 18px rgba(0,0,0,.35); }
+#tv[data-body="ivory"] .tv-body { background: linear-gradient(180deg, #f1e9d6, #d4c7a7); }
+#tv[data-body="red"] .tv-body { background: linear-gradient(180deg, #d8473f, #9d2621); }
+.tv-bezel { background: #141414; border-radius: 10% / 13%; padding: 4%; box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.2); }
+.tv-screen { position: relative; aspect-ratio: 4 / 3; border-radius: 14% / 18%; overflow: hidden; background: #000; }
+.tv-img { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: saturate(1.15) contrast(1.06); transition: transform .4s; }
+.tv-screen.rolling .tv-img { animation: roll .6s steps(6); }
+@keyframes roll { 0% { transform: translateY(0); } 50% { transform: translateY(-18%); } 100% { transform: translateY(0); } }
+.tv-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.45) 0 1px, transparent 1px 3px); opacity: var(--tv-scan, .35); }
+.tv-glass { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 55% at 32% 22%, rgba(255,255,255,.2), transparent 60%),
+  radial-gradient(ellipse 75% 70% at 50% 50%, transparent 58%, rgba(0,0,0,.65) 100%); }
+.tv-flicker { position: absolute; inset: 0; background: rgba(255,255,255,.035); animation: flick2 .14s steps(2) infinite; }
+@keyframes flick2 { 50% { opacity: 0; } }
+#tvStatic { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .25s; image-rendering: pixelated; }
+.tv-screen.switching #tvStatic { opacity: 1; transition: none; }
+.tv-osd { position: absolute; right: 7%; top: 7%; font-family: 'VT323', ui-monospace, monospace; font-size: calc(var(--tw) * .07); color: #7dff8c;
+  text-shadow: 0 0 8px rgba(125,255,140,.8); opacity: 0; transition: opacity .6s; }
+.tv-screen.osd .tv-osd { opacity: 1; transition: none; }
+.tv-side { display: flex; flex-direction: column; align-items: center; gap: 9%; padding-top: 6%; }
+.tv-knob { width: 78%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f3efe7, #aaa397 55%, #5e584f); box-shadow: 0 4px 10px rgba(0,0,0,.45);
+  position: relative; transform: rotate(var(--kr, 0deg)); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
+.tv-knob::after { content: ''; position: absolute; left: 46%; top: 8%; width: 8%; height: 34%; border-radius: 2px; background: #2c2018; }
+.tv-speaker { width: 80%; flex: 1; border-radius: 6px; background: repeating-linear-gradient(180deg, rgba(0,0,0,.55) 0 3px, transparent 3px 7px); opacity: .8; }
+.tv-legs { display: flex; justify-content: space-between; padding: 0 16%; }
+.tv-legs i { width: calc(var(--tw) * .05); height: calc(var(--tw) * .06); background: #2a2420; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
+
+/* ───────────────── 주크박스 ───────────────── */
+#jukebox { --jw: min(34vw, 66vh); width: var(--jw); position: relative; }
+body.has-shelf #jukebox { --jw: min(29vw, 55vh); }
+.jb { position: relative; border-radius: 48% 48% 5% 5% / 30% 30% 3% 3%; padding: 7% 7% 4%;
+  background: linear-gradient(180deg, #5b2f1b, #3a1d10 60%, #2b150b); box-shadow: 0 4vmin 8vmin rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.2); }
+.jb .neon { position: absolute; inset: 2.6%; border-radius: inherit; border: calc(var(--jw) * .014) solid var(--n); pointer-events: none;
+  box-shadow: 0 0 calc(var(--jw) * .03) var(--n), inset 0 0 calc(var(--jw) * .03) var(--n); }
+.jb .neon.n1 { --n: var(--j1, var(--c1)); }
+.jb .neon.n2 { --n: var(--j2, var(--c2)); animation: neonfade 4s ease-in-out infinite alternate; }
+@keyframes neonfade { from { opacity: 0; } to { opacity: 1; } }
+#jukebox[data-neon="rainbow"] .neon { --j1: #ff5fa2; --j2: #5fd6ff; }
+#jukebox[data-neon="pink"] .neon { --j1: #ff4fa0; --j2: #ffb3d9; }
+.jb-tube { position: absolute; top: 30%; bottom: 14%; width: 3.2%; border-radius: 999px; background: linear-gradient(180deg, color-mix(in srgb, var(--c1) 60%, #fff), var(--c2)); opacity: .55; overflow: hidden; }
+.jb-tube.l { left: 3.5%; } .jb-tube.r { right: 3.5%; }
+.jb-tube i { position: absolute; left: 20%; width: 60%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.85); bottom: -10%; animation: bubble var(--d) linear infinite; animation-delay: var(--dl); }
+@keyframes bubble { to { transform: translateY(calc(var(--jw) * -1.2)); } }
+body.no-bubbles .jb-tube i { display: none; }
+.jb-top { display: grid; justify-items: center; gap: 2%; margin-bottom: 4%; }
+.jb-cover { width: 34%; aspect-ratio: 1; border-radius: 6px; box-shadow: 0 0 0 calc(var(--jw) * .01) #c9a34a, 0 0 calc(var(--jw) * .05) color-mix(in srgb, var(--c1) 70%, transparent); }
+.jb-now { font-size: calc(var(--jw) * .034); letter-spacing: .2em; text-transform: uppercase; color: #f6dfa8; margin-top: 2%; max-width: 80%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+.jb-head { display: flex; justify-content: space-between; align-items: center; color: #f6dfa8; font-size: calc(var(--jw) * .03); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2%; }
+.jb-head button { border: 0; background: none; color: inherit; cursor: pointer; font: inherit; letter-spacing: inherit; text-transform: none; max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jb-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6% 2.4%; padding: 3%; border-radius: 8px; background: linear-gradient(180deg, #e9d9ad, #d6c08a);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.35); min-height: calc(var(--jw) * .5); }
+.jbs { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4%; padding: 2.5% 3%; border-radius: 4px; background: #fbf5e6; border: 1px solid #b8322a;
+  cursor: pointer; color: #2a1a10; min-width: 0; transition: transform .15s, background .2s; }
+.jbs:hover { transform: translateY(-1px); background: #fffaf0; }
+.jbs b { font-size: calc(var(--jw) * .03); background: #b8322a; color: #fff; padding: .15em .35em; border-radius: 3px; letter-spacing: .04em; }
+.jbs .t { font-size: calc(var(--jw) * .028); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jbs .a { font-size: calc(var(--jw) * .022); opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jbs.now { background: color-mix(in srgb, var(--accent) 45%, #fff6dc); box-shadow: 0 0 0 2px #b8322a, 0 0 12px color-mix(in srgb, var(--accent) 70%, transparent); }
+.jb-msg { grid-column: 1 / -1; font-size: calc(var(--jw) * .028); color: #3a2414; text-align: center; padding: 6% 4%; }
+.jb-msg .note { color: #3a2414; opacity: .8; }
+.jb-nav { display: flex; justify-content: center; align-items: center; gap: 6%; margin-top: 3%; color: #f6dfa8; font-size: calc(var(--jw) * .03); letter-spacing: .15em; }
+.jb-nav button { width: calc(var(--jw) * .07); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer; font-size: calc(var(--jw) * .03);
+  background: radial-gradient(circle at 35% 30%, #fff, #c9c4b8 60%, #7d776c); color: #3a2414; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+.jb-grille { margin-top: 4%; height: calc(var(--jw) * .1); border-radius: 50% 50% 6px 6px / 70% 70% 6px 6px;
+  background: repeating-linear-gradient(90deg, rgba(0,0,0,.55) 0 6px, color-mix(in srgb, var(--c1) 50%, #c9a34a) 6px 9px); box-shadow: inset 0 3px 8px rgba(0,0,0,.5); opacity: .85; }
+
 #radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
 body.has-shelf #radio { --rw: min(36vw, 78vh); }
 .rbody { position: relative; border-radius: calc(var(--rw) * .05); padding: calc(var(--rw) * .04) calc(var(--rw) * .045) calc(var(--rw) * .035);
@@ -536,6 +655,37 @@ body.theme-flow #shelf { display: none !important; }
         <div class="rfreq" id="rFreq">FM 88.0 MHz</div>
       </div>
     </div>
+    <div id="cassette" class="visual" data-color="clear" aria-hidden="true">
+      <div class="cs">
+        <i class="screw" style="left:2.2%;top:4%"></i><i class="screw" style="right:2.2%;top:4%"></i><i class="screw" style="left:2.2%;bottom:5%"></i><i class="screw" style="right:2.2%;bottom:5%"></i>
+        <div class="cs-label"><div class="band"></div><div class="side">A</div><div class="title" id="csTitle"></div><div class="sub" id="csSub"></div>
+          <div class="brand2">STEREO · TYPE I</div><div class="brand">C-90</div></div>
+        <div class="cs-win"><div class="cs-pack l" id="csPackL"></div><div class="cs-pack r" id="csPackR"></div>
+          <div class="cs-hub l" id="csHubL"></div><div class="cs-hub r" id="csHubR"></div></div>
+        <div class="cs-bottom"><i style="left:16%"></i><i style="left:34%"></i><i style="right:34%"></i><i style="right:16%"></i></div>
+        <div class="cs-count" id="csCount">000</div>
+      </div>
+    </div>
+    <div id="tv" class="visual" data-body="wood" aria-hidden="true">
+      <div class="tv-ant"><i></i></div>
+      <div class="tv-body">
+        <div class="tv-bezel"><div class="tv-screen" id="tvScreen"><div class="tv-img cover-bg"></div><div class="tv-scan"></div><div class="tv-flicker"></div><canvas id="tvStatic" width="160" height="120"></canvas><div class="tv-glass"></div><div class="tv-osd" id="tvOsd">CH 01</div></div></div>
+        <div class="tv-side"><div class="tv-knob" id="tvKnob1"></div><div class="tv-knob" id="tvKnob2"></div><div class="tv-speaker"></div></div>
+      </div>
+      <div class="tv-legs"><i></i><i></i></div>
+    </div>
+    <div id="jukebox" class="visual" data-neon="album">
+      <div class="jb">
+        <div class="neon n1"></div><div class="neon n2"></div>
+        <div class="jb-tube l"><i style="--d:5s;--dl:0s"></i><i style="--d:6.5s;--dl:-2s"></i><i style="--d:4.5s;--dl:-3.5s"></i></div>
+        <div class="jb-tube r"><i style="--d:6s;--dl:-1s"></i><i style="--d:5.2s;--dl:-4s"></i><i style="--d:7s;--dl:-2.5s"></i></div>
+        <div class="jb-top"><div class="jb-cover cover-bg"></div><div class="jb-now" id="jbNow"></div></div>
+        <div class="jb-head"><span>Select</span><button id="jbList" title="플레이리스트 고르기">플레이리스트 ▾</button></div>
+        <div class="jb-panel" id="jbPanel"></div>
+        <div class="jb-nav"><button id="jbPrev">◀</button><span id="jbPage">A1 – A10</span><button id="jbNext">▶</button></div>
+        <div class="jb-grille"></div>
+      </div>
+    </div>
     <div id="flow" class="visual">
       <div id="flowStage"></div>
       <div id="flowDots"></div>
@@ -615,7 +765,7 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="flow">플로우</button><button data-v="radio">라디오</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="flow">플로우</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button></div>
   </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
@@ -650,6 +800,27 @@ body.theme-flow #shelf { display: none !important; }
       <div class="seg small" id="segLed"><button data-v="amber">앰버</button><button data-v="green">초록</button><button data-v="accent">앨범색</button></div>
       <div class="slab" style="margin-top:12px"><span>라디오 몸체</span></div>
       <div class="seg small" id="segBody"><button data-v="wood">원목</button><button data-v="cream">크림</button><button data-v="black">블랙</button></div>
+    </div>
+    <div data-for="cassette">
+      <div class="slab"><span>테이프 색</span></div>
+      <div class="seg small" id="segCs"><button data-v="clear">투명</button><button data-v="white">화이트</button><button data-v="black">블랙</button><button data-v="album">앨범색</button></div>
+      <label class="switch" style="margin-top:10px"><span>라벨 손글씨</span><input type="checkbox" id="cHand"></label>
+      <div class="slab"><span>릴 회전 속도</span><span id="vReel"></span></div>
+      <input type="range" id="rReel" min="5" max="45" step="1">
+    </div>
+    <div data-for="tv">
+      <div class="slab"><span>TV 몸체</span></div>
+      <div class="seg small" id="segTv"><button data-v="wood">원목</button><button data-v="ivory">아이보리</button><button data-v="red">레드</button></div>
+      <div class="slab" style="margin-top:12px"><span>주사선 세기</span><span id="vScan"></span></div>
+      <input type="range" id="rScan" min="0" max="0.8" step="0.05">
+      <label class="switch"><span>곡 바뀔 때 지지직 화면</span><input type="checkbox" id="cStatic"></label>
+      <label class="switch"><span>지지직 소리</span><input type="checkbox" id="cTvSnd"></label>
+    </div>
+    <div data-for="jukebox">
+      <div class="slab"><span>네온 색</span></div>
+      <div class="seg small" id="segNeon"><button data-v="album">앨범색</button><button data-v="rainbow">레트로</button><button data-v="pink">핑크</button></div>
+      <label class="switch" style="margin-top:10px"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
+      <p class="note" style="margin-top:4px">선택판에는 플레이리스트 패널(P)에서 고른 목록이 나와요.</p>
     </div>
   </section>
   <section>
@@ -817,7 +988,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'clear', csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvStatic: true, tvSnd: true, jbNeon: 'album', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -986,6 +1157,7 @@ const spin = {
     const mk = (el, rpm) => { const a = el.animate([{ rotate: '0deg' }, { rotate: '360deg' }], { duration: 60000 / rpm, iterations: Infinity }); a.playbackRate = 0; return a; };
     this.anims.lp = mk($('#lp .vinyl'), 33.3);   // 기준 33.3rpm, 실제 속도는 playbackRate로 조절
     this.anims.cd = mk($('#cd .disc'), 33.3);
+    this.anims.cassette = [mk($('#csHubL'), 33.3), mk($('#csHubR'), 33.3)];
     this.rate = 0;
   },
   set(playing) {
@@ -1002,8 +1174,8 @@ const spin = {
     if (k < 1 && !document.hidden) this.raf = requestAnimationFrame(t => this.step(t));
     else { this.raf = 0; this.rate = this.target; this.apply(); }
   },
-  factor(name) { return (name === 'cd' ? settings.cdRpm : settings.rpm) / 33.3; },
-  apply() { for (const [name, a] of Object.entries(this.anims)) a.playbackRate = name === settings.theme ? this.rate * this.factor(name) : 0; },
+  factor(name) { return ({ cd: settings.cdRpm, cassette: settings.reelRpm }[name] ?? settings.rpm) / 33.3; },
+  apply() { for (const [name, a] of Object.entries(this.anims)) [].concat(a).forEach(x => x.playbackRate = name === settings.theme ? this.rate * this.factor(name) : 0); },
 };
 
 /* ═══════════════ 재생 상태 (스포티파이·샘플 공통) ═══════════════ */
@@ -1044,6 +1216,9 @@ function onTrack(t) {
   shelf.load(t);
   fx.onTrack();
   if (settings.theme === 'radio') { radio.buildText(); radio.drawText(); }
+  if (settings.theme === 'cassette') cassette.update(true);
+  if (settings.theme === 'tv') tv.switchChannel();
+  if (typeof jukebox !== 'undefined') jukebox.onTrack(t);
   if (typeof lists !== 'undefined') lists.markNow();
 }
 function onPlayState() {
@@ -1854,6 +2029,114 @@ const radio = {
 };
 addEventListener('resize', () => settings.theme === 'radio' && radio.redraw());
 
+/* 손글씨·브라운관용 글꼴 (필요할 때만 불러옴) */
+let extraFontsLoaded = false;
+function loadExtraFonts() {
+  if (extraFontsLoaded) return; extraFontsLoaded = true;
+  const l = document.createElement('link'); l.rel = 'stylesheet';
+  l.href = 'https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=VT323&display=swap'; document.head.appendChild(l);
+}
+
+/* ═══════════════ 카세트 테이프 ═══════════════ */
+const cassette = {
+  last: 0,
+  label() {
+    const t = S.track; if (!t) return ['Mixtape', ''];
+    const inList = lists.sel && lists.tracks.some(x => x.id === t.id);
+    return [inList ? lists.sel.name : (t.album || t.title), `${t.title} — ${t.artist}`];
+  },
+  update(text) {
+    if (text) { const [a, b] = this.label(); $('#csTitle').textContent = a; $('#csSub').textContent = b; }
+    const p = S.track ? clamp(S.pos() / (S.track.durationMs || 1), 0, 1) : 0;
+    const cw = $('#cassette').getBoundingClientRect().width || 500, min = cw * .11, max = cw * .27;
+    /* 테이프 양: 면적 기준으로 왼쪽에서 오른쪽으로 옮겨 감 */
+    const r = f => Math.sqrt(min * min + (max * max - min * min) * f);
+    $('#csPackL').style.setProperty('--pk', r(1 - p).toFixed(1) + 'px');
+    $('#csPackR').style.setProperty('--pk', r(p).toFixed(1) + 'px');
+    $('#csCount').textContent = String(Math.floor(S.pos() / 1000) % 1000).padStart(3, '0');
+  },
+  tick(ts) { if (ts - this.last > 1000) { this.last = ts; this.update(false); } },
+};
+addEventListener('resize', () => settings.theme === 'cassette' && cassette.update(false));
+
+/* ═══════════════ 브라운관 TV ═══════════════ */
+const tv = {
+  ch: 1, busy: 0,
+  switchChannel() {
+    const scr = $('#tvScreen'), t = S.track;
+    this.ch = t ? (Math.floor(hashHue(t.id) * 98) + 1) : this.ch % 99 + 1;
+    $('#tvOsd').textContent = 'CH ' + String(this.ch).padStart(2, '0');
+    $('#tvKnob1').style.setProperty('--kr', (this.ch * 37 % 300 - 150) + 'deg');
+    scr.classList.add('osd'); clearTimeout(this.osdT); this.osdT = setTimeout(() => scr.classList.remove('osd'), 2600);
+    if (!settings.tvStatic || REDUCED) return;
+    scr.classList.add('switching', 'rolling');
+    const cv = $('#tvStatic'), x = cv.getContext('2d'), img = x.createImageData(160, 120), d = img.data;
+    const end = performance.now() + 650, my = ++this.busy;
+    const draw = () => {
+      if (my !== this.busy) return;
+      for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+      x.putImageData(img, 0, 0);
+      if (performance.now() < end) setTimeout(draw, 40); else { scr.classList.remove('switching'); setTimeout(() => scr.classList.remove('rolling'), 300); }
+    };
+    draw();
+    if (settings.tvSnd && fx.audio()) {   // 짧은 지지직 소리
+      const c = fx.ctx, s = c.createBufferSource(), g = c.createGain(), f = c.createBiquadFilter();
+      s.buffer = fx.noise('white', 4); f.type = 'bandpass'; f.frequency.value = 3200; f.Q.value = .5;
+      g.gain.setValueAtTime(.0001, c.currentTime); g.gain.linearRampToValueAtTime(.09, c.currentTime + .04); g.gain.linearRampToValueAtTime(0, c.currentTime + .65);
+      s.connect(f).connect(g).connect(c.destination); s.start(); s.stop(c.currentTime + .7);
+    }
+  },
+};
+
+/* ═══════════════ 주크박스 ═══════════════ */
+const JB_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const jukebox = {
+  page: 0, per: 10, follow: true,
+  code(i) { return JB_LETTERS[Math.floor(i / 10) % JB_LETTERS.length] + (i % 10 + 1); },
+  ensure() {
+    if (!lists.sel || lists.selSource !== S.source) lists.select(S.source === 'spotify' && settings.listSel || LIKED);
+    else this.render();
+  },
+  onTrack(t) {
+    $('#jbNow').textContent = t ? `${t.title} · ${t.artist}` : '';
+    if (settings.theme === 'jukebox') { this.follow = true; this.ensure(); }
+  },
+  render() {
+    if (settings.theme !== 'jukebox') return;
+    const tr = lists.tracks, panel = $('#jbPanel');
+    $('#jbList').textContent = (lists.sel?.name || '플레이리스트') + ' ▾';
+    if (!tr.length) {
+      panel.innerHTML = '<div class="jb-msg"></div>';
+      panel.firstChild.innerHTML = $('#lTracks').innerHTML.trim() || '곡 목록을 불러오는 중…';
+      $('#jbPage').textContent = '—'; return;
+    }
+    const now = tr.findIndex(x => S.track && x.id === S.track.id);
+    if (this.follow && now >= 0) this.page = Math.floor(now / this.per);
+    const pages = Math.ceil(tr.length / this.per); this.page = clamp(this.page, 0, pages - 1);
+    const a = this.page * this.per, b = Math.min(tr.length, a + this.per);
+    panel.innerHTML = '';
+    for (let i = a; i < b; i++) {
+      const d = document.createElement('div'); d.className = 'jbs' + (i === now ? ' now' : ''); d.dataset.i = i;
+      d.innerHTML = '<b></b><div style="min-width:0"><div class="t"></div><div class="a"></div></div>';
+      d.querySelector('b').textContent = this.code(i); d.querySelector('.t').textContent = tr[i].name; d.querySelector('.a').textContent = tr[i].artists;
+      panel.appendChild(d);
+    }
+    $('#jbPage').textContent = `${this.code(a)} – ${this.code(b - 1)}`;
+  },
+  nav(dir) {
+    this.follow = false; const pages = Math.ceil(lists.tracks.length / this.per);
+    if (dir > 0 && this.page >= pages - 1 && lists.next) { this.page++; lists.more(); return; }
+    this.page = clamp(this.page + dir, 0, Math.max(0, pages - 1)); this.render();
+    clearTimeout(this.followT); this.followT = setTimeout(() => { this.follow = true; this.render(); }, 30000);
+  },
+};
+$('#jbPanel').addEventListener('click', e => { const s = e.target.closest('.jbs'); if (s) { lists.play(+s.dataset.i); s.classList.add('now'); } });
+$('#jbPrev').onclick = () => jukebox.nav(-1);
+$('#jbNext').onclick = () => jukebox.nav(1);
+$('#jbList').onclick = () => { lists.open(true); setTimeout(() => lists.picker(), 300); };
+/* 플레이리스트 패널 내용이 바뀌면 주크박스도 다시 그림 */
+new MutationObserver(() => { if (settings.theme === 'jukebox') requestAnimationFrame(() => jukebox.render()); }).observe($('#lTracks'), { childList: true });
+
 /* ═══════════════ 분위기 이펙트 (화면 연출 + 직접 합성한 배경 소리) ═══════════════
    스포티파이 소리는 DRM·다른 앱이라 가공할 수 없어서, 음악 위에 '겹치는' 방식이에요. */
 const FX_NAMES = { none: '없음', vinyl: 'LP 노이즈', rain: '비 오는 창가', radio: '심야 라디오' };
@@ -2030,7 +2313,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'flow', 'radio'];
+const THEMES = ['lp', 'cd', 'poster', 'flow', 'radio', 'cassette', 'tv', 'jukebox'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
@@ -2041,7 +2324,10 @@ function setTheme(t) {
   if ((was === 'flow') !== (t === 'flow') && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
-  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정' }[t]; }
+  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정' }[t]; }
+  if (t === 'cassette' || t === 'tv') loadExtraFonts();
+  if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
+  if (t === 'jukebox' && typeof jukebox !== 'undefined') jukebox.ensure();
   if (typeof lyrics !== 'undefined') setTimeout(() => lyrics.update(S.pos(), true), 60);
 }
 function setLyricsOn(on) {
@@ -2078,6 +2364,9 @@ function applyVisualSettings() {
   body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
   body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
   $('#radio').dataset.body = settings.rbody;
+  $('#cassette').dataset.color = settings.csColor; $('#cassette').classList.toggle('typed', !settings.csHand);
+  $('#tv').dataset.body = settings.tvBody; r.setProperty('--tv-scan', settings.tvScan);
+  $('#jukebox').dataset.neon = settings.jbNeon; body.classList.toggle('no-bubbles', !settings.jbBubbles);
   if (settings.theme === 'flow' && typeof flow !== 'undefined') flow.go(flow.idx, true);
   spin.apply(); checkNight(); lastClock = ''; clockTick();
 }
@@ -2090,6 +2379,12 @@ function syncSettingsUI() {
   $('#rFs').value = settings.fs; $('#vFs').textContent = '×' + (+settings.fs).toFixed(2);
   $('#rTilt').value = settings.tilt; $('#vTilt').textContent = settings.tilt + '°';
   $('#rBack').value = settings.back; $('#vBack').textContent = settings.back ? settings.back + '초 뒤' : '안 돌아옴';
+  $$('#segCs button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.csColor)); $('#cHand').checked = settings.csHand;
+  $('#rReel').value = settings.reelRpm; $('#vReel').textContent = settings.reelRpm + ' rpm';
+  $$('#segTv button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.tvBody));
+  $('#rScan').value = settings.tvScan; $('#vScan').textContent = Math.round(settings.tvScan * 100) + '%';
+  $('#cStatic').checked = settings.tvStatic; $('#cTvSnd').checked = settings.tvSnd;
+  $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles;
   $('#rRes').value = settings.radioRes; $('#vRes').textContent = settings.radioRes + '×' + settings.radioRes;
   $$('#segLed button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.led));
   $$('#segBody button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.rbody));
@@ -2126,6 +2421,9 @@ const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.
 bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
 const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.closest('button')?.dataset.v; if (v == null) return;
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
+bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
+bindSeg('#segTv', 'tvBody'); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
+bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
@@ -2205,6 +2503,7 @@ function loop(ts) {
   requestAnimationFrame(loop);
   fx.render(ts);
   if (settings.theme === 'radio') radio.tick(ts);
+  if (settings.theme === 'cassette') cassette.tick(ts);
   const fps = WALLPAPER ? CONFIG.FPS_WALLPAPER : CONFIG.FPS;
   if (ts - lastFrame < 1000 / fps - 3) return;
   lastFrame = ts;
