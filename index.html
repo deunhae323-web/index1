@@ -1100,6 +1100,110 @@ body.theme-flow #shelf { display: none !important; }
   #edge .glow { animation: none; opacity: .85; }
   #lyricsInner, #lyrics .line, #side, .drift, #idle .inner { transition: none !important; }
 }
+/* ───────────────── 에어로 (맑은 하늘·초원·유리 구슬, 2000년대 중반 감성) ───────────────── */
+#themeOpts[data-t="aero"] [data-for="aero"] { display: block; }
+#aeroScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; background: #7cc6f6; }
+body.theme-aero #aeroScene { display: block; }
+body.theme-aero #edge, body.theme-aero #vignette, body.theme-aero #grain { display: none; }
+#aeroScene > * { position: absolute; }
+#aeroScene .sky { inset: 0; background:
+  radial-gradient(ellipse 62% 58% at 86% 3%, rgba(255,251,228,.95), rgba(255,243,205,.42) 28%, rgba(255,236,190,.12) 46%, transparent 64%),
+  radial-gradient(ellipse 34% 40% at 20% 48%, rgba(8,78,186,.36), transparent 72%),
+  linear-gradient(180deg, #0a5cc4 0%, #1a78dc 20%, #3796ea 40%, #6bbaf3 57%, #ade0fd 68%, #def5ff 76%, #f2fbff 82%); }
+#aeroScene .rays { left: 86%; top: 3%; width: 260vmax; height: 260vmax; translate: -50% -50%; opacity: .55; mix-blend-mode: screen;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(255,252,230,.30) 6deg, transparent 11deg, transparent 19deg, rgba(255,252,230,.18) 24deg, transparent 30deg,
+    transparent 41deg, rgba(255,252,230,.26) 47deg, transparent 53deg, transparent 66deg, rgba(255,252,230,.14) 71deg, transparent 77deg, transparent 88deg, rgba(255,252,230,.24) 94deg, transparent 101deg,
+    transparent 112deg, rgba(255,252,230,.2) 118deg, transparent 124deg, transparent 139deg, rgba(255,252,230,.28) 146deg, transparent 152deg, transparent 166deg, rgba(255,252,230,.16) 172deg, transparent 178deg,
+    transparent 190deg, rgba(255,252,230,.22) 197deg, transparent 203deg, transparent 216deg, rgba(255,252,230,.3) 222deg, transparent 228deg, transparent 241deg, rgba(255,252,230,.18) 247deg, transparent 254deg,
+    transparent 266deg, rgba(255,252,230,.26) 272deg, transparent 279deg, transparent 292deg, rgba(255,252,230,.16) 298deg, transparent 304deg, transparent 318deg, rgba(255,252,230,.24) 325deg, transparent 331deg, transparent 344deg, rgba(255,252,230,.2) 350deg, transparent 356deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, rgba(0,0,0,.55) 12%, transparent 34%); mask-image: radial-gradient(circle, #000 0, rgba(0,0,0,.55) 12%, transparent 34%);
+  animation: aeroRays 160s linear infinite; }
+@keyframes aeroRays { to { rotate: 360deg; } }
+#aeroScene .sun { left: 86%; top: 3%; width: 34vmin; height: 34vmin; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0, #fff 9%, rgba(255,253,236,.9) 14%, rgba(255,246,210,.45) 30%, rgba(255,240,200,.12) 52%, transparent 70%); animation: aeroSun 9s ease-in-out infinite alternate; }
+@keyframes aeroSun { to { scale: 1.06; opacity: .93; } }
+#aeroScene .halo { left: 86%; top: 3%; width: 70vmin; height: 70vmin; translate: -50% -50%; border-radius: 50%; mix-blend-mode: screen; opacity: .8;
+  background: radial-gradient(circle, transparent 0 56%, rgba(255,90,90,.10) 59%, rgba(255,170,70,.16) 61.5%, rgba(255,240,100,.16) 63.5%, rgba(120,255,150,.14) 65.5%, rgba(80,200,255,.15) 67.5%, rgba(160,110,255,.12) 69.5%, transparent 72.5%); }
+#aeroClouds, #aeroBub, #aeroScene .land { inset: 0; width: 100%; height: 100%; }
+#aeroClouds { -webkit-mask-image: radial-gradient(ellipse 32vw 44vh at 20vw 40vh, rgba(0,0,0,.4), rgba(0,0,0,.72) 60%, #000 100%);
+  mask-image: radial-gradient(ellipse 32vw 44vh at 20vw 40vh, rgba(0,0,0,.4), rgba(0,0,0,.72) 60%, #000 100%); }
+#aeroScene .land .rot { transform-box: view-box; animation: aeroSpin var(--t, 7s) linear infinite; }
+@keyframes aeroSpin { to { transform: rotate(360deg); } }
+#aeroScene .land .csh { animation: aeroCsh var(--t, 90s) linear infinite; animation-delay: var(--d, 0s); }
+@keyframes aeroCsh { from { transform: translateX(-700px); } to { transform: translateX(2100px); } }
+#aeroScene .land .bl { transform-box: fill-box; transform-origin: 50% 100%; animation: aeroSway var(--t, 5s) ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+@keyframes aeroSway { from { transform: skewX(-3deg); } to { transform: skewX(3.5deg); } }
+body.no-aerocity #aeroScene .far-tech { display: none; }
+/* 렌즈 플레어 */
+#aeroScene .flare { inset: 0; mix-blend-mode: screen; transition: opacity 1s; }
+#aeroScene .flare i { position: absolute; translate: -50% -50%; border-radius: 50%; animation: aeroFl 11s ease-in-out infinite alternate; }
+#aeroScene .flare i.hex { border-radius: 0; clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); }
+@keyframes aeroFl { 50% { opacity: .65; } }
+body.no-aeroflare #aeroScene .flare, body.no-aeroflare #aeroScene .halo { opacity: 0; }
+body.no-aerobub #aeroBub { display: none; }
+#aeroBub { -webkit-mask-image: radial-gradient(ellipse 30vw 40vh at 20vw 42vh, rgba(0,0,0,.12), rgba(0,0,0,.5) 62%, #000 100%); mask-image: radial-gradient(ellipse 30vw 40vh at 20vw 42vh, rgba(0,0,0,.12), rgba(0,0,0,.5) 62%, #000 100%); }
+/* 유리 구슬 */
+#aeroScene .orbWrap { --ob: min(30vw, 46vh); left: calc(73vw - var(--ob) / 2); top: calc(54vh - var(--ob) / 2); width: var(--ob); height: var(--ob); }
+#aeroScene .orbFloat { position: absolute; inset: 0; animation: aeroBob 7s ease-in-out infinite alternate; }
+@keyframes aeroBob { from { transform: translateY(-1.3vh); } to { transform: translateY(1.3vh); } }
+#aeroViz, #aeroVizF { position: absolute; left: -55%; top: -55%; width: 210%; height: 210%; }
+#aeroScene .orb { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; isolation: isolate;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.6), 0 2.5vh 6vh rgba(0,60,130,.28), 0 0 7vh color-mix(in srgb, var(--c1) 25%, rgba(110,220,255,.55)); }
+#aeroScene .orb.swap { animation: aeroJelly .9s cubic-bezier(.3,1.6,.5,1); }
+@keyframes aeroJelly { 0% { transform: scale(1); } 25% { transform: scale(1.06, .95); } 50% { transform: scale(.97, 1.03); } 75% { transform: scale(1.015, .99); } 100% { transform: scale(1); } }
+#aeroScene .orb > * { position: absolute; inset: 0; border-radius: 50%; }
+#aeroScene .orb .oc { background-size: 122%; filter: saturate(1.12) contrast(1.04); transition: opacity .6s; }
+#aeroScene .orb .orefr { background-size: 64%; filter: blur(5px) saturate(1.5) brightness(1.08); transform: rotate(180deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 60%, rgba(0,0,0,.85) 76%, #000 100%); mask-image: radial-gradient(circle, transparent 60%, rgba(0,0,0,.85) 76%, #000 100%); }
+#aeroScene .orb .otint { background: radial-gradient(circle at 50% 42%, transparent 52%, rgba(120,210,255,.22) 74%, rgba(200,240,255,.5) 94%, rgba(255,255,255,.85) 100%);
+  box-shadow: inset 0 -3vh 5vh rgba(0,45,110,.38), inset 0 1.2vh 3vh rgba(255,255,255,.35), inset 0 0 1.2vh rgba(255,255,255,.6); }
+#aeroScene .orb .orain { background: conic-gradient(from 200deg, #ff6b6b, #ffd36b, #8dff7a, #6be4ff, #8a7bff, #ff6bd8, #ff6b6b); mix-blend-mode: screen; opacity: .38;
+  -webkit-mask-image: radial-gradient(circle, transparent 88%, #000 96%, transparent 100%); mask-image: radial-gradient(circle, transparent 88%, #000 96%, transparent 100%); animation: aeroSpin 40s linear infinite; }
+#aeroScene .orb .ohl { inset: 3% 14% auto 14%; height: 46%; border-radius: 50% / 46% 46% 54% 54%;
+  background: linear-gradient(180deg, rgba(255,255,255,.82) 0%, rgba(255,255,255,.38) 38%, rgba(255,255,255,.06) 85%, transparent 100%); }
+#aeroScene .orb .ospec { inset: 13% auto auto 25%; width: 13%; height: 7%; border-radius: 50%; rotate: -28deg; background: radial-gradient(ellipse, #fff 0, rgba(255,255,255,.85) 35%, transparent 72%); }
+#aeroScene .orb .ocau { inset: auto 18% 3% 18%; height: 30%; background: radial-gradient(ellipse 50% 60% at 50% 100%, rgba(220,255,255,.85), rgba(120,230,255,.35) 45%, transparent 75%); mix-blend-mode: screen; }
+#aeroScene .orbShadow { --ob: min(30vw, 46vh); left: calc(70vw - var(--ob) * .42); top: 88vh; width: calc(var(--ob) * .84); height: calc(var(--ob) * .13); border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(20,70,10,.45), rgba(30,90,20,.18) 55%, transparent 72%); filter: blur(4px); animation: aeroShadow 7s ease-in-out infinite alternate; }
+#aeroScene .orbShadow::after { content: ''; position: absolute; left: 44%; top: 30%; width: 22%; height: 40%; border-radius: 50%; background: radial-gradient(ellipse, rgba(230,255,240,.75), rgba(160,255,230,.25) 50%, transparent 72%); filter: blur(2px); }
+@keyframes aeroShadow { from { transform: scale(.93); opacity: .85; } to { transform: scale(1.05); opacity: 1; } }
+
+/* UI: 시계·가사는 하늘 위쪽, 컨트롤은 광택 유리 */
+body.theme-aero #scene { grid-template-columns: 1.05fr 1fr; }
+body.theme-aero #stage { display: none; }
+body.theme-aero #side { grid-column: 1; padding: 1vh 0 20vh 1vw; justify-content: flex-start; gap: 3.5vh; }
+body.theme-aero #lyrics { height: 31vh; max-width: 40vw; }
+body.theme-aero #clock .time { font-family: 'Segoe UI', 'Selawik', 'Nunito Sans', var(--sans); font-weight: 300; letter-spacing: .01em;
+  background: linear-gradient(180deg, #fff 0%, #fff 47%, #d2efff 53%, #f4fcff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+  filter: drop-shadow(0 .25vh .4vh rgba(0,55,140,.45)) drop-shadow(0 0 2.2vh rgba(90,180,255,.55));
+  -webkit-box-reflect: below -.16em linear-gradient(transparent 62%, rgba(255,255,255,.22)); }
+body.theme-aero #clock .date { color: #fff; opacity: .95; text-shadow: 0 1px 2px rgba(0,50,130,.6), 0 0 10px rgba(0,90,190,.45); }
+body.theme-aero #clock .np .t { font-family: 'Segoe UI', 'Selawik', 'Nunito Sans', var(--sans); font-style: normal; font-weight: 400; color: #fff; text-shadow: 0 1px 2px rgba(0,50,130,.65), 0 0 14px rgba(0,100,200,.5); }
+body.theme-aero #clock .np .a { color: #e6f7ff; opacity: 1; text-shadow: 0 1px 2px rgba(0,50,130,.6), 0 0 10px rgba(0,90,190,.45); }
+body.theme-aero #lyrics .line { font-family: 'Segoe UI', 'Selawik', 'Nunito Sans', 'Noto Sans KR', var(--sans); color: #fff; opacity: .55;
+  text-shadow: 0 1px 2px rgba(0,45,120,.7), 0 0 10px rgba(0,80,180,.55), 0 0 26px rgba(10,90,190,.4); }
+body.theme-aero #lyrics .line.near { opacity: .78; }
+body.theme-aero #lyrics .line.active { opacity: 1; text-shadow: 0 1px 2px rgba(0,45,120,.8), 0 0 12px rgba(0,90,200,.6), 0 0 28px rgba(60,190,255,.75); }
+body.theme-aero #player { left: 2.5vw; transform: none; width: min(470px, 31vw); color: #fff; border-radius: 20px; }
+body.theme-aero #player, body.theme-aero #topbar, body.theme-aero #chip {
+  background: linear-gradient(180deg, rgba(255,255,255,.58) 0%, rgba(255,255,255,.24) 46%, rgba(255,255,255,.07) 50%, rgba(255,255,255,.16) 100%), rgba(40,130,220,.28);
+  border: 1px solid rgba(255,255,255,.8); -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6);
+  box-shadow: 0 10px 30px rgba(0,60,140,.3), inset 0 1px 0 #fff, inset 0 -1px 0 rgba(255,255,255,.45), inset 0 0 0 1px rgba(120,210,255,.3), inset 0 -10px 18px rgba(110,230,255,.25); }
+body.theme-aero #player .title, body.theme-aero #player .sub, body.theme-aero #player .prog, body.theme-aero #chip { text-shadow: 0 1px 2px rgba(0,50,120,.65); }
+body.theme-aero #player .thumb { border-radius: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.85), 0 4px 12px rgba(0,60,140,.35); }
+body.theme-aero .ui .ibtn { color: #fff; opacity: 1; border: 1px solid rgba(255,255,255,.85);
+  background: linear-gradient(180deg, rgba(255,255,255,.85) 0%, rgba(255,255,255,.28) 48%, rgba(255,255,255,0) 52%), radial-gradient(ellipse 80% 60% at 50% 100%, #9ff2ff 0%, #36b4f2 55%, #1677d6 100%);
+  box-shadow: 0 3px 8px rgba(0,55,140,.38), inset 0 -2px 6px rgba(180,255,255,.6), inset 0 0 0 1px rgba(30,120,210,.35); filter: drop-shadow(0 0 0 transparent); }
+body.theme-aero .ui .ibtn svg { filter: drop-shadow(0 1px 1px rgba(0,50,120,.7)); }
+body.theme-aero .ui .ibtn:hover { filter: brightness(1.12) saturate(1.1); box-shadow: 0 3px 14px rgba(60,200,255,.65), inset 0 -2px 6px rgba(180,255,255,.7), inset 0 0 0 1px rgba(30,120,210,.35); }
+body.theme-aero .ui .ibtn.big { background: linear-gradient(180deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.3) 48%, rgba(255,255,255,0) 52%), radial-gradient(ellipse 80% 60% at 50% 100%, #b6ff9c 0%, #3fd06a 55%, #149a46 100%);
+  box-shadow: 0 4px 12px rgba(0,90,40,.4), 0 0 16px rgba(120,255,160,.45), inset 0 -3px 7px rgba(210,255,190,.7), inset 0 0 0 1px rgba(10,120,50,.4); }
+body.theme-aero .ui .ibtn.on { background: linear-gradient(180deg, rgba(255,255,255,.85) 0%, rgba(255,255,255,.28) 48%, rgba(255,255,255,0) 52%), radial-gradient(ellipse 80% 60% at 50% 100%, #fff3a8 0%, #ffbf3a 55%, #e88a10 100%); }
+body.theme-aero #topbar { gap: 7px; }
+body.theme-aero #bar .track { height: 8px; border-radius: 6px; background: rgba(0,50,120,.28); box-shadow: inset 0 1px 3px rgba(0,30,80,.45), 0 1px 0 rgba(255,255,255,.55); }
+body.theme-aero #bar:hover .track { height: 10px; }
+body.theme-aero #bar .fill { border-radius: 6px; background: linear-gradient(180deg, #e6fdff 0%, #7fe0ff 45%, #22a9ee 52%, #4cc8ff 100%); box-shadow: 0 0 10px rgba(90,220,255,.85); }
+body.theme-aero #settings, body.theme-aero:not(.lists-pinned) #lists, body.theme-aero #toast { background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.04) 30%), rgba(8,52,118,.72); border-color: rgba(190,235,255,.55); }
 </style>
 </head>
 <body class="paused">
@@ -1139,6 +1243,19 @@ body.theme-flow #shelf { display: none !important; }
   <div class="grain"></div>
 </div>
 <div id="filmGrain" aria-hidden="true"></div>
+<div id="aeroScene" aria-hidden="true">
+  <div class="sky"></div><div class="rays"></div><div class="halo"></div><div class="sun"></div>
+  <canvas id="aeroClouds"></canvas>
+  <div class="land" id="aeroLand"></div>
+  <div class="orbShadow"></div>
+  <div class="orbWrap"><div class="orbFloat">
+    <canvas id="aeroViz"></canvas>
+    <div class="orb" id="aeroOrb"><div class="oc cover-bg"></div><div class="orefr cover-bg"></div><div class="otint"></div><div class="orain"></div><div class="ocau"></div><div class="ohl"></div><div class="ospec"></div></div>
+    <canvas id="aeroVizF"></canvas>
+  </div></div>
+  <canvas id="aeroBub"></canvas>
+  <div class="flare" id="aeroFlare"></div>
+</div>
 <div id="cityScene" aria-hidden="true">
   <div class="sky"></div>
   <div class="cityv" id="cityV"></div>
@@ -1559,7 +1676,7 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button><button data-v="city">네온룸</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button><button data-v="city">네온룸</button><button data-v="aero">에어로</button></div>
   </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
@@ -1628,6 +1745,14 @@ body.theme-flow #shelf { display: none !important; }
       <label class="switch"><span>창밖 거대 홀로그램 광고판</span><input type="checkbox" id="cSkyHolo"></label>
       <label class="switch"><span>네온 간판</span><input type="checkbox" id="cSigns"></label>
       <p class="note" style="margin-top:6px">분위기 이펙트의 '비 오는 창가'를 켜면 빗소리가 나요.</p>
+    </div>
+    <div data-for="aero">
+      <label class="switch"><span>비눗방울·빛 입자</span><input type="checkbox" id="cAeroBub"></label>
+      <label class="switch"><span>햇살 렌즈 플레어</span><input type="checkbox" id="cAeroFlare"></label>
+      <label class="switch"><span>풍력발전기·유리 타워</span><input type="checkbox" id="cAeroCity"></label>
+      <div class="slab" style="margin-top:12px"><span>구름 흐르는 속도</span><span id="vAeroWind"></span></div>
+      <input type="range" id="rAeroWind" min="0" max="3" step="0.1">
+      <p class="note" style="margin-top:6px">유리 구슬 주위 파동은 재생 상태와 가사 줄이 바뀔 때에 맞춰 일렁여요.</p>
     </div>
     <div data-for="car">
       <div class="slab"><span>달리는 속도</span><span id="vCarSpd"></span></div>
@@ -1804,7 +1929,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -2041,6 +2166,7 @@ function onTrack(t) {
   if (typeof jukebox !== 'undefined') jukebox.onTrack(t);
   if (typeof car !== 'undefined') car.update();
   if (typeof city !== 'undefined') city.onTrack(t);
+  if (typeof aero !== 'undefined' && settings.theme === 'aero') aero.onTrack(t);
   if (typeof lists !== 'undefined') lists.markNow();
 }
 function onPlayState() {
@@ -2148,6 +2274,7 @@ const lyrics = {
   },
 };
 function edgePulse() {
+  if (typeof aero !== 'undefined') aero.kick = 1;
   if (REDUCED) return;
   const p = $('#edge .pulse'); p.classList.add('on'); setTimeout(() => p.classList.remove('on'), 140);
 }
@@ -2528,7 +2655,7 @@ const shelf = {
     else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
     return true;
   },
-  useShelf() { return !['flow', 'jukebox', 'car', 'city'].includes(settings.theme); },
+  useShelf() { return !['flow', 'jukebox', 'car', 'city', 'aero'].includes(settings.theme); },
   status(t, msg) {   // 불러오는 중·실패 이유를 선반 자리에 표시
     body.classList.add('has-shelf'); this.row.innerHTML = ''; this.list = null;
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = msg; this.el.classList.add('show');
@@ -3066,6 +3193,246 @@ const city = {
 };
 addEventListener('resize', () => settings.theme === 'city' && city.fit());
 
+/* ═══════════════ 에어로 테마: 맑은 하늘 · 뭉게구름 · 초원 · 비눗방울 · 유리 구슬 ═══════════════ */
+const aero = {
+  last: 0, energy: 0, kick: 0, ripples: [], rippleT: 0, k: 1,
+  rng(s) { return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; },
+  build() {
+    if (this.built) return; this.built = true;
+    $('#aeroLand').innerHTML = this.landSVG();
+    this.cloudSpr = Array.from({ length: 8 }, (_, i) => this.makeCloud(i));
+    this.bubSpr = this.makeBubble(192, false);
+    this.dropSpr = this.makeBubble(72, true);
+    this.glowSpr = (() => { const c = document.createElement('canvas'); c.width = c.height = 48; const x = c.getContext('2d'), g = x.createRadialGradient(24, 24, 0, 24, 24, 24);
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.18, 'rgba(230,255,255,.9)'); g.addColorStop(.45, 'rgba(150,230,255,.28)'); g.addColorStop(1, 'rgba(150,230,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 48, 48); return c; })();
+    this.flareBuild();
+    const R = this.rng(3);
+    this.drops = Array.from({ length: 13 }, () => ({ a: R() * 6.283, rad: 1.26 + R() * .4, w: (.12 + R() * .22) * (R() < .5 ? 1 : 1.15), s: .05 + R() * .07, ph: R() * 6.283 }));
+  },
+  /* ── 땅: 먼 유리 타워 · 풍력발전기 · 언덕 세 겹 · 들꽃 · 풀잎 ── */
+  landSVG() {
+    const R = this.rng(7), rnd = (a, b) => a + R() * (b - a), f = n => n.toFixed(1);
+    const FAR = 'M0 640 C 180 596, 360 598, 540 622 S 880 604, 1080 616 S 1420 588, 1600 606 L1600 905 L0 905Z',
+      MID = 'M0 694 C 210 652, 430 664, 650 702 S 1060 690, 1260 668 S 1500 662, 1600 676 L1600 905 L0 905Z',
+      NEAR = 'M0 768 C 290 722, 560 738, 830 784 S 1310 806, 1600 742 L1600 905 L0 905Z';
+    const crest = d => d.split(' L1600 905')[0];
+    let tw = '';
+    [[700, 24, 170, 'p'], [762, 40, 300, 'r'], [818, 30, 232, 'p'], [872, 52, 352, 'c'], [938, 34, 262, 'r'], [992, 26, 204, 'p'], [1044, 44, 290, 'r'], [1098, 22, 150, 'r']].forEach(([x, w, h, k]) => {
+      const top = 650 - h, l = x - w / 2, r = x + w / 2;
+      const d = k === 'p' ? `M${l} 650 L${l + w * .12} ${top + w * .7} Q${x} ${top - w * .9} ${r - w * .12} ${top + w * .7} L${r} 650Z`
+        : `M${l} 650 L${l + w * .06} ${top + w / 2} A${w / 2 - w * .06} ${w / 2} 0 0 1 ${r - w * .06} ${top + w / 2} L${r} 650Z`;
+      tw += `<path d="${d}" fill="url(#twG)"/><path d="${d}" fill="url(#twFl)"/>`;
+      tw += `<rect x="${f(x + w * .12)}" y="${top + w * .5}" width="${f(w * .07)}" height="${h - w * .5}" fill="rgba(255,255,255,.75)"/>`;
+      if (k === 'r') tw += `<ellipse cx="${x}" cy="${top + w * .45}" rx="${f(w * .36)}" ry="${f(w * .14)}" fill="#7fcf6a" opacity=".85"/>`;
+      if (k === 'c') tw += `<ellipse cx="${x}" cy="${f(top + h * .3)}" rx="${f(w * 1.05)}" ry="${f(w * .22)}" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="3"/><ellipse cx="${x}" cy="${f(top + h * .3)}" rx="${f(w * 1.05)}" ry="${f(w * .22)}" fill="rgba(160,230,255,.25)"/>`;
+    });
+    tw += '<path d="M818 470 Q 845 452 872 462" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="4"/><path d="M938 520 Q 965 505 992 516" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="3"/>';
+    let mast = '', rot = '';
+    [[548, 50], [606, 44], [1412, 86], [1490, 100], [1566, 78]].forEach(([x, h]) => {
+      const top = 640 - h, L = h * .48;
+      mast += `<path d="M${x - 2.6} 640 L${x - 1} ${top} L${x + 1} ${top} L${x + 2.6} 640Z" fill="url(#tbG)"/><rect x="${x - 3}" y="${top - 2.5}" width="8" height="5" rx="2" fill="#f4f8fb"/>`;
+      const bl = `M${x} ${top} C${x + 2.6} ${top - L * .25}, ${x + 1.8} ${top - L * .8}, ${x + .3} ${top - L} L${x - 1.3} ${top - L * .45}Z`;
+      rot += `<g class="rot" style="transform-origin:${x}px ${top}px;--t:${f(rnd(5.5, 8.5))}s;animation-delay:-${f(rnd(0, 8))}s">` +
+        [0, 120, 240].map(a => `<path d="${bl}" transform="rotate(${a} ${x} ${top})" fill="#fbfdff" stroke="rgba(150,175,200,.5)" stroke-width=".5"/>`).join('') +
+        `<circle cx="${x}" cy="${top}" r="2.6" fill="#e9eef3"/></g>`;
+    });
+    let fl = '';
+    for (let i = 0; i < 140; i++) { const y = rnd(812, 896), x = rnd(0, 1600), s = .6 + (y - 812) / 84;
+      fl += `<circle cx="${f(x)}" cy="${f(y)}" r="${f((1 + R() * 1.4) * s)}" fill="${['#fff', '#fffbe0', '#ffe46b', '#ffd0ec', '#ffffff'][Math.floor(R() * 5)]}" opacity="${f(.65 + R() * .35)}"/>`; }
+    for (let i = 0; i < 70; i++) { const y = rnd(712, 780), x = rnd(0, 1600);
+      fl += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(.7 + R() * .6)}" fill="${R() < .5 ? '#fff' : '#fff27a'}" opacity=".55"/>`; }
+    let blades = '';
+    const shades = ['#2f8f24', '#4fae2e', '#7fd14a'];
+    shades.forEach((col, si) => { for (let g = 0; g < 4; g++) {
+      let d = ''; for (let x = -10 + si * 1.7 + g * 6.1; x < 1612; x += 24 + R() * 6) { const h = rnd(16, 46) * (si === 2 ? .7 : 1), lean = rnd(-9, 9), b = 906;
+        d += `M${f(x - 2)} ${b} Q${f(x - 1 + lean * .35)} ${f(b - h * .55)} ${f(x + lean)} ${f(b - h)} Q${f(x + 1 + lean * .35)} ${f(b - h * .55)} ${f(x + 2)} ${b}Z`; }
+      blades += `<path class="bl" d="${d}" fill="${col}" style="--t:${f(rnd(3.5, 6))}s;--d:-${f(rnd(0, 5))}s"/>`; } });
+    let csh = '';
+    for (let i = 0; i < 4; i++) csh += `<ellipse class="csh" cx="0" cy="${f(rnd(690, 860))}" rx="${f(rnd(240, 380))}" ry="${f(rnd(38, 70))}" fill="url(#cshG)" style="--t:${f(rnd(110, 170))}s;--d:-${f(rnd(0, 170))}s"/>`;
+    const svgA = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%"><defs>
+      <linearGradient id="twG" x1="0" x2="1"><stop offset="0" stop-color="#cfeeff"/><stop offset=".35" stop-color="#fbfeff"/><stop offset=".7" stop-color="#c2e6fb"/><stop offset="1" stop-color="#8fc6ea"/></linearGradient>
+      <pattern id="twFl" width="6" height="9" patternUnits="userSpaceOnUse"><rect y="8" width="6" height="1" fill="rgba(80,150,205,.22)"/></pattern>
+      <linearGradient id="tbG" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c9d6e2"/></linearGradient>
+      <linearGradient id="hazeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4f6ff" stop-opacity="0"/><stop offset="1" stop-color="#e4f6ff" stop-opacity=".75"/></linearGradient>
+      <linearGradient id="hFar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4e6b6"/><stop offset=".25" stop-color="#86cc80"/><stop offset="1" stop-color="#5aa94f"/></linearGradient>
+      <linearGradient id="hMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6e85c"/><stop offset=".22" stop-color="#6fc23a"/><stop offset="1" stop-color="#3a8f26"/></linearGradient>
+      <linearGradient id="hNear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4f566"/><stop offset=".18" stop-color="#86d93f"/><stop offset=".55" stop-color="#4caa2c"/><stop offset="1" stop-color="#25751c"/></linearGradient>
+      <linearGradient id="sunL" x1="0" x2="1"><stop offset="0" stop-color="#fffbe0" stop-opacity="0"/><stop offset=".6" stop-color="#fffbe0" stop-opacity=".05"/><stop offset="1" stop-color="#fffbe0" stop-opacity=".28"/></linearGradient>
+      <filter id="grassN" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".75 .045" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .08  0 0 0 0 .3  0 0 0 0 .04  0 0 0 -1.6 1.25"/></filter>
+      <filter id="sheenB" y="-50%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+      <clipPath id="hillClip"><path d="${FAR}"/></clipPath>
+    </defs>
+    <g class="far-tech"><g opacity=".9">${tw}</g><rect x="0" y="300" width="1600" height="360" fill="url(#hazeG)"/>${mast}</g>
+    <path d="${FAR}" fill="url(#hFar)"/><path d="${crest(FAR)}" fill="none" stroke="rgba(235,255,215,.45)" stroke-width="3" filter="url(#sheenB)"/>
+    <path d="${MID}" fill="url(#hMid)"/><path d="${crest(MID)}" fill="none" stroke="rgba(235,255,190,.35)" stroke-width="5" filter="url(#sheenB)"/>
+    <path d="${NEAR}" fill="url(#hNear)"/><path d="${crest(NEAR)}" fill="none" stroke="rgba(240,255,190,.38)" stroke-width="6" filter="url(#sheenB)"/>
+    <g clip-path="url(#hillClip)"><rect x="0" y="560" width="1600" height="345" filter="url(#grassN)" opacity=".35"/><rect x="0" y="560" width="1600" height="345" fill="url(#sunL)"/></g>
+    ${fl}</svg>`;
+    const svgB = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" style="position:absolute;inset:0;width:100%;height:100%"><defs>
+      <radialGradient id="cshG"><stop offset="0" stop-color="#0d4a12" stop-opacity=".2"/><stop offset=".6" stop-color="#0d4a12" stop-opacity=".1"/><stop offset="1" stop-color="#0d4a12" stop-opacity="0"/></radialGradient>
+      <clipPath id="hillClip2"><path d="${FAR}"/></clipPath></defs>
+      <g class="far-tech">${rot}</g><g clip-path="url(#hillClip2)">${csh}</g>${blades}</svg>`;
+    return svgA + svgB;
+  },
+  /* ── 뭉게구름 한 덩이를 미리 그려 둠 (위는 햇빛에 하얗고, 아래는 푸르스름한 그늘) ── */
+  makeCloud(i) {
+    const R = this.rng(100 + i * 37), W = 640, H = 340, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+    const n = 30 + Math.floor(R() * 18), base = H * .8, span = .5 + R() * .4, tall = .7 + R() * .6, puffs = [];
+    for (let k = 0; k < n; k++) {
+      const u = ((R() + R() + R()) / 3) * 2 - 1, hg = 1 - Math.abs(u) ** 1.5;
+      const r = (16 + R() * 44) * (.5 + hg * .75);
+      puffs.push({ px: W / 2 + u * W * span * .5, py: base - r * .5 - R() * hg * H * .4 * tall, r });
+    }
+    x.filter = 'blur(2.5px)';
+    for (const p of puffs) { const g = x.createRadialGradient(p.px, p.py + p.r * .2, p.r * .1, p.px, p.py, p.r);
+      g.addColorStop(0, 'rgba(196,214,236,1)'); g.addColorStop(.8, 'rgba(208,224,242,.92)'); g.addColorStop(1, 'rgba(214,228,246,0)');
+      x.fillStyle = g; x.beginPath(); x.arc(p.px, p.py, p.r, 0, 6.283); x.fill(); }
+    puffs.sort((a, b) => b.py - a.py);
+    for (const p of puffs) { const hx = p.px + p.r * .2, hy = p.py - p.r * .3, g = x.createRadialGradient(hx, hy, 0, hx, hy, p.r * .95);
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.5, 'rgba(255,255,253,.88)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.beginPath(); x.arc(hx, hy, p.r * .95, 0, 6.283); x.fill(); }
+    x.filter = 'none';
+    x.globalCompositeOperation = 'source-atop';
+    let g = x.createLinearGradient(0, base - H * .4, 0, base + 6); g.addColorStop(0, 'rgba(150,175,210,0)'); g.addColorStop(.7, 'rgba(150,175,210,.32)'); g.addColorStop(1, 'rgba(130,158,198,.55)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    g = x.createLinearGradient(W * .5, 0, W, 0); g.addColorStop(0, 'rgba(255,248,225,0)'); g.addColorStop(1, 'rgba(255,248,225,.25)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.globalCompositeOperation = 'destination-out';
+    g = x.createLinearGradient(0, base - 6, 0, base + 22); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
+    x.fillStyle = g; x.fillRect(0, base - 6, W, H);
+    x.globalCompositeOperation = 'source-over';
+    return c;
+  },
+  /* ── 비눗방울(무지갯빛 막) / 물방울 스프라이트 ── */
+  makeBubble(s, drop) {
+    const c = document.createElement('canvas'); c.width = c.height = s; const x = c.getContext('2d'), r = s / 2 - 2, cx = s / 2, cy = s / 2;
+    let g = x.createRadialGradient(cx, cy, r * .15, cx, cy, r);
+    if (drop) { g.addColorStop(0, 'rgba(210,248,255,.35)'); g.addColorStop(.7, 'rgba(120,215,255,.38)'); g.addColorStop(.92, 'rgba(60,160,230,.55)'); g.addColorStop(1, 'rgba(230,252,255,.9)'); }
+    else { g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.7, 'rgba(225,246,255,.05)'); g.addColorStop(.9, 'rgba(230,248,255,.22)'); g.addColorStop(1, 'rgba(255,255,255,.7)'); }
+    x.fillStyle = g; x.beginPath(); x.arc(cx, cy, r, 0, 6.283); x.fill();
+    if (!drop && x.createConicGradient) {
+      const cg = x.createConicGradient(-.6, cx, cy); ['#ff7ad9', '#ffd36b', '#8dff9a', '#6be4ff', '#9b7bff', '#ff8fb1', '#ffe36b', '#7affd8', '#ff7ad9'].forEach((col, k, a) => cg.addColorStop(k / (a.length - 1), col));
+      x.save(); x.globalAlpha = .45; x.strokeStyle = cg; x.lineWidth = r * .12; x.filter = `blur(${(r * .035).toFixed(1)}px)`; x.beginPath(); x.arc(cx, cy, r * .92, 0, 6.283); x.stroke(); x.restore();
+    }
+    const hx = cx + r * .32, hy = cy - r * .42;
+    g = x.createRadialGradient(hx, hy, 0, hx, hy, r * .42); g.addColorStop(0, 'rgba(255,255,255,.95)'); g.addColorStop(.4, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.save(); x.translate(hx, hy); x.rotate(.6); x.scale(1, .6); x.translate(-hx, -hy); x.fillStyle = g; x.beginPath(); x.arc(hx, hy, r * .42, 0, 6.283); x.fill(); x.restore();
+    x.fillStyle = 'rgba(255,255,255,.95)'; x.beginPath(); x.arc(cx + r * .45, cy - r * .5, r * .07, 0, 6.283); x.fill();
+    x.strokeStyle = drop ? 'rgba(255,255,255,.75)' : 'rgba(255,255,255,.45)'; x.lineWidth = r * .07; x.lineCap = 'round';
+    x.beginPath(); x.arc(cx, cy, r * .78, 2.0, 2.9); x.stroke();
+    return c;
+  },
+  flareBuild() {
+    const F = [[.16, 7, 'hex', 'rgba(150,255,210,.13)'], [.3, 2.6, 'dot', 'rgba(255,225,150,.35)'], [.42, 11, 'hex', 'rgba(120,200,255,.1)'], [.55, 1.8, 'dot', 'rgba(255,255,255,.4)'],
+      [.68, 18, 'ring', 'rgba(170,255,230,.22)'], [.86, 4.5, 'hex', 'rgba(255,160,225,.12)'], [1.08, 9, 'dot', 'rgba(140,255,220,.08)']];
+    $('#aeroFlare').innerHTML = '<i class="streak"></i>' + F.map(([t, s, k, col]) => `<i class="${k === 'hex' ? 'hex' : ''}" data-t="${t}" style="width:${s}vmin;height:${s}vmin;animation-delay:-${(t * 9).toFixed(1)}s;background:${
+      k === 'ring' ? `radial-gradient(circle, transparent 58%, ${col} 66%, rgba(255,255,255,.18) 69%, transparent 74%)`
+      : k === 'hex' ? `radial-gradient(circle, ${col} 0, ${col} 62%, ${col.replace(/[\d.]+\)$/, m => Math.min(.5, parseFloat(m) * 2.6) + ')')} 88%, ${col} 100%)`
+      : `radial-gradient(circle, ${col} 0, ${col} 35%, transparent 70%)`}"></i>`).join('');
+    const st = $('#aeroFlare .streak'); Object.assign(st.style, { width: '80vw', height: '1.3vh', borderRadius: '50%', animation: 'none', opacity: '.55',
+      background: 'radial-gradient(ellipse 50% 50%, rgba(255,255,255,.9), rgba(200,240,255,.35) 30%, transparent 70%)' });
+  },
+  fit() {
+    const d = Math.min(1.5, devicePixelRatio || 1); this.k = d;
+    for (const id of ['#aeroClouds', '#aeroBub']) { const c = $(id); c.width = innerWidth * d; c.height = innerHeight * d; }
+    this.cx = $('#aeroClouds').getContext('2d'); this.bx = $('#aeroBub').getContext('2d');
+    const v = $('#aeroViz').getBoundingClientRect(), vs = Math.round(v.width * d);
+    for (const id of ['#aeroViz', '#aeroVizF']) { const c = $(id); c.width = c.height = vs; }
+    this.vx = $('#aeroViz').getContext('2d'); this.fx = $('#aeroVizF').getContext('2d');
+    const sx = .86, sy = .03;
+    $$('#aeroFlare i').forEach(el => { const t = +(el.dataset.t || 0); el.style.left = ((sx + (.5 - sx) * t) * 100) + '%'; el.style.top = ((sy + (.5 - sy) * t) * 100) + '%'; });
+  },
+  initParts() {
+    const W = innerWidth * this.k, H = innerHeight * this.k, R = Math.random;
+    if (!this.clouds) this.clouds = Array.from({ length: 10 }, (_, i) => this.cloud(R() * 1.3 - .15, i));
+    this.bubs = Array.from({ length: 24 }, () => this.bub(true));
+    this.sparks = Array.from({ length: 46 }, () => ({ x: R(), y: R(), z: R(), ph: R() * 6.283, sp: .5 + R() * 1.5 }));
+  },
+  cloud(x, i) { const R = Math.random, d = R(); return { x, d, s: this.cloudSpr[(i ?? Math.floor(R() * 8)) % 8], y: .43 - d * .37 + (R() - .5) * .06, w: .17 + d * .3, a: .72 + d * .28 }; },
+  bub(any) { const R = Math.random, d = R(); return { x: R(), y: any ? R() : 1.08, d, r: 5 + d * d * 42, vy: .012 + d * .03, ph: R() * 6.283, wob: .004 + R() * .01, rot: R() }; },
+  start() {
+    this.build(); this.fit(); if (!this.bubs) this.initParts(); this.onTrack(null);
+    body.classList.toggle('no-aerobub', !settings.aeroBub); body.classList.toggle('no-aeroflare', !settings.aeroFlare); body.classList.toggle('no-aerocity', !settings.aeroCity);
+    this.clouds.sort((a, b) => a.d - b.d);
+    if (!this.running) { this.running = true; this.last = performance.now(); requestAnimationFrame(t => this.loop(t)); }
+  },
+  onTrack(t) {
+    if (!t || !this.built) return;
+    const o = $('#aeroOrb'); o.classList.remove('swap'); void o.offsetWidth; o.classList.add('swap');
+    this.ripples.push({ k: 0, d: 2.4, a: 1.4 }, { k: -.25, d: 2.8, a: 1 }); this.kick = 1;
+  },
+  loop(ts) {
+    if (settings.theme !== 'aero' || document.hidden) { this.running = false; return; }
+    requestAnimationFrame(t => this.loop(t));
+    if (ts - this.last < 30) return;
+    const dt = Math.min(.06, (ts - this.last) / 1000 || .03); this.last = ts; const t = ts / 1000;
+    this.energy += ((S.playing ? 1 : .22) - this.energy) * Math.min(1, dt * 1.4);
+    this.kick *= Math.exp(-dt * 2.2);
+    this.sky(dt, t); this.particles(dt, t); this.viz(dt, t);
+  },
+  sky(dt) {
+    const x = this.cx, W = x.canvas.width, H = x.canvas.height, wind = settings.aeroWind;
+    x.clearRect(0, 0, W, H);
+    for (const c of this.clouds) {
+      c.x += (.0025 + c.d * .009) * wind * dt;
+      const cw = c.w * W, ch = cw * (340 / 640);
+      if (c.x * W > W + cw * .1) Object.assign(c, this.cloud(-c.w - .02), { d: c.d, w: c.w, y: c.y, a: c.a });
+      x.globalAlpha = c.a; x.drawImage(c.s, c.x * W - cw / 2, c.y * H - ch * .8, cw, ch);
+    }
+    x.globalAlpha = 1;
+  },
+  particles(dt, t) {
+    const x = this.bx, W = x.canvas.width, H = x.canvas.height, sc = H / 900;
+    x.clearRect(0, 0, W, H); if (!settings.aeroBub) return;
+    for (const p of this.sparks) {
+      p.y -= (.004 + p.z * .012) * dt; p.x += Math.sin(t * .4 + p.ph) * .00025;
+      if (p.y < -.02) { p.y = 1.02; p.x = Math.random(); }
+      const a = (.35 + .65 * Math.max(0, Math.sin(t * p.sp + p.ph))) * Math.min(1, p.y * 4) * (.4 + p.z * .6), s = (5 + p.z * 13) * sc;
+      x.globalAlpha = a; x.drawImage(this.glowSpr, p.x * W - s / 2, p.y * H - s / 2, s, s);
+    }
+    for (const b of this.bubs) {
+      b.y -= b.vy * dt; const wx = Math.sin(t * (.6 + b.d * .5) + b.ph) * b.wob;
+      if (b.y < -.1) Object.assign(b, this.bub(false));
+      const r = b.r * sc * this.k, px = (b.x + wx) * W, py = b.y * H, sq = 1 + Math.sin(t * 2.2 + b.ph) * .035;
+      x.globalAlpha = (.55 + b.d * .45) * Math.min(1, b.y * 5, (1.08 - b.y) * 8);
+      x.drawImage(this.bubSpr, px - r * sq, py - r / sq, r * 2 * sq, r * 2 / sq);
+    }
+    x.globalAlpha = 1;
+  },
+  /* ── 유리 구슬 주위 아쿠아 파동 · 퍼지는 물결 · 공전하는 물방울 ── */
+  viz(dt, t) {
+    const x = this.vx, f = this.fx, W = x.canvas.width, c = W / 2, R = W / 4.2, e = this.energy * (.8 + .2 * Math.sin(t * 1.7) * Math.sin(t * .63)), k = this.kick;
+    x.clearRect(0, 0, W, W); f.clearRect(0, 0, W, W);
+    let g = x.createRadialGradient(c, c, R * .95, c, c, R * 1.45);
+    g.addColorStop(0, `rgba(140,235,255,${(.32 * e + .08).toFixed(3)})`); g.addColorStop(.45, `rgba(90,200,255,${(.12 * e).toFixed(3)})`); g.addColorStop(1, 'rgba(90,200,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, W, W);
+    if (S.playing) { this.rippleT -= dt; if (this.rippleT <= 0) { this.ripples.push({ k: 0, d: 3.4, a: .8 }); this.rippleT = 2.6 - e * .5; } }
+    if (k > .9 && !this.kicked) { this.ripples.push({ k: 0, d: 2.6, a: 1.1 }); this.kicked = true; } if (k < .5) this.kicked = false;
+    x.globalCompositeOperation = 'lighter';
+    this.ripples = this.ripples.filter(rp => (rp.k += dt / rp.d) < 1);
+    for (const rp of this.ripples) { if (rp.k < 0) continue; const rr = R * (1.03 + rp.k * .95), a = .42 * (1 - rp.k) ** 1.7 * rp.a;
+      x.strokeStyle = `rgba(150,235,255,${a.toFixed(3)})`; x.lineWidth = R * (.03 * (1 - rp.k) + .005); x.beginPath(); x.arc(c, c, rr, 0, 6.283); x.stroke(); }
+    const rings = [[1.07, 5, 1.2, .034, '120,230,255', .55], [1.1, 7, -1.6, .028, '80,195,255', .42], [1.045, 3, .7, .022, '200,255,255', .6], [1.13, 9, 2.1, .02, '150,240,255', .25]];
+    for (const [base, n, sp, amp, col, al] of rings) {
+      x.beginPath();
+      for (let i = 0; i <= 180; i++) { const a = i / 180 * 6.2832;
+        const rr = R * (base + e * (amp * Math.sin(n * a + t * sp) + amp * .55 * Math.sin((n + 4) * a - t * sp * 1.7 + 1.3) + amp * .35 * Math.sin((n * 2 + 1) * a + t * .9)) + k * .045 * Math.sin(13 * a + t * 5));
+        i ? x.lineTo(c + Math.cos(a) * rr, c + Math.sin(a) * rr) : x.moveTo(c + Math.cos(a) * rr, c + Math.sin(a) * rr); }
+      x.strokeStyle = `rgba(${col},${(al * .35 * (.4 + e * .6)).toFixed(3)})`; x.lineWidth = R * .05; x.stroke();
+      x.strokeStyle = `rgba(${col},${(al * (.45 + e * .55)).toFixed(3)})`; x.lineWidth = R * .012; x.stroke();
+    }
+    x.globalCompositeOperation = 'source-over';
+    for (const d of this.drops) {
+      d.a += d.w * dt * (.5 + e * .7);
+      const s = Math.sin(d.a), px = c + Math.cos(d.a) * R * d.rad, py = c + s * R * d.rad * .3 + Math.sin(t * 1.3 + d.ph) * R * .05, sz = R * d.s * (1 + s * .25) * 2;
+      const ctx = s > 0 ? f : x; ctx.globalAlpha = .55 + (s + 1) * .22; ctx.drawImage(this.dropSpr, px - sz / 2, py - sz / 2, sz, sz);
+    }
+    x.globalAlpha = f.globalAlpha = 1;
+  },
+};
+addEventListener('resize', () => settings.theme === 'aero' && aero.fit());
+document.addEventListener('visibilitychange', () => { if (!document.hidden && settings.theme === 'aero') aero.start(); });
+
 /* 손글씨·브라운관용 글꼴 (필요할 때만 불러옴) */
 let extraFontsLoaded = false;
 function loadExtraFonts() {
@@ -3369,7 +3736,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox', 'car', 'city'];
+const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox', 'car', 'city', 'aero'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
@@ -3377,16 +3744,18 @@ function setTheme(t) {
   body.classList.toggle('theme-flow', t === 'flow');
   $$('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
   spin.apply();
-  const noShelf = x => ['flow', 'jukebox', 'car', 'city'].includes(x);
+  const noShelf = x => ['flow', 'jukebox', 'car', 'city', 'aero'].includes(x);
   if (noShelf(was) !== noShelf(t) && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
-  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정', car: '자동차 설정', city: '네온룸 설정' }[t]; }
+  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정', car: '자동차 설정', city: '네온룸 설정', aero: '에어로 설정' }[t]; }
   if (['cassette', 'tv', 'jukebox', 'radio'].includes(t)) loadExtraFonts();
   if (t === 'tv' && typeof tv !== 'undefined') tv.fisheye();
   body.classList.toggle('theme-jukebox', t === 'jukebox');
   body.classList.toggle('theme-car', t === 'car');
   body.classList.toggle('theme-city', t === 'city');
+  body.classList.toggle('theme-aero', t === 'aero');
+  if (t === 'aero' && typeof aero !== 'undefined') requestAnimationFrame(() => aero.start());
   if (t === 'city' && typeof city !== 'undefined') { loadExtraFonts(); requestAnimationFrame(() => { city.start(); city.onTrack(S.track); }); }
   if (t === 'car' && typeof car !== 'undefined') { loadExtraFonts(); car.build(); car.update(); }
   if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
@@ -3455,6 +3824,8 @@ function syncSettingsUI() {
   $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles; $('#cBulbs').checked = settings.jbBulbs;
   $$('#segCityWx button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.cityWx));
   $('#rCityAmt').value = settings.cityAmt; $('#vCityAmt').textContent = '×' + (+settings.cityAmt).toFixed(1);
+  $('#cAeroBub').checked = settings.aeroBub; $('#cAeroFlare').checked = settings.aeroFlare; $('#cAeroCity').checked = settings.aeroCity;
+  $('#rAeroWind').value = settings.aeroWind; $('#vAeroWind').textContent = settings.aeroWind ? '×' + (+settings.aeroWind).toFixed(1) : '멈춤';
   $('#cCityCars').checked = settings.cityCars; $('#cSkyHolo').checked = settings.skyHolo; $('#cSigns').checked = settings.citySigns;
   $('#rCarSpd').value = settings.carSpd; $('#vCarSpd').textContent = '×' + (+settings.carSpd).toFixed(1);
   $$('#segVfd button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carVfd));
@@ -3498,6 +3869,7 @@ const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.cl
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
 bindSeg('#segTv', 'tvBody'); bindRange('#rFish', 'tvFish', () => tv.fisheye()); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
 bindSeg('#segCityWx', 'cityWx', () => city.start()); bindRange('#rCityAmt', 'cityAmt', () => city.start()); bindCheck('#cCityCars', 'cityCars', () => city.start()); bindCheck('#cSkyHolo', 'skyHolo', () => city.start()); bindCheck('#cSigns', 'citySigns', () => city.start());
+bindCheck('#cAeroBub', 'aeroBub', () => aero.start()); bindCheck('#cAeroFlare', 'aeroFlare', () => aero.start()); bindCheck('#cAeroCity', 'aeroCity', () => aero.start()); bindRange('#rAeroWind', 'aeroWind');
 bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp', 'carLamp');
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
