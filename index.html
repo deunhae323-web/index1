@@ -419,91 +419,122 @@ body.has-shelf #cassette { --cw: min(37vw, 82vh); }
 .cs-count { position: absolute; right: 7%; bottom: 6%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .026); letter-spacing: .12em;
   background: #111; color: #e8e2d0; padding: .15em .45em; border-radius: 3px; }
 
-/* ───────────────── 브라운관 TV ───────────────── */
-#tv { --tw: min(38vw, 82vh); width: var(--tw); position: relative; margin-top: calc(var(--tw) * .12); }
-body.has-shelf #tv { --tw: min(32vw, 62vh); }
-.tv-ant { position: absolute; left: 50%; bottom: 100%; width: 0; height: 0; }
-.tv-ant::before, .tv-ant::after { content: ''; position: absolute; bottom: 0; left: 0; width: 2px; height: calc(var(--tw) * .2); background: linear-gradient(#ddd, #888); transform-origin: bottom; }
-.tv-ant::before { rotate: -30deg; } .tv-ant::after { rotate: 26deg; }
-.tv-ant i { position: absolute; bottom: -4px; left: calc(var(--tw) * -.05); width: calc(var(--tw) * .1); height: calc(var(--tw) * .04); border-radius: 50% 50% 0 0; background: #3a3a3e; }
-.tv-body { position: relative; display: grid; grid-template-columns: 1fr 17%; gap: 3.5%; padding: 4.5%; border-radius: calc(var(--tw) * .06);
-  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.22)), repeating-linear-gradient(92deg, #6e4224 0 8px, #5f381e 8px 11px, #7b4b2a 11px 20px);
-  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.42), inset 0 2px 0 rgba(255,255,255,.22), inset 0 -8px 18px rgba(0,0,0,.35); }
-#tv[data-body="ivory"] .tv-body { background: linear-gradient(180deg, #f1e9d6, #d4c7a7); }
-#tv[data-body="red"] .tv-body { background: linear-gradient(180deg, #d8473f, #9d2621); }
-.tv-bezel { background: #141414; border-radius: 10% / 13%; padding: 4%; box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.2); }
-.tv-screen { position: relative; aspect-ratio: 4 / 3; border-radius: 14% / 18%; overflow: hidden; background: #000; }
-.tv-img { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: url(#tvFisheye) saturate(1.15) contrast(1.06); transition: transform .4s; }
-.tv-screen { border-radius: 16% / 20% !important; box-shadow: inset 0 0 calc(var(--tw) * .06) rgba(0,0,0,.9); }
+/* ───────────────── 브라운관 TV (50년대 실물 느낌) ───────────────── */
+#tv { --tw: min(38vw, 80vh); width: var(--tw); position: relative; margin-top: calc(var(--tw) * .15); }
+body.has-shelf #tv { --tw: min(32vw, 60vh); }
+.tv-ant { position: absolute; left: 50%; bottom: 100%; width: calc(var(--tw) * .13); height: calc(var(--tw) * .045); translate: -50% 0; }
+.tv-ant .base { position: absolute; inset: 0; border-radius: 50% 50% 4px 4px / 100% 100% 4px 4px; background: radial-gradient(ellipse at 40% 25%, #55555a, #1a1a1d 65%, #0c0c0d); box-shadow: 0 2px 4px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2); }
+.tv-ant .rod { position: absolute; left: 50%; bottom: 60%; width: calc(var(--tw) * .007); height: calc(var(--tw) * .28); transform-origin: 50% 100%; border-radius: 2px;
+  background: repeating-linear-gradient(180deg, transparent 0 31%, rgba(0,0,0,.45) 31% 32.5%), linear-gradient(90deg, #7d8286, #ffffff 45%, #8a8f93); }
+.tv-ant .rod::after { content: ''; position: absolute; left: 50%; top: 0; width: 260%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #9aa0a4 70%); }
+.tv-ant .rod.l { rotate: -32deg; } .tv-ant .rod.r { rotate: 22deg; height: calc(var(--tw) * .24); }
+.tv-body { position: relative; display: grid; grid-template-columns: 1fr 19%; gap: 3%; padding: 4% 4% 7.5%; border-radius: calc(var(--tw) * .028);
+  background: linear-gradient(180deg, rgba(255,235,210,.2), rgba(255,255,255,0) 22%, rgba(0,0,0,.28)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.005 0.11' numOctaves='4' seed='3'/><feColorMatrix values='0.55 0 0 0 0.15  0.32 0 0 0 0.065  0.17 0 0 0 0.03  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>") center / cover;
+  box-shadow: 0 calc(var(--tw) * .07) calc(var(--tw) * .1) rgba(0,0,0,.55), 0 calc(var(--tw) * .01) calc(var(--tw) * .02) rgba(0,0,0,.45),
+              inset 0 2px 1px rgba(255,240,220,.35), inset 0 -5px 9px rgba(0,0,0,.55), inset 2px 0 2px rgba(255,255,255,.08), inset -2px 0 3px rgba(0,0,0,.35); }
+#tv[data-body="ivory"] .tv-body { background: linear-gradient(180deg, rgba(255,255,255,.4), transparent 25%, rgba(0,0,0,.18)), linear-gradient(160deg, #efe6d2, #cdbf9f); }
+#tv[data-body="red"] .tv-body { background: linear-gradient(180deg, rgba(255,255,255,.28), transparent 25%, rgba(0,0,0,.32)), linear-gradient(160deg, #b8322a, #741814); }
+.tv-bezel { padding: 3.2%; border-radius: 7% / 9.5%; background: linear-gradient(145deg, #eadbb4, #9c8456 28%, #dccb9f 52%, #74603a 82%, #b9a274);
+  box-shadow: 0 1px 0 rgba(255,255,255,.35), 0 3px 7px rgba(0,0,0,.55), inset 0 1px 1px rgba(255,255,255,.65), inset 0 -1px 2px rgba(0,0,0,.4); }
+.tv-screen { position: relative; aspect-ratio: 4 / 3; border-radius: 13% / 17%; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #2c312d, #0b0d0b 75%);
+  box-shadow: 0 0 0 calc(var(--tw) * .008) #0a0a0a, inset 0 0 calc(var(--tw) * .06) rgba(0,0,0,.95); }
+.tv-img { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: url(#tvFisheye) saturate(.92) contrast(1.12) brightness(.96); transition: transform .4s; }
+.tv-bloom { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: blur(calc(var(--tw) * .02)) saturate(1.3); opacity: .32; mix-blend-mode: screen; }
 .tv-screen.rolling .tv-img { animation: roll .6s steps(6); }
 @keyframes roll { 0% { transform: translateY(0); } 50% { transform: translateY(-18%); } 100% { transform: translateY(0); } }
-.tv-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.45) 0 1px, transparent 1px 3px); opacity: var(--tv-scan, .35); }
-.tv-glass { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 55% at 32% 22%, rgba(255,255,255,.2), transparent 60%),
-  radial-gradient(ellipse 75% 70% at 50% 50%, transparent 58%, rgba(0,0,0,.65) 100%); }
-.tv-flicker { position: absolute; inset: 0; background: rgba(255,255,255,.035); animation: flick2 .14s steps(2) infinite; }
+.tv-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.42) 0 1px, transparent 1px 3px); opacity: var(--tv-scan, .35); }
+.tv-glass { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 92% 88% at 50% 50%, transparent 55%, rgba(0,0,0,.72) 100%),
+              linear-gradient(162deg, rgba(255,255,255,.15) 0%, rgba(255,255,255,.04) 26%, transparent 28%),
+              radial-gradient(ellipse 34% 14% at 27% 13%, rgba(255,255,255,.24), transparent 70%); }
+.tv-flicker { position: absolute; inset: 0; background: rgba(255,255,255,.025); animation: flick2 .14s steps(2) infinite; }
 @keyframes flick2 { 50% { opacity: 0; } }
 #tvStatic { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .25s; image-rendering: pixelated; }
 .tv-screen.switching #tvStatic { opacity: 1; transition: none; }
-.tv-osd { position: absolute; right: 7%; top: 7%; font-family: 'VT323', ui-monospace, monospace; font-size: calc(var(--tw) * .07); color: #7dff8c;
-  text-shadow: 0 0 8px rgba(125,255,140,.8); opacity: 0; transition: opacity .6s; }
+.tv-osd { position: absolute; right: 8%; top: 8%; font-family: 'VT323', ui-monospace, monospace; font-size: calc(var(--tw) * .065); color: #9dffb0;
+  text-shadow: 0 0 6px rgba(125,255,140,.8); opacity: 0; transition: opacity .6s; }
 .tv-screen.osd .tv-osd { opacity: 1; transition: none; }
-.tv-side { display: flex; flex-direction: column; align-items: center; gap: 9%; padding-top: 6%; }
-.tv-knob { width: 78%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f3efe7, #aaa397 55%, #5e584f); box-shadow: 0 4px 10px rgba(0,0,0,.45);
-  position: relative; transform: rotate(var(--kr, 0deg)); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
-.tv-knob::after { content: ''; position: absolute; left: 46%; top: 8%; width: 8%; height: 34%; border-radius: 2px; background: #2c2018; }
-.tv-speaker { width: 80%; flex: 1; border-radius: 6px; background: repeating-linear-gradient(180deg, rgba(0,0,0,.55) 0 3px, transparent 3px 7px); opacity: .8; }
-.tv-legs { display: flex; justify-content: space-between; padding: 0 16%; }
-.tv-legs i { width: calc(var(--tw) * .05); height: calc(var(--tw) * .06); background: #2a2420; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
+.tv-side { display: flex; flex-direction: column; align-items: center; gap: 5%; padding: 8% 6%; border-radius: calc(var(--tw) * .012);
+  background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.06)); box-shadow: inset 0 1px 3px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.12); }
+.tv-ctl { display: flex; flex-direction: column; align-items: center; gap: .35em; width: 100%; }
+.tv-ctl span { font-size: calc(var(--tw) * .017); letter-spacing: .22em; color: #f0e2bd; opacity: .75; font-weight: 600; }
+.tv-knob { position: relative; width: 74%; aspect-ratio: 1; border-radius: 50%; background: repeating-conic-gradient(#efefef 0 3deg, #6b6f72 3deg 6deg);
+  box-shadow: 0 4px 8px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.4); transform: rotate(var(--kr, 0deg)); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
+.tv-knob.small { width: 58%; }
+.tv-knob::before { content: ''; position: absolute; inset: 15%; border-radius: 50%; background: radial-gradient(circle at 36% 30%, #ffffff, #d6d8da 32%, #868b8f 74%, #c9cccf);
+  box-shadow: 0 1px 3px rgba(0,0,0,.55), inset 0 -1px 2px rgba(0,0,0,.3); }
+.tv-knob::after { content: ''; position: absolute; left: 48%; top: 19%; width: 4%; height: 25%; border-radius: 2px; background: #1e1e1e; }
+.tv-speaker { width: 88%; flex: 1; border-radius: calc(var(--tw) * .01); border: calc(var(--tw) * .006) solid #b89a5e;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(255,230,190,.07) 0 1px, transparent 1px 3px), #3b2b1d;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.15); }
+.tv-badge { position: absolute; left: 4%; bottom: 1.8%; width: 73%; text-align: center; font-family: var(--serif); font-style: italic; font-weight: 600; font-size: calc(var(--tw) * .032);
+  color: transparent; background: linear-gradient(180deg, #fff3c9, #c19d48 55%, #7d6224); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 1px 0 rgba(0,0,0,.6)); letter-spacing: .06em; }
+.tv-legs { position: relative; height: calc(var(--tw) * .1); }
+.tv-legs i { position: absolute; top: -3px; width: calc(var(--tw) * .026); height: 100%; border-radius: 0 0 3px 3px; transform-origin: 50% 0;
+  background: linear-gradient(90deg, #24130a, #6a3e1f 45%, #24130a); box-shadow: 0 5px 6px rgba(0,0,0,.5); }
+.tv-legs i::after { content: ''; position: absolute; left: -12%; right: -12%; bottom: 0; height: 20%; border-radius: 1px; background: linear-gradient(90deg, #7d6224, #f3dc93, #7d6224); }
+.tv-legs i.l { left: 14%; transform: rotate(14deg); } .tv-legs i.r { right: 14%; transform: rotate(-14deg); }
 
-/* ───────────────── 주크박스 테마: 80년대 미국 바 ───────────────── */
+/* ───────────────── 주크박스 테마: 아메리칸 다이너 (밤) ───────────────── */
 #jbScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; }
 body.theme-jukebox #jbScene { display: block; }
-/* 벽돌 벽 (앨범 색이 은은하게 비치도록 살짝 투명) */
-#jbScene .wall { position: absolute; inset: 0; opacity: .84;
-  background:
-    radial-gradient(ellipse 80% 70% at 50% 35%, rgba(255,150,80,.18), transparent 70%),
-    linear-gradient(180deg, rgba(20,6,6,.55), rgba(8,3,3,.35) 55%, rgba(8,3,3,.75)),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><rect width='120' height='60' fill='%23241210'/><g fill='%236e2f22'><rect x='1' y='1' width='57' height='27' rx='2'/><rect x='61' y='1' width='58' height='27' rx='2' fill='%23642a1f'/><rect x='-29' y='31' width='58' height='27' rx='2' fill='%23743325'/><rect x='31' y='31' width='57' height='27' rx='2'/><rect x='91' y='31' width='58' height='27' rx='2' fill='%23602920'/></g></svg>") 0 0 / 120px 60px; }
-#jbScene .wood { position: absolute; left: 0; right: 0; bottom: 0; height: 30vh;
-  background: linear-gradient(180deg, #2a160c 0 1.2vh, #4a2a16 1.2vh 1.8vh, transparent 1.8vh),
-              repeating-linear-gradient(90deg, #3a2012 0 13vh, #2c170c 13vh 13.3vh), #3a2012;
-  box-shadow: 0 -1.5vh 3vh rgba(0,0,0,.5); opacity: .92; }
-#jbScene .wood::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,180,100,.08), rgba(0,0,0,.55)); }
-/* 바 카운터 */
-#jbScene .counter { position: absolute; left: -2vw; right: -2vw; bottom: 0; height: 9vh;
-  background: linear-gradient(180deg, #8a5a32 0 .9vh, #5b3519 .9vh 2.2vh, #2a170b 2.2vh); box-shadow: 0 -.6vh 2vh rgba(0,0,0,.6); }
-#jbScene .counter::before { content: ''; position: absolute; left: 0; right: 0; top: 3.4vh; height: .8vh; border-radius: 1vh;
-  background: linear-gradient(180deg, #fff, #a9a9a9 40%, #6d6d6d); box-shadow: 0 0 1vh rgba(255,220,170,.4); }
-#jbScene .stool { position: absolute; bottom: 0; width: 9vh; height: 13vh; }
+#jbScene .wall { position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 55% at 50% 28%, color-mix(in srgb, var(--c1) 16%, transparent), transparent 70%),
+              linear-gradient(180deg, rgba(3,12,14,.5), rgba(3,12,14,.18) 40%, rgba(3,10,12,.55)),
+              repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 1px, rgba(255,255,255,.04) 1px 2px, transparent 2px 4.6vh),
+              repeating-linear-gradient(90deg, rgba(0,0,0,.3) 0 1px, rgba(255,255,255,.04) 1px 2px, transparent 2px 4.6vh),
+              linear-gradient(180deg, #2c6f68, #1c4f4a); }
+#jbScene .trim { position: absolute; left: 0; right: 0; top: 58vh; height: 1.3vh; background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); box-shadow: 0 .4vh .8vh rgba(0,0,0,.5); }
+#jbScene .trim::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: .9vh; background: linear-gradient(180deg, #d0362c, #8e1c17); }
+#jbScene .steel { position: absolute; left: 0; right: 0; top: calc(58vh + 2.2vh); bottom: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.7)), repeating-linear-gradient(90deg, #aeb6bb 0 .35vh, #5b6469 .35vh 1.5vh, #c8cfd3 1.5vh 1.85vh); }
+#jbScene .floor { position: absolute; left: -40%; right: -40%; bottom: -1vh; height: 26vh; transform-origin: 50% 100%; transform: perspective(50vh) rotateX(62deg);
+  background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.15)), repeating-conic-gradient(#ebe4d2 0 25%, #141414 0 50%) 0 0 / 10vh 10vh;
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent); mask-image: linear-gradient(to top, #000 55%, transparent); }
+#jbScene .counter { position: absolute; right: -2vw; width: 47vw; bottom: 8vh; height: 17vh;
+  background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.6)), repeating-linear-gradient(90deg, #b9c1c5 0 .3vh, #5f686d .3vh 1.2vh, #d0d6d9 1.2vh 1.5vh);
+  box-shadow: 0 2vh 3vh rgba(0,0,0,.5); }
+#jbScene .counter::before { content: ''; position: absolute; left: -1vh; right: 0; top: -2.4vh; height: 2.6vh; border-radius: .6vh .6vh 0 0;
+  background: linear-gradient(180deg, #f2f3f4 0 .25vh, #c8312a .25vh 1.7vh, #e9ebec 1.7vh 2.1vh, #6a6f73 2.1vh); box-shadow: 0 .6vh 1vh rgba(0,0,0,.5); }
+#jbScene .counter::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2vh; background: #111; }
+#jbScene .stool { position: absolute; bottom: 0; width: 8.5vh; height: 15vh; translate: -50% 0;
+  background: radial-gradient(ellipse 48% 7% at 50% 96%, #d6d9db, #5d6267 70%, transparent 72%); }
 #jbScene .stool::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3vh; border-radius: 50%;
-  background: radial-gradient(ellipse at 40% 35%, #e0423a, #8e1a16 70%); box-shadow: 0 .5vh 0 #c9c9c9, 0 1vh 1.5vh rgba(0,0,0,.6); }
-#jbScene .stool::after { content: ''; position: absolute; left: 44%; width: 12%; top: 3vh; bottom: 0; background: linear-gradient(90deg, #777, #eee, #888); }
-/* 매달린 조명 */
-#jbScene .lamp { position: absolute; top: 0; width: 14vh; translate: -50% 0; transform-origin: 50% 0; animation: sway 9s ease-in-out infinite alternate; }
-#jbScene .lamp .cord { margin: 0 auto; width: 2px; height: var(--len, 12vh); background: #111; }
-#jbScene .lamp .shade { margin: 0 auto; width: 100%; height: 5vh; border-radius: 50% 50% 8% 8% / 100% 100% 8% 8%;
-  background: linear-gradient(180deg, #1f4a35, #0f2a1d); box-shadow: inset 0 -.4vh 0 #c9a34a; position: relative; }
-#jbScene .lamp .shade::after { content: ''; position: absolute; left: 50%; bottom: -1.2vh; width: 3vh; height: 2.4vh; translate: -50% 0; border-radius: 50%;
-  background: radial-gradient(circle, #fff8e0, #ffcf7a 60%, transparent 70%); box-shadow: 0 0 3vh 1vh rgba(255,200,110,.6); }
-#jbScene .lamp .cone { position: absolute; left: 50%; top: calc(var(--len, 12vh) + 4vh); width: 90vh; height: 85vh; translate: -50% 0;
-  background: conic-gradient(from 160deg at 50% 0%, transparent 0deg, rgba(255,196,120,.16) 12deg 28deg, transparent 40deg);
-  -webkit-mask-image: linear-gradient(#000 20%, transparent 95%); mask-image: linear-gradient(#000 20%, transparent 95%); }
-@keyframes sway { from { transform: rotate(-1.2deg); } to { transform: rotate(1.2deg); } }
-/* 연기 */
-#jbScene .haze { position: absolute; inset: -10%; opacity: .45;
-  background: radial-gradient(ellipse 40% 25% at 30% 40%, rgba(255,220,190,.12), transparent 70%), radial-gradient(ellipse 50% 30% at 75% 55%, rgba(255,200,170,.1), transparent 70%);
+  background: radial-gradient(ellipse at 40% 30%, #f06555, #a8231b 62%, #6e140f); box-shadow: 0 .45vh 0 #e2e4e6, 0 .75vh 0 #6a6f73, 0 1.5vh 1.6vh rgba(0,0,0,.6); }
+#jbScene .stool::after { content: ''; position: absolute; left: 44%; width: 12%; top: 3.5vh; bottom: .8vh; background: linear-gradient(90deg, #6a6f73, #ffffff 45%, #7d8286); }
+#jbScene .globe { position: absolute; top: 0; translate: -50% 0; width: 9vh; transform-origin: 50% 0; animation: sway 10s ease-in-out infinite alternate; }
+#jbScene .globe .cord { margin: 0 auto; width: 2px; height: var(--len, 10vh); background: #0d0d0d; }
+#jbScene .globe .cap { margin: 0 auto; width: 3vh; height: 1.6vh; border-radius: 1vh 1vh 0 0; background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); }
+#jbScene .globe .ball { margin: -.3vh auto 0; width: 8vh; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #fffdf3, #fbe9c3 45%, #e8c98d 75%, #c9a46a); box-shadow: 0 0 4vh 1.5vh rgba(255,215,150,.45), 0 0 12vh 4vh rgba(255,200,120,.18); }
+#jbScene .globe .pool { position: absolute; left: 50%; top: calc(var(--len, 10vh) + 9vh); width: 70vh; height: 70vh; translate: -50% 0;
+  background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(255,214,150,.16), transparent 70%); }
+@keyframes sway { from { transform: rotate(-1deg); } to { transform: rotate(1deg); } }
+#jbScene .haze { position: absolute; inset: -10%; opacity: .35; background: radial-gradient(ellipse 40% 25% at 30% 40%, rgba(255,230,200,.1), transparent 70%), radial-gradient(ellipse 50% 30% at 75% 50%, rgba(255,220,190,.08), transparent 70%);
   animation: haze 40s ease-in-out infinite alternate; }
 @keyframes haze { to { transform: translate(4%, -3%) scale(1.08); } }
-/* 네온 간판 */
-#jbScene .sign { position: absolute; font-weight: 700; white-space: nowrap; animation: neonflick var(--f, 8s) infinite; }
-#jbScene .open { left: 3vw; top: 7vh; padding: .3em .6em; border-radius: .6em; font-family: system-ui, sans-serif; font-size: 3.2vh; letter-spacing: .18em; color: #ffe9ea;
-  border: .35vh solid #ff3b3b; text-shadow: 0 0 .4vh #fff, 0 0 1.2vh #ff3b3b, 0 0 2.6vh #ff1a1a; box-shadow: 0 0 1.4vh #ff3b3b, inset 0 0 1.4vh #ff3b3b; --f: 11s; }
-#jbScene .live { left: 4.5vw; top: 22vh; writing-mode: vertical-rl; font-family: system-ui, sans-serif; font-size: 2.6vh; letter-spacing: .3em; color: #e9f6ff;
-  text-shadow: 0 0 .4vh #fff, 0 0 1.2vh #3aa7ff, 0 0 2.8vh #1a6dff; --f: 6.5s; }
-#jbScene .script { right: 4vw; bottom: 32vh; font-family: 'Pacifico', cursive; font-weight: 400; font-size: 4.2vh; color: #fff0f8;
-  text-shadow: 0 0 .4vh #fff, 0 0 1.4vh #ff4fa3, 0 0 3vh #ff2d6f; transform: rotate(-6deg); --f: 13s; opacity: .9; }
-#jbScene .cocktail { left: 49%; top: 10vh; width: 7vh; translate: -50% 0; --f: 9s; }
-#jbScene .cocktail svg { width: 100%; filter: drop-shadow(0 0 .5vh #5ff0ff) drop-shadow(0 0 1.4vh #22c8ff); }
+#jbScene .sign { position: absolute; white-space: nowrap; animation: neonflick var(--f, 8s) infinite; }
+#jbScene .diner { left: 3vw; top: 5vh; padding: .25em .55em .3em; border-radius: .35em; border: .32vh solid #5fd0ff; font-family: 'Arial Black', Impact, system-ui, sans-serif; font-weight: 900;
+  font-size: 5.2vh; letter-spacing: .12em; color: #ffe2e0; text-shadow: 0 0 .3vh #fff, 0 0 1vh #ff3b3b, 0 0 2.4vh #ff1a1a, 0 0 4vh #ff1a1a;
+  box-shadow: 0 0 1vh #3ab8ff, inset 0 0 1vh #3ab8ff; --f: 12s; }
+#jbScene .h24 { left: 3.6vw; top: 15.5vh; font-family: system-ui, sans-serif; font-weight: 700; font-size: 1.9vh; letter-spacing: .35em; color: #e9f6ff;
+  text-shadow: 0 0 .3vh #fff, 0 0 1vh #3aa7ff, 0 0 2.2vh #1a6dff; --f: 7s; }
+#jbScene .cup { left: 49%; top: 9vh; width: 8vh; translate: -50% 0; --f: 10s; }
+#jbScene .cup svg { width: 100%; filter: drop-shadow(0 0 .5vh #ffb347) drop-shadow(0 0 1.4vh #ff8a1f); }
+#jbScene .cup .steam { animation: steam 3s ease-in-out infinite; }
+@keyframes steam { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+#jbScene .shakes { right: 4vw; top: 30vh; font-family: 'Pacifico', cursive; font-size: 3.8vh; color: #fff0f8; transform: rotate(-5deg);
+  text-shadow: 0 0 .4vh #fff, 0 0 1.4vh #ff4fa3, 0 0 3vh #ff2d6f; --f: 13s; opacity: .92; }
+/* 밝은 커버에서도 가사가 보이게 */
+#side::before { content: ''; position: absolute; inset: -8vh -5vw; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1.5s;
+  background: radial-gradient(ellipse 65% 60% at 42% 58%, rgba(12,8,16,.42), transparent 75%); }
+body.bright-bg #side::before, body.theme-jukebox #side::before { opacity: 1; }
+body.bright-bg #lyrics .line { text-shadow: 0 1px 2px rgba(0,0,0,.5), 0 0 16px rgba(0,0,0,.4); }
+body.bright-bg #lyrics .line:not(.active):not(.near) { opacity: .5; }
+body.bright-bg #lyrics .line.near { opacity: .7; }
+body.bright-bg #clock { text-shadow: 0 1px 3px rgba(0,0,0,.45), 0 0 24px rgba(0,0,0,.3); }
+body.bright-bg #clock .time { text-shadow: 0 2px 6px rgba(0,0,0,.35), 0 0 40px rgba(0,0,0,.25); }
+body.bright-bg.theme-flow #lyrics::before { content: ''; position: absolute; inset: -2vh -4vw; z-index: -1; background: radial-gradient(ellipse at 50% 50%, rgba(12,8,16,.38), transparent 72%); }
 /* 시계·제목·가사를 네온사인처럼 */
 body.theme-jukebox #clock .time { color: #fff3f8; text-shadow: 0 0 4px #fff, 0 0 12px #ff4fa3, 0 0 28px #ff2d6f, 0 0 52px #ff2d6f; animation: neonflick 9s infinite; }
 body.theme-jukebox #clock .date { color: #bff6ff; opacity: 1; text-shadow: 0 0 6px #4fd8ff, 0 0 16px #2ab8ff; }
@@ -606,6 +637,42 @@ body.playing .jb-grille::after { animation: thrum .48s ease-in-out infinite alte
 .jb-plate { position: relative; z-index: 2; margin: 3% 0 0; text-align: center; font-size: calc(var(--jw) * .022); letter-spacing: .4em; color: #3a1608; padding: .35em 0; border-radius: 3px;
   background: linear-gradient(180deg, #fafafa, #bdbdbd 50%, #8f8f8f); text-transform: uppercase; font-weight: 700; }
 .jb-base { height: calc(var(--jw) * .05); margin: 3% -9% 0; border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #3a1d0c, #1a0b04); }
+
+/* ── 주크박스 실물 질감 (나뭇결·크롬·플라스틱) ── */
+.jb { background: linear-gradient(90deg, rgba(0,0,0,.5), transparent 16%, transparent 84%, rgba(0,0,0,.5)), linear-gradient(180deg, rgba(255,230,200,.14), transparent 30%, rgba(0,0,0,.32)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='600'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.11 0.005' numOctaves='4' seed='9'/><feColorMatrix values='0.55 0 0 0 0.15  0.32 0 0 0 0.065  0.17 0 0 0 0.03  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>") center / cover;
+  box-shadow: 0 5vmin 10vmin rgba(0,0,0,.6), 0 0 6vmin rgba(255,150,50,.22), inset 0 0 0 calc(var(--jw) * .01) #b89a5e, inset 0 2px 1px rgba(255,240,220,.35), inset 0 -6px 12px rgba(0,0,0,.5); }
+.jb-crown .band, #jukebox[data-neon] .jb-crown .band {
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, transparent 1px 3px, rgba(0,0,0,.14) 3px 4px, transparent 4px 9px),
+              radial-gradient(ellipse 60% 80% at 50% 115%, rgba(255,245,215,.85), transparent 70%),
+              linear-gradient(90deg, #a8381f, #d9822a, #e2c15a, #4f8f63, #3d6f99, #6f4a8f, #a8381f);
+  background-size: 100% 100%, 100% 100%, 300% 100%; animation: peacock2 26s linear infinite; filter: saturate(.85); }
+#jukebox[data-neon="album"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, transparent 1px 3px, rgba(0,0,0,.14) 3px 4px, transparent 4px 9px),
+  radial-gradient(ellipse 60% 80% at 50% 115%, rgba(255,245,215,.85), transparent 70%), linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c2), var(--c1)); background-size: 100% 100%, 100% 100%, 300% 100%; }
+#jukebox[data-neon="pink"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, transparent 1px 3px, rgba(0,0,0,.14) 3px 4px, transparent 4px 9px),
+  radial-gradient(ellipse 60% 80% at 50% 115%, rgba(255,245,215,.85), transparent 70%), linear-gradient(90deg, #b8325e, #e08aa8, #f2c9d6, #e08aa8, #b8325e); background-size: 100% 100%, 100% 100%, 300% 100%; }
+@keyframes peacock2 { to { background-position: 0 0, 0 0, 300% 0; } }
+.jb-crown::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,.32), transparent 28%), radial-gradient(ellipse 22% 10% at 30% 13%, rgba(255,255,255,.55), transparent 70%); }
+.jb-crown .well { background: radial-gradient(ellipse at 50% 100%, #fff1c8 0%, #f2a64a 24%, #8a3a10 58%, #2a0b04 86%); box-shadow: inset 0 0 calc(var(--jw) * .05) rgba(0,0,0,.75), 0 0 0 calc(var(--jw) * .012) #c8ccd0, 0 0 0 calc(var(--jw) * .016) #6a6f73; }
+.jb-crown .rays { animation: none; opacity: .75; background: repeating-conic-gradient(from 0deg, rgba(235,238,240,.7) 0 .8deg, transparent .8deg 7.5deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 11%, #000 12% 44%, transparent 46%); mask-image: radial-gradient(circle, transparent 11%, #000 12% 44%, transparent 46%); }
+.jb-title { color: transparent; background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); -webkit-background-clip: text; background-clip: text; text-shadow: none; filter: drop-shadow(0 2px 1px rgba(0,0,0,.75)); animation: none; }
+.jb-bulb { display: none; }
+.jb-pillar { background: linear-gradient(180deg, #b84a2a, #d99a3a, #e0cc6a, #5f9a6a, #4a7aa8, #7f5a9a, #b84a2a); background-size: 100% 300%; filter: saturate(.85);
+  box-shadow: 0 0 calc(var(--jw) * .045) rgba(255,160,60,.45), inset 0 0 0 calc(var(--jw) * .005) rgba(255,255,255,.35), inset calc(var(--jw) * .012) 0 calc(var(--jw) * .015) rgba(255,255,255,.35), inset calc(var(--jw) * -.014) 0 calc(var(--jw) * .02) rgba(0,0,0,.45); }
+.jb-pillar::before { background: repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 1px, rgba(0,0,0,.14) 1px 2px, transparent 2px 18%); }
+.jb-pillar::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4%; background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); }
+body.no-bulbs .jb-crown .band, body.no-bulbs .jb-pillar { animation: none; }
+.jb-rec { box-shadow: inset 0 0 calc(var(--jw) * .05) rgba(0,0,0,.9), 0 0 0 calc(var(--jw) * .01) #cfd2d4, 0 0 0 calc(var(--jw) * .015) #6a6f73, 0 0 calc(var(--jw) * .04) rgba(255,170,70,.35); }
+.jb-now { background: linear-gradient(180deg, #fff6d8, #e3c67a 50%, #b8933e); color: #2a1206; box-shadow: 0 1px 2px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.7); }
+.jb-panel { border-color: #e6e8ea #7d8286 #5f6468 #cfd2d4; background: linear-gradient(180deg, #f6ecd4, #e9d6a8); }
+.jb-panel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.28), transparent 28%, transparent 70%, rgba(255,255,255,.08)); }
+.jbs { background: #fbf6e8; box-shadow: 0 1px 1px rgba(0,0,0,.3); }
+.jbs .t { font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; letter-spacing: 0; }
+.jbs .a { font-family: 'Courier New', ui-monospace, monospace; }
+.jb-nav button, .jb-plate { background: linear-gradient(180deg, #fbfbfb 0%, #cfd2d4 18%, #7d8286 36%, #eef0f1 52%, #6a6f73 70%, #b9bec1 86%, #f5f6f7 100%); box-shadow: 0 2px 0 #3b3f42, 0 3px 5px rgba(0,0,0,.45); }
+.jb-grille { box-shadow: inset 0 3px 10px rgba(0,0,0,.6), 0 0 0 calc(var(--jw) * .01) #cfd2d4, 0 0 0 calc(var(--jw) * .014) #6a6f73, 0 0 calc(var(--jw) * .04) rgba(255,150,40,.35); }
+.jb-base { background: linear-gradient(180deg, #2a160b, #120803); box-shadow: inset 0 2px 0 rgba(255,255,255,.08); }
 
 #radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
 body.has-shelf #radio { --rw: min(36vw, 78vh); }
@@ -743,15 +810,15 @@ body.theme-flow #shelf { display: none !important; }
   </filter>
 </svg>
 <div id="jbScene" aria-hidden="true">
-  <div class="wall"></div><div class="haze"></div><div class="wood"></div>
-  <div class="lamp" style="left:79vw;--len:5vh"><div class="cord"></div><div class="shade"></div><div class="cone"></div></div>
-  <div class="lamp" style="left:94vw;--len:13vh;animation-delay:-4s"><div class="cord"></div><div class="shade"></div><div class="cone"></div></div>
-  <div class="sign open">OPEN</div>
-  <div class="sign live">LIVE MUSIC</div>
-  <div class="sign cocktail"><svg viewBox="0 0 60 70" fill="none" stroke="#bff9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h48L30 36z"/><path d="M30 36v24M18 62h24"/><path d="M40 4l-8 14" stroke="#ffd0ec"/><circle cx="24" cy="18" r="4" stroke="#7dff8c"/></svg></div>
-  <div class="sign script">Cocktails</div>
+  <div class="wall"></div><div class="trim"></div><div class="steel"></div><div class="floor"></div><div class="haze"></div>
+  <div class="globe" style="left:68vw;--len:4vh"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
+  <div class="globe" style="left:88vw;--len:9vh;animation-delay:-5s"><div class="cord"></div><div class="cap"></div><div class="ball"></div><div class="pool"></div></div>
+  <div class="sign diner">DINER</div>
+  <div class="sign h24">OPEN 24 HRS</div>
+  <div class="sign cup"><svg viewBox="0 0 80 70" fill="none" stroke="#ffe0b0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 30h40v10a20 20 0 0 1-20 20 20 20 0 0 1-20-20z"/><path d="M54 34h6a7 7 0 0 1 0 14h-8"/><path d="M8 64h56"/><g class="steam"><path d="M26 22c-4-5 4-8 0-14"/><path d="M36 22c-4-5 4-8 0-14"/><path d="M46 22c-4-5 4-8 0-14"/></g></svg></div>
+  <div class="sign shakes">Burgers &amp; Shakes</div>
   <div class="counter"></div>
-  <div class="stool" style="left:3vw"></div><div class="stool" style="left:12vw"></div><div class="stool" style="right:4vw"></div>
+  <div class="stool" style="left:60vw"></div><div class="stool" style="left:72vw"></div><div class="stool" style="left:84vw"></div><div class="stool" style="left:96vw"></div>
 </div>
 <div id="edge" aria-hidden="true"><div class="glow"></div><div class="pulse"></div></div>
 
@@ -805,12 +872,17 @@ body.theme-flow #shelf { display: none !important; }
       </div>
     </div>
     <div id="tv" class="visual" data-body="wood" aria-hidden="true">
-      <div class="tv-ant"><i></i></div>
+      <div class="tv-ant"><i class="rod l"></i><i class="rod r"></i><div class="base"></div></div>
       <div class="tv-body">
-        <div class="tv-bezel"><div class="tv-screen" id="tvScreen"><div class="tv-img cover-bg"></div><div class="tv-scan"></div><div class="tv-flicker"></div><canvas id="tvStatic" width="160" height="120"></canvas><div class="tv-glass"></div><div class="tv-osd" id="tvOsd">CH 01</div></div></div>
-        <div class="tv-side"><div class="tv-knob" id="tvKnob1"></div><div class="tv-knob" id="tvKnob2"></div><div class="tv-speaker"></div></div>
+        <div class="tv-bezel"><div class="tv-screen" id="tvScreen"><div class="tv-img cover-bg"></div><div class="tv-bloom cover-bg"></div><div class="tv-scan"></div><div class="tv-flicker"></div><canvas id="tvStatic" width="160" height="120"></canvas><div class="tv-glass"></div><div class="tv-osd" id="tvOsd">CH 01</div></div></div>
+        <div class="tv-side">
+          <div class="tv-ctl"><div class="tv-knob" id="tvKnob1"></div><span>CHANNEL</span></div>
+          <div class="tv-ctl"><div class="tv-knob small" id="tvKnob2"></div><span>VOLUME</span></div>
+          <div class="tv-speaker"></div>
+        </div>
+        <div class="tv-badge">Ambient</div>
       </div>
-      <div class="tv-legs"><i></i><i></i></div>
+      <div class="tv-legs"><i class="l"></i><i class="r"></i></div>
     </div>
     <div id="jukebox" class="visual" data-neon="rainbow">
       <div class="jb">
@@ -963,7 +1035,7 @@ body.theme-flow #shelf { display: none !important; }
     <div data-for="jukebox">
       <div class="slab"><span>네온 색</span></div>
       <div class="seg small" id="segNeon"><button data-v="rainbow">레트로</button><button data-v="album">앨범색</button><button data-v="pink">핑크</button></div>
-      <label class="switch" style="margin-top:10px"><span>전구 깜빡임</span><input type="checkbox" id="cBulbs"></label>
+      <label class="switch" style="margin-top:10px"><span>빛 색 흐름</span><input type="checkbox" id="cBulbs"></label>
       <label class="switch"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
       <p class="note" style="margin-top:4px">선택판에는 플레이리스트 패널(P)에서 고른 목록이 나와요.</p>
     </div>
@@ -1287,6 +1359,7 @@ async function applyArt(url, seed) {
   if (info) setPalette(info.cols, info.lum); else setPalette(moodPalette(seed), .4);
 }
 function setPalette(cols, lum) {
+  body.classList.toggle('bright-bg', lum > .5);   // 밝은 커버면 가사·시계에 그림자
   const r = document.documentElement.style;
   const [a, b, c] = cols.map(col => tune(col, .5, .56, .74));
   r.setProperty('--c1', rgbStr(a)); r.setProperty('--c2', rgbStr(b)); r.setProperty('--c3', rgbStr(c));
