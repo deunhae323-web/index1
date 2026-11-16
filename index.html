@@ -63,7 +63,7 @@ body.paused #edge .glow { animation-play-state: paused; }
 #scene { position: fixed; inset: 0; z-index: 4; display: grid; grid-template-columns: 1.05fr 1fr;
   align-items: center; gap: 4vw; padding: 7vh 6vw 17vh; transition: opacity 1.2s ease; }
 body.zen #scene, body.wallpaper #scene { padding-bottom: 8vh; transition: opacity 1.2s ease, padding 1.2s ease; }
-#stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; height: 100%; min-height: 0; }
+#stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: safe center; gap: 4vh; height: 100%; min-height: 0; }
 body.has-shelf { --disc: min(34vw, 50vh); }
 body.has-shelf #poster { width: calc(min(24vw, 34vh) * var(--ps)); }
 body.has-shelf #poster .cap { margin-top: 2vh; padding-top: 1.2vh; }
@@ -371,21 +371,27 @@ body.lists-pinned.pl-right #topbar { top: auto; bottom: 3.6vh; right: 24px; }
 #segTheme { display: grid; grid-template-columns: repeat(4, 1fr); }
 #themeOpts[data-t="cassette"] [data-for="cassette"], #themeOpts[data-t="tv"] [data-for="tv"], #themeOpts[data-t="jukebox"] [data-for="jukebox"] { display: block; }
 
-/* ───────────────── 카세트 테이프 ───────────────── */
+/* ───────────────── 카세트 테이프 (80년대 플라스틱) ───────────────── */
 #cassette { --cw: min(42vw, 100vh); width: var(--cw); }
 body.has-shelf #cassette { --cw: min(37vw, 82vh); }
-.cs { position: relative; aspect-ratio: 1.58; border-radius: calc(var(--cw) * .035);
-  background: linear-gradient(135deg, rgba(255,255,255,.3), rgba(255,255,255,.08) 55%, rgba(255,255,255,.18)); border: 1px solid rgba(255,255,255,.45);
-  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.5); }
-#cassette[data-color="white"] .cs { background: linear-gradient(160deg, #f4f2ec, #d9d6cd); border-color: rgba(0,0,0,.08); }
-#cassette[data-color="black"] .cs { background: linear-gradient(160deg, #2c2b30, #151418); border-color: rgba(255,255,255,.12); }
-#cassette[data-color="album"] .cs { background: linear-gradient(160deg, color-mix(in srgb, var(--c1) 75%, #222), color-mix(in srgb, var(--c2) 65%, #111)); }
+.cs { position: relative; aspect-ratio: 1.58; border-radius: calc(var(--cw) * .03); --shell: #2a2826; --shell2: #171615;
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.08), transparent 55%), linear-gradient(170deg, var(--shell), var(--shell2));
+  box-shadow: 0 4vmin 8vmin rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 calc(var(--cw) * .012) rgba(255,255,255,.04), inset 0 -10px 22px rgba(0,0,0,.45); }
+.cs::before { content: ''; position: absolute; inset: 3.2%; border-radius: calc(var(--cw) * .02); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), inset 0 1px 2px rgba(0,0,0,.5); pointer-events: none; }
+.cs::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: .22;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+#cassette[data-color="cream"] .cs { --shell: #ded3bb; --shell2: #bfb196; }
+#cassette[data-color="brown"] .cs { --shell: #6a4430; --shell2: #3e2516; }
+#cassette[data-color="album"] .cs { --shell: color-mix(in srgb, var(--c1) 55%, #2a2622); --shell2: color-mix(in srgb, var(--c2) 45%, #151311); }
 .cs .screw { position: absolute; width: calc(var(--cw) * .022); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #eee, #8d8d8d); box-shadow: inset 0 0 0 1px rgba(0,0,0,.3); }
 .cs .screw::after { content: ''; position: absolute; left: 20%; right: 20%; top: 45%; height: 10%; background: rgba(0,0,0,.45); rotate: 35deg; }
-.cs-label { position: absolute; left: 6%; right: 6%; top: 7%; height: 63%; border-radius: calc(var(--cw) * .018); overflow: hidden;
-  background: repeating-linear-gradient(180deg, transparent 0 calc(var(--cw) * .034), rgba(70,110,170,.18) calc(var(--cw) * .034) calc(var(--cw) * .036)), #f3ead3;
-  box-shadow: 0 1px 2px rgba(0,0,0,.25); color: #2b2620; }
-.cs-label .band { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(180deg, color-mix(in srgb, var(--c1) 80%, #fff), color-mix(in srgb, var(--c2) 70%, #fff)); }
+.cs-label { position: absolute; left: 6%; right: 6%; top: 7%; height: 63%; border-radius: calc(var(--cw) * .012); overflow: hidden;
+  background: radial-gradient(ellipse at 70% 30%, transparent 40%, rgba(150,110,40,.14)),
+              repeating-linear-gradient(180deg, transparent 0 calc(var(--cw) * .034), rgba(70,110,170,.2) calc(var(--cw) * .034) calc(var(--cw) * .036)), #efe4c8;
+  box-shadow: 0 1px 2px rgba(0,0,0,.35), inset 0 0 0 1px rgba(0,0,0,.06); color: #2b2620; }
+.cs-label .band { position: absolute; left: 0; right: 0; bottom: 0; height: 52%;
+  background: linear-gradient(180deg, #d9452b 0 22%, #ef7d24 22% 44%, #f4b23a 44% 66%, #2b2a28 66% 100%); }
+#cassette[data-color="album"] .cs-label .band { background: linear-gradient(180deg, var(--c1) 0 22%, var(--c2) 22% 44%, var(--c3) 44% 66%, #2b2a28 66% 100%); }
 .cs-label .side { position: absolute; left: 3%; top: 7%; width: calc(var(--cw) * .065); aspect-ratio: 1; border: 2px solid #2b2620; border-radius: 4px; display: grid; place-items: center;
   font-weight: 700; font-size: calc(var(--cw) * .045); }
 .cs-label .title { position: absolute; left: 14%; right: 4%; top: 4%; font-family: 'Nanum Pen Script', var(--serif-kr), cursive; font-size: calc(var(--cw) * .062); line-height: 1.1;
@@ -394,10 +400,10 @@ body.has-shelf #cassette { --cw: min(37vw, 82vh); }
 .cs-label .sub { position: absolute; left: 14%; right: 4%; top: 22%; font-family: 'Nanum Pen Script', var(--serif-kr), cursive; font-size: calc(var(--cw) * .04);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #2f3a66; opacity: .85; }
 #cassette.typed .cs-label .sub { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .024); top: 24%; }
-.cs-label .brand { position: absolute; right: 4%; bottom: 5%; font-size: calc(var(--cw) * .022); font-weight: 700; letter-spacing: .2em; color: rgba(255,255,255,.9); }
-.cs-label .brand2 { position: absolute; left: 4%; bottom: 5%; font-size: calc(var(--cw) * .022); font-weight: 600; letter-spacing: .15em; color: rgba(255,255,255,.9); }
+.cs-label .brand { position: absolute; right: 3.5%; bottom: 3%; font-size: calc(var(--cw) * .06); font-weight: 800; font-style: italic; letter-spacing: .02em; color: #f4e9cf; }
+.cs-label .brand2 { position: absolute; left: 3.5%; bottom: 5%; font-size: calc(var(--cw) * .019); font-weight: 600; letter-spacing: .18em; color: #f4e9cf; line-height: 1.5; }
 .cs-win { position: absolute; left: 22%; right: 22%; top: 36%; height: 30%; border-radius: calc(var(--cw) * .03);
-  background: rgba(25,18,14,.72); box-shadow: inset 0 2px 8px rgba(0,0,0,.6), 0 0 0 calc(var(--cw) * .006) rgba(0,0,0,.25); overflow: hidden; }
+  background: linear-gradient(180deg, rgba(60,40,25,.85), rgba(25,16,10,.9)); box-shadow: inset 0 2px 8px rgba(0,0,0,.6), 0 0 0 calc(var(--cw) * .006) rgba(0,0,0,.25); overflow: hidden; }
 .cs-win::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,.2), transparent 45%); z-index: 2; pointer-events: none; }
 .cs-pack { position: absolute; top: 50%; width: var(--pk); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
   background: radial-gradient(circle, #3a2414 0 58%, #4a2e1a 59% 100%); box-shadow: 0 0 0 1px rgba(0,0,0,.4); transition: width 1s linear; }
@@ -408,7 +414,7 @@ body.has-shelf #cassette { --cw: min(37vw, 82vh); }
 .cs-hub::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 calc(var(--cw) * .009) #f2f0ea; }
 .cs-hub.l { left: 20.5%; } .cs-hub.r { left: 79.5%; }
 .cs-bottom { position: absolute; left: 20%; right: 20%; bottom: 0; height: 19%; clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32)); }
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(0,0,0,.35)), repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 1px, transparent 1px 6px); }
 .cs-bottom i { position: absolute; bottom: 28%; width: calc(var(--cw) * .03); aspect-ratio: 1; border-radius: 50%; background: rgba(0,0,0,.55); }
 .cs-count { position: absolute; right: 7%; bottom: 6%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: calc(var(--cw) * .026); letter-spacing: .12em;
   background: #111; color: #e8e2d0; padding: .15em .45em; border-radius: 3px; }
@@ -448,44 +454,80 @@ body.has-shelf #tv { --tw: min(32vw, 62vh); }
 .tv-legs { display: flex; justify-content: space-between; padding: 0 16%; }
 .tv-legs i { width: calc(var(--tw) * .05); height: calc(var(--tw) * .06); background: #2a2420; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
 
-/* ───────────────── 주크박스 ───────────────── */
-#jukebox { --jw: min(34vw, 66vh); width: var(--jw); position: relative; }
-body.has-shelf #jukebox { --jw: min(29vw, 55vh); }
-.jb { position: relative; border-radius: 48% 48% 5% 5% / 30% 30% 3% 3%; padding: 7% 7% 4%;
-  background: linear-gradient(180deg, #5b2f1b, #3a1d10 60%, #2b150b); box-shadow: 0 4vmin 8vmin rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.2); }
-.jb .neon { position: absolute; inset: 2.6%; border-radius: inherit; border: calc(var(--jw) * .014) solid var(--n); pointer-events: none;
-  box-shadow: 0 0 calc(var(--jw) * .03) var(--n), inset 0 0 calc(var(--jw) * .03) var(--n); }
-.jb .neon.n1 { --n: var(--j1, var(--c1)); }
-.jb .neon.n2 { --n: var(--j2, var(--c2)); animation: neonfade 4s ease-in-out infinite alternate; }
-@keyframes neonfade { from { opacity: 0; } to { opacity: 1; } }
-#jukebox[data-neon="rainbow"] .neon { --j1: #ff5fa2; --j2: #5fd6ff; }
-#jukebox[data-neon="pink"] .neon { --j1: #ff4fa0; --j2: #ffb3d9; }
-.jb-tube { position: absolute; top: 30%; bottom: 14%; width: 3.2%; border-radius: 999px; background: linear-gradient(180deg, color-mix(in srgb, var(--c1) 60%, #fff), var(--c2)); opacity: .55; overflow: hidden; }
-.jb-tube.l { left: 3.5%; } .jb-tube.r { right: 3.5%; }
-.jb-tube i { position: absolute; left: 20%; width: 60%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.85); bottom: -10%; animation: bubble var(--d) linear infinite; animation-delay: var(--dl); }
-@keyframes bubble { to { transform: translateY(calc(var(--jw) * -1.2)); } }
+/* ───────────────── 주크박스 (50년대 화려한 불빛) ───────────────── */
+#jukebox { --jw: min(26vw, 38vh); width: var(--jw); position: relative; }
+.jb { position: relative; padding: 0 7% 3.5%; border-radius: 50% 50% 4% 4% / 30% 30% 3% 3%;
+  background: linear-gradient(180deg, #5a1d10, #3a0f07 55%, #210804);
+  box-shadow: 0 4vmin 9vmin rgba(0,0,0,.5), 0 0 8vmin rgba(255,150,50,.38), inset 0 0 0 calc(var(--jw) * .014) #d8c08a, inset 0 0 0 calc(var(--jw) * .022) #6b3a14; }
+.jb::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.08) 38%, transparent 46%); }
+.jb-crown { position: relative; height: calc(var(--jw) * .5); margin: 0 -7.8%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden; }
+.jb-crown .band { position: absolute; inset: 0; border-radius: inherit;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
+              linear-gradient(90deg, #ff3b2f, #ff9a1f, #ffe25a, #5ee38f, #3aa7ff, #b65bff, #ff3b2f);
+  background-size: 100% 100%, 300% 100%; animation: peacock 16s linear infinite; }
+#jukebox[data-neon="album"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
+  linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c2), var(--c1)); background-size: 100% 100%, 300% 100%; }
+#jukebox[data-neon="pink"] .jb-crown .band { background: repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 10px),
+  linear-gradient(90deg, #ff2e88, #ff9ccf, #ffd6ec, #ff9ccf, #ff2e88); background-size: 100% 100%, 300% 100%; }
+@keyframes peacock { to { background-position: 0 0, 300% 0; } }
+.jb-crown .well { position: absolute; left: 13%; right: 13%; top: 20%; bottom: -2%; border-radius: 50% 50% 0 0 / 100% 100% 0 0; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 100%, #7a2e10, #2a0b04 70%); box-shadow: inset 0 0 calc(var(--jw) * .04) rgba(0,0,0,.8), 0 0 0 calc(var(--jw) * .01) #d8c08a; }
+.jb-crown .rays { position: absolute; left: 50%; bottom: -60%; width: 170%; aspect-ratio: 1; translate: -50% 0;
+  background: repeating-conic-gradient(rgba(255,214,130,.24) 0 5deg, transparent 5deg 14deg); animation: rays 50s linear infinite;
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 62%); mask-image: radial-gradient(circle, #000 20%, transparent 62%); }
+@keyframes rays { to { transform: rotate(360deg); } }
+.jb-title { position: absolute; left: 0; right: 0; top: 34%; text-align: center; font-family: 'Pacifico', 'Nanum Pen Script', cursive; font-size: calc(var(--jw) * .07);
+  color: #fff6dc; text-shadow: 0 0 4px #ffb066, 0 0 12px #ff6a1f, 0 0 26px #ff2d6f; animation: neonflick 7s infinite; }
+@keyframes neonflick { 0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; } 20%, 63% { opacity: .55; } }
+.jb-bulb { position: absolute; width: calc(var(--jw) * .03); aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, var(--bc) 62%); box-shadow: 0 0 calc(var(--jw) * .015) var(--bc), 0 0 calc(var(--jw) * .035) var(--bc);
+  opacity: .3; animation: chase 1.8s linear infinite; animation-delay: var(--dl); }
+@keyframes chase { 0%, 100% { opacity: .28; } 8% { opacity: 1; } 30% { opacity: .55; } }
+body.paused .jb-bulb { animation-duration: 5s; }
+body.no-bulbs .jb-bulb { animation: none; opacity: .75; }
+.jb-top { position: relative; display: grid; justify-items: center; margin: -10% 0 3%; z-index: 2; }
+.jb-cover { width: 32%; aspect-ratio: 1; border-radius: 4px;
+  box-shadow: 0 0 0 calc(var(--jw) * .01) #f2e3b5, 0 0 0 calc(var(--jw) * .02) #8a6a2a, 0 0 calc(var(--jw) * .06) rgba(255,170,70,.75); }
+.jb-now { margin-top: 3.5%; padding: .3em 1em; border-radius: 999px; font-size: calc(var(--jw) * .03); letter-spacing: .16em; text-transform: uppercase; color: #3a1608;
+  background: linear-gradient(180deg, #fff3c9, #e6c56d); box-shadow: 0 0 calc(var(--jw) * .03) rgba(255,190,90,.7); max-width: 86%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jb-tube { position: absolute; top: 34%; bottom: 13%; width: 5%; border-radius: 999px; overflow: hidden; opacity: .92; z-index: 1;
+  background: linear-gradient(180deg, #ff4d3a, #ffb02e, #ffe866, #4be08a, #3aa7ff, #c45bff, #ff4d3a); background-size: 100% 300%; animation: tubeflow 9s linear infinite;
+  box-shadow: 0 0 calc(var(--jw) * .035) rgba(255,160,60,.65), inset 0 0 0 1px rgba(255,255,255,.35); }
+.jb-tube::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.45), transparent 40%, rgba(0,0,0,.2)); }
+@keyframes tubeflow { to { background-position: 0 300%; } }
+.jb-tube.l { left: 1.2%; } .jb-tube.r { right: 1.2%; }
+.jb-tube i { position: absolute; left: 22%; width: 56%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.9); bottom: -10%; animation: bubble var(--d) linear infinite; animation-delay: var(--dl); }
+@keyframes bubble { to { transform: translateY(calc(var(--jw) * -1.1)); } }
 body.no-bubbles .jb-tube i { display: none; }
-.jb-top { display: grid; justify-items: center; gap: 2%; margin-bottom: 4%; }
-.jb-cover { width: 34%; aspect-ratio: 1; border-radius: 6px; box-shadow: 0 0 0 calc(var(--jw) * .01) #c9a34a, 0 0 calc(var(--jw) * .05) color-mix(in srgb, var(--c1) 70%, transparent); }
-.jb-now { font-size: calc(var(--jw) * .034); letter-spacing: .2em; text-transform: uppercase; color: #f6dfa8; margin-top: 2%; max-width: 80%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
-.jb-head { display: flex; justify-content: space-between; align-items: center; color: #f6dfa8; font-size: calc(var(--jw) * .03); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2%; }
-.jb-head button { border: 0; background: none; color: inherit; cursor: pointer; font: inherit; letter-spacing: inherit; text-transform: none; max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jb-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6% 2.4%; padding: 3%; border-radius: 8px; background: linear-gradient(180deg, #e9d9ad, #d6c08a);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,.35); min-height: calc(var(--jw) * .5); }
-.jbs { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4%; padding: 2.5% 3%; border-radius: 4px; background: #fbf5e6; border: 1px solid #b8322a;
-  cursor: pointer; color: #2a1a10; min-width: 0; transition: transform .15s, background .2s; }
-.jbs:hover { transform: translateY(-1px); background: #fffaf0; }
-.jbs b { font-size: calc(var(--jw) * .03); background: #b8322a; color: #fff; padding: .15em .35em; border-radius: 3px; letter-spacing: .04em; }
-.jbs .t { font-size: calc(var(--jw) * .028); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jbs .a { font-size: calc(var(--jw) * .022); opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.jbs.now { background: color-mix(in srgb, var(--accent) 45%, #fff6dc); box-shadow: 0 0 0 2px #b8322a, 0 0 12px color-mix(in srgb, var(--accent) 70%, transparent); }
+.jb-head { display: flex; justify-content: space-between; align-items: center; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 1.6%;
+  text-shadow: 0 0 8px rgba(255,170,60,.7); }
+.jb-head button { border: 0; background: none; color: inherit; cursor: pointer; font: inherit; letter-spacing: .05em; text-transform: none; max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: inherit; }
+.jb-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5% 2.2%; padding: 2.6%; border-radius: 6px; min-height: calc(var(--jw) * .4);
+  background: linear-gradient(180deg, #fff2cf, #f1d996); border: calc(var(--jw) * .012) solid; border-color: #f4f4f4 #8d8d8d #6f6f6f #e2e2e2;
+  box-shadow: 0 0 calc(var(--jw) * .05) rgba(255,190,90,.6), inset 0 0 calc(var(--jw) * .04) rgba(255,160,40,.45); }
+.jbs { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4%; padding: 2.2% 3%; background: #fffaf0; cursor: pointer; color: #1c1209; min-width: 0;
+  border-top: 3px solid #c8312a; border-bottom: 3px solid #2752b5; border-radius: 1px; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform .15s, background .2s; }
+.jbs:hover { transform: translateY(-1px); background: #fff; }
+.jbs b { font-size: calc(var(--jw) * .028); background: #1c1209; color: #ffe08a; padding: .18em .38em; border-radius: 2px; letter-spacing: .04em; }
+.jbs .t { font-size: calc(var(--jw) * .027); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; letter-spacing: .02em; }
+.jbs .a { font-size: calc(var(--jw) * .021); font-style: italic; opacity: .72; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jbs.now { background: #fff1b8; box-shadow: 0 0 0 2px #ff9a1f, 0 0 calc(var(--jw) * .04) rgba(255,160,40,.9); }
+.jbs.now b { background: #c8312a; color: #fff; }
 .jb-msg { grid-column: 1 / -1; font-size: calc(var(--jw) * .028); color: #3a2414; text-align: center; padding: 6% 4%; }
 .jb-msg .note { color: #3a2414; opacity: .8; }
-.jb-nav { display: flex; justify-content: center; align-items: center; gap: 6%; margin-top: 3%; color: #f6dfa8; font-size: calc(var(--jw) * .03); letter-spacing: .15em; }
-.jb-nav button { width: calc(var(--jw) * .07); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer; font-size: calc(var(--jw) * .03);
-  background: radial-gradient(circle at 35% 30%, #fff, #c9c4b8 60%, #7d776c); color: #3a2414; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
-.jb-grille { margin-top: 4%; height: calc(var(--jw) * .1); border-radius: 50% 50% 6px 6px / 70% 70% 6px 6px;
-  background: repeating-linear-gradient(90deg, rgba(0,0,0,.55) 0 6px, color-mix(in srgb, var(--c1) 50%, #c9a34a) 6px 9px); box-shadow: inset 0 3px 8px rgba(0,0,0,.5); opacity: .85; }
+.jb-nav { display: flex; justify-content: center; align-items: center; gap: 5%; margin-top: 3%; color: #ffd98a; font-size: calc(var(--jw) * .028); letter-spacing: .2em;
+  text-shadow: 0 0 8px rgba(255,170,60,.7); }
+.jb-nav button { width: calc(var(--jw) * .1); height: calc(var(--jw) * .055); border-radius: 4px; border: 0; cursor: pointer; font-size: calc(var(--jw) * .026); color: #3a1608;
+  background: linear-gradient(180deg, #fafafa, #b9b9b9 55%, #8a8a8a); box-shadow: 0 3px 0 #555, 0 0 calc(var(--jw) * .025) rgba(255,90,60,.6); }
+.jb-nav button:active { transform: translateY(2px); box-shadow: 0 1px 0 #555; }
+.jb-grille { position: relative; margin-top: 3.5%; height: calc(var(--jw) * .14); border-radius: 50% 50% 6px 6px / 80% 80% 6px 6px; overflow: hidden;
+  background: repeating-conic-gradient(from 270deg at 50% 100%, #efe7d6 0 1.6deg, #3a1608 1.6deg 6deg); box-shadow: inset 0 3px 10px rgba(0,0,0,.6), 0 0 0 calc(var(--jw) * .008) #d8c08a; }
+.jb-grille::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(255,150,40,.85), transparent 70%); opacity: .45; }
+body.playing .jb-grille::after { animation: thrum .48s ease-in-out infinite alternate; }
+@keyframes thrum { to { opacity: .9; } }
+.jb-plate { margin-top: 2.4%; text-align: center; font-size: calc(var(--jw) * .022); letter-spacing: .4em; color: #3a1608; padding: .35em 0; border-radius: 3px;
+  background: linear-gradient(180deg, #fafafa, #bdbdbd 50%, #8f8f8f); text-transform: uppercase; font-weight: 700; }
 
 #radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
 body.has-shelf #radio { --rw: min(36vw, 78vh); }
@@ -505,6 +547,20 @@ body.playing .onair::before { background: #ff4a3d; box-shadow: 0 0 10px #ff4a3d,
 .grille { border-radius: calc(var(--rw) * .03); box-shadow: inset 0 3px 10px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.2);
   background: radial-gradient(circle, rgba(0,0,0,.6) 34%, transparent 40%) 0 0 / calc(var(--rw) * .022) calc(var(--rw) * .022),
               linear-gradient(160deg, color-mix(in srgb, var(--c2) 30%, #4a3c34), color-mix(in srgb, var(--c1) 20%, #2a201b)); }
+.grille { position: relative; display: grid; place-items: center; }
+.rclock { width: 84%; aspect-ratio: 1; border-radius: 50%; padding: 5%; display: none;
+  background: linear-gradient(145deg, #f8f8f6, #a9a9a4 45%, #e9e9e6 60%, #8d8d88); box-shadow: 0 6px 14px rgba(0,0,0,.45), inset 0 1px 0 #fff; }
+body.radio-clock .rclock { display: block; }
+.rclock .face { position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+  background: repeating-conic-gradient(from -1deg, #3a2a1a 0 2deg, transparent 2deg 30deg), #f1e4c2; box-shadow: inset 0 3px 10px rgba(0,0,0,.35); color: #3a2a1a; }
+.rclock .face::before { content: ''; position: absolute; inset: 7%; border-radius: 50%; background: radial-gradient(circle, #fdf6e3, #f5e9cb); }
+.rclock .face span { position: absolute; translate: -50% -50%; font-family: var(--serif); font-weight: 600; font-size: calc(var(--rw) * .036); z-index: 1; }
+.rclock .face em { position: absolute; left: 0; right: 0; top: 62%; text-align: center; font-family: 'Nanum Pen Script', var(--serif); font-size: calc(var(--rw) * .032); color: #b23a2a; z-index: 1; }
+.rclock .face i { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%; border-radius: 3px; z-index: 2; margin-left: -1px; }
+.rclock .hh { width: 4.5%; height: 25%; background: #2a1d12; translate: -40% 0; }
+.rclock .mh { width: 3%; height: 36%; background: #2a1d12; translate: -35% 0; }
+.rclock .sh { width: 1.2%; height: 40%; background: #c8312a; translate: -10% 0; transition: transform .25s cubic-bezier(.4,2.2,.6,1); }
+.rclock .face b { position: absolute; left: 50%; top: 50%; width: 7%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: #c8312a; z-index: 3; }
 .rright { display: flex; flex-direction: column; gap: calc(var(--rw) * .022); }
 .lcd { aspect-ratio: 1; border-radius: calc(var(--rw) * .018); background: #0b0d0a; padding: calc(var(--rw) * .012);
   box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.18); position: relative; overflow: hidden; }
@@ -644,7 +700,9 @@ body.theme-flow #shelf { display: none !important; }
       <div class="rbody">
         <div class="rtop"><span>Ambient · FM / AM</span><span class="onair">On Air</span></div>
         <div class="rmain">
-          <div class="grille"></div>
+          <div class="grille"><div class="rclock" id="rClock">
+            <div class="face"><span style="top:15%;left:50%">12</span><span style="top:50%;left:85%">3</span><span style="top:85%;left:50%">6</span><span style="top:50%;left:15%">9</span>
+              <em>Ambient</em><i class="hh"></i><i class="mh"></i><i class="sh"></i><b></b></div></div></div>
           <div class="rright"><div class="lcd"><canvas id="dotCover"></canvas></div><div class="led"><canvas id="dotText"></canvas></div></div>
         </div>
         <div class="dialrow">
@@ -659,7 +717,7 @@ body.theme-flow #shelf { display: none !important; }
       <div class="cs">
         <i class="screw" style="left:2.2%;top:4%"></i><i class="screw" style="right:2.2%;top:4%"></i><i class="screw" style="left:2.2%;bottom:5%"></i><i class="screw" style="right:2.2%;bottom:5%"></i>
         <div class="cs-label"><div class="band"></div><div class="side">A</div><div class="title" id="csTitle"></div><div class="sub" id="csSub"></div>
-          <div class="brand2">STEREO · TYPE I</div><div class="brand">C-90</div></div>
+          <div class="brand2">TYPE I</div><div class="brand">C90</div></div>
         <div class="cs-win"><div class="cs-pack l" id="csPackL"></div><div class="cs-pack r" id="csPackR"></div>
           <div class="cs-hub l" id="csHubL"></div><div class="cs-hub r" id="csHubR"></div></div>
         <div class="cs-bottom"><i style="left:16%"></i><i style="left:34%"></i><i style="right:34%"></i><i style="right:16%"></i></div>
@@ -674,16 +732,17 @@ body.theme-flow #shelf { display: none !important; }
       </div>
       <div class="tv-legs"><i></i><i></i></div>
     </div>
-    <div id="jukebox" class="visual" data-neon="album">
+    <div id="jukebox" class="visual" data-neon="rainbow">
       <div class="jb">
-        <div class="neon n1"></div><div class="neon n2"></div>
-        <div class="jb-tube l"><i style="--d:5s;--dl:0s"></i><i style="--d:6.5s;--dl:-2s"></i><i style="--d:4.5s;--dl:-3.5s"></i></div>
-        <div class="jb-tube r"><i style="--d:6s;--dl:-1s"></i><i style="--d:5.2s;--dl:-4s"></i><i style="--d:7s;--dl:-2.5s"></i></div>
+        <div class="jb-crown" id="jbCrown"><div class="band"></div><div class="well"><div class="rays"></div></div><div class="jb-title">Ambient-o-Matic</div></div>
+        <div class="jb-tube l"><i style="--d:5s;--dl:0s"></i><i style="--d:6.5s;--dl:-2s"></i><i style="--d:4.5s;--dl:-3.5s"></i><i style="--d:5.8s;--dl:-1.2s"></i></div>
+        <div class="jb-tube r"><i style="--d:6s;--dl:-1s"></i><i style="--d:5.2s;--dl:-4s"></i><i style="--d:7s;--dl:-2.5s"></i><i style="--d:4.8s;--dl:-3s"></i></div>
         <div class="jb-top"><div class="jb-cover cover-bg"></div><div class="jb-now" id="jbNow"></div></div>
-        <div class="jb-head"><span>Select</span><button id="jbList" title="플레이리스트 고르기">플레이리스트 ▾</button></div>
+        <div class="jb-head"><span>★ Select ★</span><button id="jbList" title="플레이리스트 고르기">플레이리스트 ▾</button></div>
         <div class="jb-panel" id="jbPanel"></div>
         <div class="jb-nav"><button id="jbPrev">◀</button><span id="jbPage">A1 – A10</span><button id="jbNext">▶</button></div>
         <div class="jb-grille"></div>
+        <div class="jb-plate">Select-o-Matic · 100</div>
       </div>
     </div>
     <div id="flow" class="visual">
@@ -796,6 +855,7 @@ body.theme-flow #shelf { display: none !important; }
     <div data-for="radio">
       <div class="slab"><span>도트 크기</span><span id="vRes"></span></div>
       <input type="range" id="rRes" min="16" max="56" step="4">
+      <label class="switch"><span>스피커 자리에 시계</span><input type="checkbox" id="cRClock"></label>
       <div class="slab" style="margin-top:4px"><span>LED 색</span></div>
       <div class="seg small" id="segLed"><button data-v="amber">앰버</button><button data-v="green">초록</button><button data-v="accent">앨범색</button></div>
       <div class="slab" style="margin-top:12px"><span>라디오 몸체</span></div>
@@ -803,7 +863,7 @@ body.theme-flow #shelf { display: none !important; }
     </div>
     <div data-for="cassette">
       <div class="slab"><span>테이프 색</span></div>
-      <div class="seg small" id="segCs"><button data-v="clear">투명</button><button data-v="white">화이트</button><button data-v="black">블랙</button><button data-v="album">앨범색</button></div>
+      <div class="seg small" id="segCs"><button data-v="black">블랙</button><button data-v="cream">크림</button><button data-v="brown">브라운</button><button data-v="album">앨범색</button></div>
       <label class="switch" style="margin-top:10px"><span>라벨 손글씨</span><input type="checkbox" id="cHand"></label>
       <div class="slab"><span>릴 회전 속도</span><span id="vReel"></span></div>
       <input type="range" id="rReel" min="5" max="45" step="1">
@@ -818,8 +878,9 @@ body.theme-flow #shelf { display: none !important; }
     </div>
     <div data-for="jukebox">
       <div class="slab"><span>네온 색</span></div>
-      <div class="seg small" id="segNeon"><button data-v="album">앨범색</button><button data-v="rainbow">레트로</button><button data-v="pink">핑크</button></div>
-      <label class="switch" style="margin-top:10px"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
+      <div class="seg small" id="segNeon"><button data-v="rainbow">레트로</button><button data-v="album">앨범색</button><button data-v="pink">핑크</button></div>
+      <label class="switch" style="margin-top:10px"><span>전구 깜빡임</span><input type="checkbox" id="cBulbs"></label>
+      <label class="switch"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
       <p class="note" style="margin-top:4px">선택판에는 플레이리스트 패널(P)에서 고른 목록이 나와요.</p>
     </div>
   </section>
@@ -988,7 +1049,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'clear', csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvStatic: true, tvSnd: true, jbNeon: 'album', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'black', radioClock: true, jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -1010,6 +1071,7 @@ function applyFont(k) {
   r.setProperty('--title-style', f.style); r.setProperty('--clock-weight', f.weight);
 }
 const saveSettings = () => store.set('settings', settings);
+if (settings.csColor === 'clear') settings.csColor = 'black'; if (settings.csColor === 'white') settings.csColor = 'cream';   // 예전 값 정리
 
 /* ───────────────── 색 유틸 ───────────────── */
 function rgb2hsl(r, g, b) {
@@ -1657,7 +1719,7 @@ const shelf = {
       let items = [], url = `/artists/${t.artistId}/albums?include_groups=album,single&market=from_token&limit=10`;
       for (let page = 0; url && page < 6; page++) {
         const r = await sp.api(url);
-        if (!r.ok) { console.warn('[shelf] 앨범 목록 실패', r.status, await r.text().catch(() => '')); break; }
+        if (!r.ok) { this.err = r.status; console.warn('[shelf] 앨범 목록 실패', r.status, await r.text().catch(() => '')); break; }
         const j = await r.json(); items = items.concat(j.items || []);
         url = j.next ? j.next.replace('https://api.spotify.com/v1', '') : '';
       }
@@ -1669,9 +1731,12 @@ const shelf = {
         out.push({ id: a.id, uri: a.uri, name: a.name, year: (a.release_date || '').slice(0, 4), date: a.release_date || '', cover: img?.url || '', type: a.album_type });
       }
       return out.sort((a, b) => b.date.localeCompare(a.date));
-    } catch { return null; }
+    } catch (e) { this.err = e.retryAfter ? '429 (잠시 요청 제한)' : (e.message || '네트워크'); return null; }
   },
   async load(t) {
+    try { await this.load_(t); } catch (e) { console.error('[shelf]', e); this.hide(); }   // 선반 문제로 화면이 깨지지 않게
+  },
+  async load_(t) {
     const key = t.kind === 'track' ? (t.artistId || t.artist) : '';
     if (!(settings.shelf || settings.theme === 'flow') || !key) { this.hide(); this.artistKey = ''; this.cur = null; flow.build(null); return; }
     if (key === this.artistKey) {   // 같은 아티스트의 다른 곡
@@ -1682,7 +1747,11 @@ const shelf = {
     this.artistKey = key; const my = ++this.token;
     this.el.classList.remove('show');
     let list = this.cache.get(key);
-    if (list === undefined) { list = await this.fetchAlbums(t); this.cache.set(key, list); }
+    if (list === undefined) {
+      this.err = 0; if (settings.shelf && this.useShelf()) this.status(t, '앨범 불러오는 중…');
+      list = await this.fetchAlbums(t);
+      if (list && list.length) this.cache.set(key, list);   // 실패는 저장하지 않음 → 다음 곡에서 다시 시도
+    }
     if (my !== this.token) return;
     this.cur = list ? list.slice() : null;
     if (this.cur) this.ensureCurrent(this.cur, t);
@@ -1698,10 +1767,18 @@ const shelf = {
     else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
     return true;
   },
+  useShelf() { return !['flow', 'jukebox'].includes(settings.theme); },
+  status(t, msg) {   // 불러오는 중·실패 이유를 선반 자리에 표시
+    body.classList.add('has-shelf'); this.row.innerHTML = ''; this.list = null;
+    $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = msg; this.el.classList.add('show');
+  },
   show(t, animate) {
     const list = this.cur;
     flow.build(list);
-    if (!list || list.length < 2 || !settings.shelf) { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; return; }
+    if (settings.shelf && this.useShelf() && (!list || list.length < 2) && this.err) {
+      this.status(t, `앨범 목록을 못 불러왔어요 (${this.err})`); clearTimeout(this.errT); this.errT = setTimeout(() => !this.list && this.hide(), 8000); return;
+    }
+    if (!list || list.length < 2 || !settings.shelf || !this.useShelf()) { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; return; }
     body.classList.add('has-shelf');
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = '';
     const keepScroll = animate ? 0 : this.row.scrollLeft;
@@ -2013,7 +2090,13 @@ const radio = {
       }
     }
   },
-  redraw() { if (settings.theme !== 'radio') return; this.ledCtx = null; this.drawCover(); this.buildText(); this.drawText(); this.dial(); },
+  clock() {
+    if (!settings.radioClock) return;
+    const d = new Date(), s = d.getSeconds(), m = d.getMinutes() + s / 60, h = d.getHours() % 12 + m / 60;
+    const set = (sel, deg) => $(sel).style.transform = `rotate(${deg}deg)`;
+    set('#rClock .hh', h * 30); set('#rClock .mh', m * 6); set('#rClock .sh', s * 6);
+  },
+  redraw() { if (settings.theme !== 'radio') return; this.clock(); this.ledCtx = null; this.drawCover(); this.buildText(); this.drawText(); this.dial(); },
   dial() {
     const p = S.track ? clamp(S.pos() / (S.track.durationMs || 1), 0, 1) : 0, np = 5 + p * 90;
     const st = $('#radio').style; st.setProperty('--np', np.toFixed(2) + '%');
@@ -2024,7 +2107,7 @@ const radio = {
   tick(ts) {
     if (ts - this.last < 66) return; this.last = ts;   // 약 15프레임
     if (S.playing && ts - this.lastStep > 90) { this.lastStep = ts; this.off = (this.off + 1) % (this.bits?.w || 1); this.drawText(); }
-    if (ts - (this.lastDial || 0) > 1000) { this.lastDial = ts; this.dial(); }
+    if (ts - (this.lastDial || 0) > 1000) { this.lastDial = ts; this.dial(); this.clock(); }
   },
 };
 addEventListener('resize', () => settings.theme === 'radio' && radio.redraw());
@@ -2034,7 +2117,7 @@ let extraFontsLoaded = false;
 function loadExtraFonts() {
   if (extraFontsLoaded) return; extraFontsLoaded = true;
   const l = document.createElement('link'); l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=VT323&display=swap'; document.head.appendChild(l);
+  l.href = 'https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=VT323&family=Pacifico&display=swap'; document.head.appendChild(l);
 }
 
 /* ═══════════════ 카세트 테이프 ═══════════════ */
@@ -2090,6 +2173,15 @@ const tv = {
 
 /* ═══════════════ 주크박스 ═══════════════ */
 const JB_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+(function buildBulbs() {   // 아치를 따라 도는 전구 24개
+  const cr = $('#jbCrown'), N = 24, cols = ['#fff3c4', '#ffb347', '#ff5b4a', '#ffe36e'];
+  for (let i = 0; i < N; i++) {
+    const a = Math.PI * (1 - i / (N - 1)), b = document.createElement('i'); b.className = 'jb-bulb';
+    b.style.left = (50 + Math.cos(a) * 46.5) + '%'; b.style.top = (100 - Math.sin(a) * 92) + '%';
+    b.style.setProperty('--bc', cols[i % cols.length]); b.style.setProperty('--dl', (-(N - i) * 0.075).toFixed(3) + 's');
+    cr.appendChild(b);
+  }
+})();
 const jukebox = {
   page: 0, per: 10, follow: true,
   code(i) { return JB_LETTERS[Math.floor(i / 10) % JB_LETTERS.length] + (i % 10 + 1); },
@@ -2321,11 +2413,12 @@ function setTheme(t) {
   body.classList.toggle('theme-flow', t === 'flow');
   $$('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
   spin.apply();
-  if ((was === 'flow') !== (t === 'flow') && typeof shelf !== 'undefined') shelf.refresh();
+  const noShelf = x => x === 'flow' || x === 'jukebox';
+  if (noShelf(was) !== noShelf(t) && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
   const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정' }[t]; }
-  if (t === 'cassette' || t === 'tv') loadExtraFonts();
+  if (['cassette', 'tv', 'jukebox', 'radio'].includes(t)) loadExtraFonts();
   if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
   if (t === 'jukebox' && typeof jukebox !== 'undefined') jukebox.ensure();
   if (typeof lyrics !== 'undefined') setTimeout(() => lyrics.update(S.pos(), true), 60);
@@ -2366,7 +2459,8 @@ function applyVisualSettings() {
   $('#radio').dataset.body = settings.rbody;
   $('#cassette').dataset.color = settings.csColor; $('#cassette').classList.toggle('typed', !settings.csHand);
   $('#tv').dataset.body = settings.tvBody; r.setProperty('--tv-scan', settings.tvScan);
-  $('#jukebox').dataset.neon = settings.jbNeon; body.classList.toggle('no-bubbles', !settings.jbBubbles);
+  $('#jukebox').dataset.neon = settings.jbNeon; body.classList.toggle('no-bubbles', !settings.jbBubbles); body.classList.toggle('no-bulbs', !settings.jbBulbs);
+  body.classList.toggle('radio-clock', !!settings.radioClock);
   if (settings.theme === 'flow' && typeof flow !== 'undefined') flow.go(flow.idx, true);
   spin.apply(); checkNight(); lastClock = ''; clockTick();
 }
@@ -2384,7 +2478,8 @@ function syncSettingsUI() {
   $$('#segTv button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.tvBody));
   $('#rScan').value = settings.tvScan; $('#vScan').textContent = Math.round(settings.tvScan * 100) + '%';
   $('#cStatic').checked = settings.tvStatic; $('#cTvSnd').checked = settings.tvSnd;
-  $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles;
+  $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles; $('#cBulbs').checked = settings.jbBulbs;
+  $('#cRClock').checked = !!settings.radioClock;
   $('#rRes').value = settings.radioRes; $('#vRes').textContent = settings.radioRes + '×' + settings.radioRes;
   $$('#segLed button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.led));
   $$('#segBody button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.rbody));
@@ -2423,7 +2518,8 @@ const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.cl
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
 bindSeg('#segTv', 'tvBody'); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
-bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles');
+bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
+bindCheck('#cRClock', 'radioClock', () => radio.clock());
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
@@ -2442,6 +2538,7 @@ $('#sClient').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer);
 $('#sDemo').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer); demo.start(); };
 
 addEventListener('keydown', e => {
+  if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
   const k = e.key;
   if (k === ' ') { e.preventDefault(); ctl.toggle(); }
