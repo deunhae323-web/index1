@@ -279,10 +279,40 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #lists { position: fixed; top: 16px; left: 16px; bottom: 16px; z-index: 9; width: min(360px, 92vw); padding: 18px 14px 14px; display: flex; flex-direction: column;
   transform: translateX(calc(-100% - 30px)); transition: transform .5s cubic-bezier(.2,.8,.2,1), opacity .9s, visibility .9s; cursor: default; }
 #lists.open { transform: none; }
-body.lists-pinned #lists { top: 14vh; bottom: 16vh; left: 2.4vw; width: min(340px, 28vw); background: rgba(255,255,255,.07); }
-body.lists-pinned.zen #lists { background: transparent; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-body.lists-pinned.zen #lists .lbtns, body.lists-pinned.zen #lists .more { opacity: 0; }
-body.lists-pinned #scene { padding-left: calc(min(340px, 28vw) + 4.5vw); }
+/* 띄워두기: 앨범 뒷면 트랙리스트처럼 (박스 없이 글자만) */
+.lkick { display: none; }
+body.lists-pinned #lists { z-index: 4; top: 15vh; bottom: 19vh; left: 3.2vw; width: min(300px, 24vw); padding: 0;
+  background: transparent; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+body.lists-pinned #lists { translate: var(--dx) var(--dy); transition: transform .5s cubic-bezier(.2,.8,.2,1), translate 60s linear; }
+body.lists-pinned #scene { padding-left: calc(min(300px, 24vw) + 5vw); }
+body.lists-pinned .lhead { grid-template-columns: 1fr; padding: 0 0 1.4vh; margin-bottom: 1.2vh; border-bottom: 1px solid rgba(255,255,255,.4); }
+body.lists-pinned .lcov { display: none; }
+body.lists-pinned .lkick { display: block; font-size: clamp(9px, .68vw, 11px); letter-spacing: .38em; text-transform: uppercase; opacity: .65; margin-bottom: .7vh; }
+body.lists-pinned .lname { font-family: var(--serif); font-style: var(--title-style); font-weight: 500; font-size: clamp(20px, 1.7vw, 32px); line-height: 1.15; white-space: normal;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+body.lists-pinned .lname:lang(ko), body.lists-pinned .lname.kr { font-family: var(--serif-kr); font-style: normal; font-size: clamp(18px, 1.45vw, 27px); }
+body.lists-pinned .lname::after { opacity: 0; transition: opacity .3s; }
+body.lists-pinned #lists:hover .lname::after { opacity: .7; }
+body.lists-pinned .lsub { font-size: clamp(10px, .75vw, 12px); letter-spacing: .22em; text-transform: uppercase; opacity: .6; margin-top: .7vh; }
+body.lists-pinned .lbtns { position: absolute; top: -5.2vh; left: -6px; opacity: 0; padding: 0; }
+body.lists-pinned #lists:hover .lbtns { opacity: 1; }
+body.zen.lists-pinned .lbtns, body.wallpaper.lists-pinned .lbtns { display: none; }
+body.lists-pinned #lPicker { background: rgba(24,16,30,.6); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); border-radius: 14px; border: 1px solid rgba(255,255,255,.15); padding: 6px; margin: 0 0 10px; }
+body.lists-pinned #lTracks { counter-reset: trk; margin: 0; padding: 18vh 0; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 20%, #000 72%, transparent); mask-image: linear-gradient(transparent, #000 20%, #000 72%, transparent); }
+body.lists-pinned #lTracks::-webkit-scrollbar { display: none; }
+body.lists-pinned .tr { grid-template-columns: 2.3em 1fr; gap: .4em; padding: .55em 0; border-radius: 0; background: none !important; opacity: .4; transition: opacity .8s, transform .8s; transform-origin: left center; }
+body.lists-pinned .tr::before { counter-increment: trk; content: counter(trk, decimal-leading-zero); font-family: var(--serif); font-style: italic; font-size: .95em; opacity: .75; padding-top: .1em; }
+body.lists-pinned .tr .tc { display: none; }
+body.lists-pinned .tr .tn { font-weight: 400; font-size: clamp(13px, .98vw, 17px); }
+body.lists-pinned .tr .ta { font-size: clamp(10.5px, .78vw, 13px); letter-spacing: .04em; }
+body.lists-pinned .tr.near { opacity: .62; }
+body.lists-pinned .tr:hover { opacity: .9; }
+body.lists-pinned .tr.now { opacity: 1; transform: scale(1.04); }
+body.lists-pinned .tr.now::before { content: '♪'; font-style: normal; color: var(--accent); opacity: 1; text-shadow: 0 0 12px var(--accent); }
+body.lists-pinned .tr.now .tn { font-weight: 500; text-shadow: 0 0 18px color-mix(in srgb, var(--c1) 50%, transparent); }
+body.lists-pinned .more { opacity: 0; } body.lists-pinned #lists:hover .more { opacity: 1; }
+body.lists-pinned .note { font-size: 12px; }
 .lhead { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; padding: 0 4px 12px; }
 .lcov { width: 64px; height: 64px; border-radius: 10px; background-size: cover; background-position: center; box-shadow: 0 4px 14px rgba(0,0,0,.3);
   display: grid; place-items: center; font-size: 26px; }
@@ -489,7 +519,7 @@ body.theme-flow #shelf { display: none !important; }
 <aside id="lists" class="glass">
   <div class="lhead">
     <div class="lcov" id="lCov"></div>
-    <div style="min-width:0"><button class="lname" id="lName" title="다른 플레이리스트 고르기">플레이리스트</button><div class="lsub" id="lSub"></div></div>
+    <div style="min-width:0"><div class="lkick">Tracklist</div><button class="lname" id="lName" title="다른 플레이리스트 고르기">플레이리스트</button><div class="lsub" id="lSub"></div></div>
   </div>
   <div class="lbtns">
     <button class="ibtn play" id="lPlay" title="이 목록 재생"><svg viewBox="0 0 24 24"><path d="M8 5.2v13.6a.7.7 0 0 0 1.07.6l10.6-6.8a.7.7 0 0 0 0-1.2L9.07 4.6A.7.7 0 0 0 8 5.2z"/></svg></button>
@@ -540,6 +570,7 @@ body.theme-flow #shelf { display: none !important; }
   <section>
     <h3>화면 구성</h3>
     <label class="switch"><span>아티스트의 다른 앨범 선반</span><input type="checkbox" id="cShelf"></label>
+    <label class="switch"><span>플레이리스트 띄워두기 (트랙리스트)</span><input type="checkbox" id="cListPin"></label>
     <label class="switch"><span>밤 모드 (23~7시 자동으로 어둡게)</span><input type="checkbox" id="cNight"></label>
   </section>
   <section>
@@ -1460,6 +1491,8 @@ const lists = {
   pin(on) {
     settings.listPin = on; saveSettings();
     body.classList.toggle('lists-pinned', on); $('#lPin').classList.toggle('on', on);
+    $('#lPicker').hidden = true; if ($('#cListPin')) $('#cListPin').checked = on;
+    setTimeout(() => this.markNow(false), 600);
     if (on) this.open(true); else $('#lists').classList.remove('open');
     if (settings.theme === 'flow') setTimeout(() => flow.go(flow.idx, true), 520);
   },
@@ -1471,7 +1504,7 @@ const lists = {
     c.style.backgroundImage = s.cover ? cssUrl(s.cover) : ''; c.textContent = s.cover ? '' : (s.kind === 'liked' ? '♥' : '♪');
     c.style.backgroundColor = s.cover ? '' : 'transparent';
     if (!s.cover) c.style.backgroundImage = 'linear-gradient(135deg, #5b3fd6, #9fd3e8)';
-    $('#lName').textContent = s.name;
+    $('#lName').textContent = s.name; $('#lName').classList.toggle('kr', hasHangul(s.name));
     $('#lSub').textContent = [s.total != null ? `${s.total}곡` : '', s.owner].filter(Boolean).join(' · ') || (S.source === 'demo' ? '샘플' : '');
     $('#lShuf').classList.toggle('on', !!settings.shuffle);
   },
@@ -1482,6 +1515,9 @@ const lists = {
     const box = $('#lTracks');
     if (S.source !== 'spotify') {   // 샘플
       demo.build(); this.tracks = demo.list.map((t, i) => ({ id: t.id, name: t.title, artists: t.artist, cover: t.cover, demo: i }));
+      const extra = [['Paper Lanterns', 'Mira Hollow'], ['물결 일기', '윤슬'], ['Moon Ballroom', 'The Lantern Club'], ['Small Hours', 'Mira Hollow'], ['겨울 정류장', '윤슬'],
+        ['Violet Hours', 'The Lantern Club'], ['Neon Harbor', 'Mira Hollow'], ['푸른 시간', '윤슬'], ['Static & Satin', 'The Lantern Club']];
+      extra.forEach(([n, a], k) => this.tracks.splice(k * 2 % (this.tracks.length + 1), 0, { id: 'x' + k, name: n, artists: a, cover: '', demo: k % 3 }));
       this.sel.total = this.tracks.length; this.header(); return this.render();
     }
     if (this.scopeMissing(sel.kind === 'liked' ? 'user-library-read' : 'playlist-read-private')) { box.innerHTML = this.reauthHtml(sel.kind === 'liked' ? '좋아요 표시한 곡' : '플레이리스트'); return; }
@@ -1522,7 +1558,15 @@ const lists = {
     if (this.next) { const b = document.createElement('button'); b.className = 'btn small more'; b.textContent = '더 불러오기'; b.onclick = () => { b.remove(); this.more(); }; box.appendChild(b); }
     this.markNow();
   },
-  markNow() { const id = S.track?.id; $$('#lTracks .tr').forEach(n => n.classList.toggle('now', !!id && n.dataset.id === id)); },
+  markNow(smooth = true) {
+    const id = S.track?.id, rows = $$('#lTracks .tr'); let ni = -1;
+    rows.forEach((n, i) => { const on = !!id && n.dataset.id === id; n.classList.toggle('now', on); if (on) ni = i; });
+    rows.forEach((n, i) => n.classList.toggle('near', ni >= 0 && Math.abs(i - ni) <= 2 && i !== ni));
+    if (settings.listPin && ni >= 0) {   // 띄워둘 땐 지금 곡이 가운데 오도록 천천히 스크롤
+      const box = $('#lTracks'), r = rows[ni];
+      box.scrollTo({ top: r.offsetTop - box.clientHeight * .42, behavior: smooth ? 'smooth' : 'auto' });
+    }
+  },
   play(i) {
     const s = this.sel; if (!s) return;
     if (S.source !== 'spotify') { const t = this.tracks[i ?? 0]; if (t?.demo != null) demo.load(t.demo, true); return; }
@@ -1803,7 +1847,7 @@ function syncSettingsUI() {
   $('#rFxVol').value = settings.fxVol; $('#vFxVol').textContent = settings.fxVol === 0 ? '소리 끔' : Math.round(settings.fxVol * 100) + '%';
   $('#cFxFollow').checked = settings.fxFollow;
   $$('#fxList button').forEach(b => b.classList.toggle('on', b.dataset.fx === settings.fx));
-  $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#cNight').checked = settings.night;
+  $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
 }
 function renderFonts() {
   const box = $('#fontList'); if (box.childElementCount) { $$('#fontList button').forEach(b => b.classList.toggle('on', b.dataset.f === settings.font)); return; }
@@ -1821,6 +1865,7 @@ bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
+$('#cListPin').onchange = e => lists.pin(e.target.checked);
 $('#cShelf').onchange = e => { settings.shelf = e.target.checked; saveSettings(); shelf.refresh(); };
 $('#sLyr').onclick = () => setLyricsOn(!settings.lyrics);
 $('#sOffM').onclick = () => lyrics.nudge(-.5);
