@@ -801,6 +801,81 @@ body.no-bulbs .jb-crown .band, body.no-bulbs .jb-pillar { animation: none; }
 
 #radio { --rw: min(40vw, 92vh); width: var(--rw); color: #2a1d12; }
 body.has-shelf #radio { --rw: min(36vw, 78vh); }
+/* ───────────────── 영수증 프린터 ───────────────── */
+#stage[data-theme="receipt"] #receipt, #stage[data-theme="globe"] #globe { display: block; }
+#themeOpts[data-t="receipt"] [data-for="receipt"], #themeOpts[data-t="globe"] [data-for="globe"] { display: block; }
+#receipt { --rw: min(24vw, 40vh); width: calc(var(--rw) * 2.1); height: 76vh; position: relative; }
+.rc-printer { position: absolute; left: 50%; bottom: 2vh; width: calc(var(--rw) * 1.3); height: calc(var(--rw) * .46); translate: -50% 0; border-radius: calc(var(--rw) * .08) calc(var(--rw) * .08) calc(var(--rw) * .05) calc(var(--rw) * .05);
+  background: linear-gradient(180deg, #3a3b40, #26272b 40%, #1b1c1f); box-shadow: 0 2.4vh 4vh rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18), inset 0 -4px 8px rgba(0,0,0,.5); z-index: 3; }
+.rc-printer::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 38%; border-radius: inherit; border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+  background: linear-gradient(180deg, #4a4b51, #2e2f34); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+.rc-printer .slot { position: absolute; left: 50%; top: 9%; width: calc(var(--rw) * 1.06); height: calc(var(--rw) * .028); translate: -50% 0; border-radius: 2px; background: #050506; box-shadow: inset 0 2px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.15); }
+.rc-printer .led { position: absolute; right: 9%; top: 52%; width: calc(var(--rw) * .028); aspect-ratio: 1; border-radius: 50%; background: #3dff7a; box-shadow: 0 0 6px #3dff7a; }
+#receipt.printing .rc-printer .led { animation: ledblink .18s steps(2) infinite; background: #ffb13d; box-shadow: 0 0 6px #ffb13d; }
+@keyframes ledblink { 50% { opacity: .3; } }
+.rc-printer .btn { position: absolute; right: 16%; top: 48%; width: calc(var(--rw) * .1); height: calc(var(--rw) * .06); border-radius: 4px; background: linear-gradient(180deg, #5a5b61, #333438); box-shadow: 0 2px 0 #111; }
+.rc-printer span { position: absolute; left: 9%; top: 54%; font: 600 calc(var(--rw) * .036)/1 system-ui, sans-serif; letter-spacing: .3em; color: #8d8f96; }
+.rc-feed { position: absolute; left: 50%; bottom: calc(2vh + var(--rw) * .43); width: var(--rw); height: 66vh; translate: -50% 0; overflow: hidden; z-index: 2; }
+.rc-paper { position: absolute; left: 0; right: 0; bottom: 0; padding: calc(var(--rw) * .09) calc(var(--rw) * .07) calc(var(--rw) * .05);
+  background: linear-gradient(90deg, rgba(0,0,0,.05), transparent 8%, transparent 92%, rgba(0,0,0,.05)), #f8f6f0; color: #2b2b2b;
+  font-family: 'IBM Plex Mono', ui-monospace, 'D2Coding', Menlo, Consolas, monospace; font-size: calc(var(--rw) * .046); line-height: 1.5; letter-spacing: .02em;
+  -webkit-mask-image: linear-gradient(transparent, #000 calc(var(--rw) * .03)), conic-gradient(#000 0 0);
+  box-shadow: 0 0 1.5vh rgba(0,0,0,.25); transform: translateY(var(--ty, 0%)); }
+.rc-paper.feeding { transition: transform 2.6s steps(30); }
+.rc-paper::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: calc(var(--rw) * .03); background: conic-gradient(from -45deg at 50% 100%, transparent 0 90deg, #f8f6f0 90deg 270deg, transparent 270deg) 0 0 / calc(var(--rw) * .05) 100%; translate: 0 -99%; }
+.rc-paper .c { text-align: center; }
+.rc-paper .b { font-weight: 700; }
+.rc-paper .big { font-size: 1.35em; font-weight: 700; letter-spacing: .08em; }
+.rc-paper .hr { border-top: 1px dashed #555; margin: .5em 0; opacity: .7; }
+.rc-paper .r { display: flex; justify-content: space-between; gap: 1em; }
+.rc-paper .r span:last-child { text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.rc-paper .lyr { text-align: center; font-style: italic; padding: .3em 0; word-break: keep-all; }
+.rc-paper .bar { height: calc(var(--rw) * .12); margin: .6em auto .2em; width: 86%; }
+.rc-paper .tiny { font-size: .78em; opacity: .75; text-align: center; letter-spacing: .15em; }
+.rc-paper * { opacity: .9; text-shadow: 0 0 .4px rgba(0,0,0,.6); }
+.rc-pile { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.rc-old { position: absolute; width: calc(var(--rw) * .62); padding: calc(var(--rw) * .04); background: #f3f1ea; font-family: ui-monospace, monospace; font-size: calc(var(--rw) * .028); color: #444;
+  line-height: 1.5; box-shadow: 0 .6vh 1.2vh rgba(0,0,0,.35); animation: rcdrop .9s cubic-bezier(.3,1.3,.5,1) both; }
+.rc-old b { display: block; font-size: 1.15em; }
+@keyframes rcdrop { from { opacity: 0; transform: translateY(-14vh) rotate(0deg) scale(1.2); } to { opacity: 1; } }
+
+/* ───────────────── 스노우볼 / 오르골 ───────────────── */
+#globe { --gw: min(32vw, 56vh); width: var(--gw); position: relative; }
+body.has-shelf #globe { --gw: min(28vw, 44vh); }
+.gb-sphere { position: relative; width: 100%; aspect-ratio: 1; border-radius: 50%; z-index: 2; }
+.gb-sphere.shake { animation: gbshake .9s cubic-bezier(.36,.07,.19,.97); }
+@keyframes gbshake { 10%, 90% { transform: translateX(-1.5%) rotate(-2deg); } 20%, 80% { transform: translateX(2.5%) rotate(3deg); } 30%, 50%, 70% { transform: translateX(-3.5%) rotate(-4deg); } 40%, 60% { transform: translateX(3.5%) rotate(4deg); } }
+.gb-inner { position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--c2) 30%, rgba(255,255,255,.12)), color-mix(in srgb, var(--c1) 25%, rgba(10,14,30,.55)) 75%); }
+.gb-art { position: absolute; left: 50%; top: 45%; width: 50%; aspect-ratio: 1; translate: -50% -50%; border-radius: 4%;
+  box-shadow: 0 0 0 calc(var(--gw) * .012) #e9d9a8, 0 0 0 calc(var(--gw) * .02) #8c7034, 0 calc(var(--gw) * .03) calc(var(--gw) * .05) rgba(0,0,0,.45); }
+.gb-mound { position: absolute; left: -8%; right: -8%; bottom: -10%; height: 30%; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 20%, #ffffff, #e6eef8 45%, #b9c9dc 80%); box-shadow: inset 0 calc(var(--gw) * .01) calc(var(--gw) * .02) rgba(255,255,255,.9); }
+#globe[data-kind="glitter"] .gb-mound, #globe[data-kind="album"] .gb-mound { background: radial-gradient(ellipse at 50% 20%, #fff6dc, #e8cf8f 55%, #a98a43); }
+#gbSnow { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gb-glass { position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 31% 24%, rgba(255,255,255,.75) 0 2.5%, rgba(255,255,255,.18) 9%, transparent 24%),
+              radial-gradient(circle at 72% 78%, rgba(255,255,255,.14), transparent 22%),
+              radial-gradient(circle, transparent 60%, rgba(255,255,255,.08) 66%, rgba(190,215,255,.28) 71%, rgba(255,255,255,.35) 72.5%, rgba(0,0,0,.25) 74%, transparent 75%),
+              radial-gradient(circle, transparent 58%, rgba(10,20,40,.25) 72%);
+  box-shadow: inset 0 0 calc(var(--gw) * .07) rgba(255,255,255,.22), inset 0 calc(var(--gw) * -.03) calc(var(--gw) * .06) rgba(0,0,0,.25); }
+.gb-glass::after { content: ''; position: absolute; inset: 6%; border-radius: 50%; border-top: calc(var(--gw) * .012) solid rgba(255,255,255,.35); border-left: calc(var(--gw) * .006) solid rgba(255,255,255,.12);
+  border-right: 0 solid transparent; border-bottom: 0 solid transparent; rotate: -18deg; filter: blur(1px); }
+.gb-base { position: relative; z-index: 1; width: 76%; margin: calc(var(--gw) * -.12) auto 0; height: calc(var(--gw) * .28); border-radius: 14% 14% 10% 10% / 34% 34% 20% 20%;
+  background: linear-gradient(180deg, rgba(255,235,210,.25), transparent 30%, rgba(0,0,0,.35)), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.005 0.11' numOctaves='4' seed='5'/><feColorMatrix values='0.55 0 0 0 0.15  0.32 0 0 0 0.065  0.17 0 0 0 0.03  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>") center / cover;
+  box-shadow: 0 calc(var(--gw) * .05) calc(var(--gw) * .08) rgba(0,0,0,.5), inset 0 2px 1px rgba(255,240,220,.35), inset 0 -5px 9px rgba(0,0,0,.55); }
+.gb-base .band { position: absolute; left: 0; right: 0; top: 34%; height: 9%; background: linear-gradient(180deg, #fff1c0, #c19d48 50%, #7d6224); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.gb-base .plaque { position: absolute; left: 50%; top: 52%; translate: -50% 0; max-width: 60%; padding: .25em 1em; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: linear-gradient(180deg, #f6e6b0, #b8933e 60%, #8a6c2c); color: #3a2a10; font-family: var(--serif); font-style: italic; font-size: calc(var(--gw) * .034); box-shadow: 0 1px 2px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.6); }
+.gb-key { position: absolute; right: -9%; top: 46%; width: 13%; height: 24%; perspective: 200px; }
+.gb-key .stem { position: absolute; left: 0; top: 42%; width: 50%; height: 16%; background: linear-gradient(180deg, #fff1c0, #a8862f); border-radius: 2px; }
+.gb-key .wing { position: absolute; right: 0; top: 0; width: 55%; height: 100%; animation: keyspin 2.6s linear infinite; animation-play-state: paused; transform-style: preserve-3d; }
+body.playing .gb-key .wing { animation-play-state: running; }
+.gb-key .wing::before, .gb-key .wing::after { content: ''; position: absolute; left: 10%; width: 80%; height: 46%; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff4c8, #c19d48 60%, #7d6224); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.gb-key .wing::before { top: 0; } .gb-key .wing::after { bottom: 0; }
+@keyframes keyspin { to { transform: rotateX(360deg); } }
+
+
 .rbody { position: relative; border-radius: calc(var(--rw) * .05); padding: calc(var(--rw) * .04) calc(var(--rw) * .045) calc(var(--rw) * .035);
   background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(0,0,0,.2)), repeating-linear-gradient(93deg, #7b4a29 0 7px, #6a3e21 7px 10px, #86542f 10px 19px, #73452a 19px 23px);
   box-shadow: 0 4vmin 8vmin rgba(0,0,0,.42), inset 0 2px 0 rgba(255,255,255,.25), inset 0 -8px 18px rgba(0,0,0,.35); }
@@ -1051,6 +1126,15 @@ body.theme-flow #shelf { display: none !important; }
         <div class="jb-feet"><i></i><i></i></div>
       </div>
     </div>
+    <div id="receipt" class="visual" aria-hidden="true">
+      <div class="rc-pile" id="rcPile"></div>
+      <div class="rc-feed"><div class="rc-paper" id="rcPaper"></div></div>
+      <div class="rc-printer"><div class="slot"></div><span>THERMAL · 58</span><div class="btn"></div><div class="led"></div></div>
+    </div>
+    <div id="globe" class="visual" data-kind="snow" aria-hidden="true">
+      <div class="gb-sphere" id="gbSphere"><div class="gb-inner"><div class="gb-art cover-bg"></div><div class="gb-mound"></div><canvas id="gbSnow"></canvas></div><div class="gb-glass"></div></div>
+      <div class="gb-base"><div class="band"></div><div class="plaque" id="gbPlaque">Ambient</div><div class="gb-key"><div class="stem"></div><div class="wing"></div></div></div>
+    </div>
     <div id="flow" class="visual">
       <div id="flowStage"></div>
       <div id="flowDots"></div>
@@ -1130,7 +1214,7 @@ body.theme-flow #shelf { display: none !important; }
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
   <section>
     <h3>중앙 비주얼</h3>
-    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button></div>
+    <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="cassette">카세트</button><button data-v="tv">TV</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button><button data-v="receipt">영수증</button><button data-v="globe">스노우볼</button></div>
   </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
@@ -1189,6 +1273,19 @@ body.theme-flow #shelf { display: none !important; }
       <label class="switch" style="margin-top:10px"><span>빛 색 흐름</span><input type="checkbox" id="cBulbs"></label>
       <label class="switch"><span>기포 튜브</span><input type="checkbox" id="cBubbles"></label>
       <p class="note" style="margin-top:4px">선택판에는 플레이리스트 패널(P)에서 고른 목록이 나와요.</p>
+    </div>
+    <div data-for="receipt">
+      <label class="switch"><span>인쇄 소리 (드르륵)</span><input type="checkbox" id="cRcSnd"></label>
+      <label class="switch"><span>지난 영수증 옆에 쌓기</span><input type="checkbox" id="cRcPile"></label>
+      <div class="row" style="margin-top:6px"><button class="btn small" id="bRcPrint">지금 다시 인쇄</button></div>
+    </div>
+    <div data-for="globe">
+      <div class="slab"><span>흩날리는 것</span></div>
+      <div class="seg small" id="segGbKind"><button data-v="snow">눈</button><button data-v="glitter">금빛 반짝이</button><button data-v="album">앨범색 반짝이</button></div>
+      <div class="slab" style="margin-top:12px"><span>양</span><span id="vGbCount"></span></div>
+      <input type="range" id="rGbCount" min="40" max="260" step="10">
+      <label class="switch"><span>곡 바뀔 때 흔들기</span><input type="checkbox" id="cGbShake"></label>
+      <div class="row" style="margin-top:6px"><button class="btn small" id="bGbShake">지금 흔들기</button></div>
     </div>
     <div data-for="car">
       <div class="slab"><span>달리는 속도</span><span id="vCarSpd"></span></div>
@@ -1365,7 +1462,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, rcSnd: true, rcPile: true, gbKind: 'snow', gbCount: 140, gbShake: true, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -1601,6 +1698,8 @@ function onTrack(t) {
   if (settings.theme === 'tv') tv.switchChannel();
   if (typeof jukebox !== 'undefined') jukebox.onTrack(t);
   if (typeof car !== 'undefined') car.update();
+  if (typeof receipt !== 'undefined') receipt.queue(t);
+  if (settings.theme === 'globe') { $('#gbPlaque').textContent = t.title; globe.shake(); }
   if (typeof lists !== 'undefined') lists.markNow();
 }
 function onPlayState() {
@@ -1676,6 +1775,7 @@ const lyrics = {
     $('#lyrics').classList.toggle('plain', !this.synced);
     this.el.classList.toggle('plain-scroll', !this.synced);
     this.show(true); this.update(S.pos(), true);
+    if (typeof receipt !== 'undefined') receipt.onLyrics(t);
   },
   show(on) { this.has = on; body.classList.toggle('no-lyrics', !(on && settings.lyrics)); },
   offset() { return this.offsets.get(S.track?.id) || 0; },
@@ -2088,7 +2188,7 @@ const shelf = {
     else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
     return true;
   },
-  useShelf() { return !['flow', 'jukebox', 'car'].includes(settings.theme); },
+  useShelf() { return !['flow', 'jukebox', 'car', 'receipt'].includes(settings.theme); },
   status(t, msg) {   // 불러오는 중·실패 이유를 선반 자리에 표시
     body.classList.add('has-shelf'); this.row.innerHTML = ''; this.list = null;
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = msg; this.el.classList.add('show');
@@ -2456,6 +2556,126 @@ const car = {
   },
 };
 
+/* ═══════════════ 영수증 프린터 ═══════════════ */
+const receipt = {
+  no: store.get('rcptNo', 0), done: '', pending: null,
+  esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); },
+  pickLine() {
+    const ls = (lyrics.lines || []).filter(l => l.text && l.text.length >= 8 && !/^[♪\s·]+$/.test(l.text));
+    return ls.length ? ls[Math.floor(ls.length * .35)].text : '';
+  },
+  barcode(seed) {
+    let h = Math.floor(hashHue(seed) * 1e9), x = 0, stops = [];
+    for (let i = 0; i < 46; i++) { h = (h * 1103515245 + 12345) >>> 0; const w = 1 + (h % 3); stops.push(`${i % 2 ? '#fff0' : '#222'} ${x}px ${x + w}px`); x += w; }
+    return `linear-gradient(90deg, ${stops.join(',')}) center / ${x}px 100% no-repeat`;
+  },
+  /* 곡이 바뀌면 가사가 올 때까지 잠깐 기다렸다가 인쇄 */
+  queue(t) {
+    if (settings.theme !== 'receipt' || !t || this.done === t.id) return;
+    clearTimeout(this.pending); this.pending = setTimeout(() => this.print(t), 3500);
+  },
+  onLyrics(t) { if (settings.theme === 'receipt' && S.track === t && this.done !== t.id) { clearTimeout(this.pending); this.pending = setTimeout(() => this.print(t), 300); } },
+  print(t) {
+    if (!t || settings.theme !== 'receipt') return; this.done = t.id;
+    const paper = $('#rcPaper'), old = paper.dataset.title;
+    if (old && settings.rcPile) this.toPile(old, paper.dataset.artist, paper.dataset.time);
+    this.no++; store.set('rcptNo', this.no);
+    const d = new Date(), pad = n => String(n).padStart(2, '0');
+    const when = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const line = this.pickLine(), e = x => this.esc(x);
+    paper.innerHTML = `
+      <div class="c big">AMBIENT RECORDS</div>
+      <div class="c">음악 영수증 · MUSIC RECEIPT</div>
+      <div class="c">${when}</div>
+      <div class="hr"></div>
+      <div class="r"><span>NO.</span><span>${String(this.no).padStart(4, '0')}</span></div>
+      <div class="r"><span>TITLE</span><span class="b">${e(t.title)}</span></div>
+      <div class="r"><span>ARTIST</span><span>${e(t.artist)}</span></div>
+      ${t.album ? `<div class="r"><span>ALBUM</span><span>${e(t.album)}${t.year ? ' (' + e(t.year) + ')' : ''}</span></div>` : ''}
+      <div class="r"><span>TIME</span><span>${fmt(t.durationMs)}</span></div>
+      <div class="hr"></div>
+      <div class="lyr">${line ? '“' + e(line) + '”' : '♪ (가사 없음)'}</div>
+      <div class="hr"></div>
+      <div class="r b"><span>TOTAL</span><span>${fmt(t.durationMs)}</span></div>
+      <div class="r"><span>PAID</span><span>♥ 1 LISTEN</span></div>
+      <div class="bar" style="background:${this.barcode(t.id)}"></div>
+      <div class="tiny">THANK YOU FOR LISTENING</div>`;
+    paper.dataset.title = t.title; paper.dataset.artist = t.artist; paper.dataset.time = fmt(t.durationMs);
+    /* 드르륵: 아래에서 위로 한 칸씩 밀려 나옴 */
+    paper.classList.remove('feeding'); paper.style.setProperty('--ty', '100%'); void paper.offsetHeight;
+    paper.classList.add('feeding'); paper.style.setProperty('--ty', '0%');
+    $('#receipt').classList.add('printing'); clearTimeout(this.pt); this.pt = setTimeout(() => $('#receipt').classList.remove('printing'), 2700);
+    if (settings.rcSnd) this.buzz();
+  },
+  toPile(title, artist, time) {
+    const pile = $('#rcPile'), el = document.createElement('div'); el.className = 'rc-old';
+    el.innerHTML = `<b>${this.esc(title)}</b>${this.esc(artist)}<br>TIME ${time}<br>- - - - - - - - - -`;
+    const n = pile.childElementCount, left = n % 2 ? 66 + Math.random() * 8 : 4 + Math.random() * 8;
+    el.style.left = left + '%'; el.style.bottom = (16 + (n % 4) * 7 + Math.random() * 4) + '%'; el.style.rotate = ((n % 2 ? 1 : -1) * (6 + Math.random() * 14)).toFixed(1) + 'deg';
+    pile.appendChild(el); while (pile.childElementCount > 6) pile.firstChild.remove();
+  },
+  buzz() {   // 감열 프린터 '드르륵' 소리
+    if (!fx.audio()) return;
+    const c = fx.ctx, t0 = c.currentTime, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), am = c.createGain(), lfo = c.createOscillator();
+    s.buffer = fx.noise('white', 4); f.type = 'bandpass'; f.frequency.value = 2600; f.Q.value = 1.2;
+    lfo.type = 'square'; lfo.frequency.value = 11.5; lfo.connect(am.gain); am.gain.value = .5;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.06, t0 + .05); g.gain.setValueAtTime(.06, t0 + 2.5); g.gain.linearRampToValueAtTime(0, t0 + 2.65);
+    s.connect(f).connect(am).connect(g).connect(c.destination); s.start(); lfo.start(); s.stop(t0 + 2.7); lfo.stop(t0 + 2.7);
+  },
+};
+
+/* ═══════════════ 스노우볼 / 오르골 ═══════════════ */
+const globe = {
+  parts: [], last: 0, running: false,
+  setup() {
+    const cv = $('#gbSnow'), r = cv.getBoundingClientRect(), dpr = Math.min(1.5, devicePixelRatio || 1);
+    if (!r.width) return false;
+    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); this.ctx = cv.getContext('2d'); this.W = cv.width;
+    const N = settings.gbCount;
+    if (this.parts.length !== N) this.parts = Array.from({ length: N }, () => this.spawn(true));
+    $('#globe').dataset.kind = settings.gbKind; return true;
+  },
+  spawn(anywhere) {
+    const R = .47, a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random()) * R;
+    return { x: .5 + Math.cos(a) * rr * .9, y: anywhere ? .5 + Math.sin(a) * rr : .1 + Math.random() * .1, vx: 0, vy: 0,
+             s: .004 + Math.random() * .007, ph: Math.random() * 6.28, rest: false, hue: Math.random() };
+  },
+  shake() {
+    if (!settings.gbShake) return;
+    const sp = $('#gbSphere'); sp.classList.remove('shake'); void sp.offsetWidth; sp.classList.add('shake');
+    for (const p of this.parts) { p.rest = false; p.vx = (Math.random() - .5) * .02; p.vy = -(.01 + Math.random() * .025); }
+  },
+  floorY(x) { const dx = (x - .5) / .58; return .8 + (dx * dx) * .14; },   // 바닥 눈더미 모양
+  start() { if (!this.running && this.setup()) { this.running = true; requestAnimationFrame(t => this.loop(t)); } },
+  loop(ts) {
+    if (settings.theme !== 'globe' || document.hidden) { this.running = false; return; }
+    requestAnimationFrame(t => this.loop(t));
+    if (ts - this.last < 33) return;   // 약 30프레임
+    const dt = Math.min(.05, (ts - this.last) / 1000 || .033); this.last = ts;
+    const x = this.ctx, W = this.W, kind = settings.gbKind, t = ts / 1000;
+    x.clearRect(0, 0, W, W);
+    const cols = kind === 'album' ? ['--c1', '--c2', '--c3'].map(v => getComputedStyle(document.documentElement).getPropertyValue(v)) : null;
+    for (const p of this.parts) {
+      if (!p.rest) {
+        p.vy += .012 * dt; p.vy = Math.min(p.vy, (kind === 'snow' ? .045 : .03) * (S.playing ? 1 : 1.6) * dt * 10);
+        p.vx += Math.sin(t * .7 + p.ph) * .0004; p.vx *= .97;
+        p.x += p.vx; p.y += p.vy;
+        const dx = p.x - .5, dy = p.y - .5, d = Math.hypot(dx, dy);
+        if (d > .47) { p.x = .5 + dx / d * .47; p.y = .5 + dy / d * .47; p.vx *= -.3; }
+        if (p.y > this.floorY(p.x)) { p.y = this.floorY(p.x); p.rest = true; p.restAt = t; }
+      } else if (S.playing && t - p.restAt > 4 + p.hue * 6) Object.assign(p, this.spawn(false));   // 재생 중이면 위에서 다시 내림
+      const px = p.x * W, py = p.y * W, sz = p.s * W;
+      if (kind === 'snow') { x.fillStyle = `rgba(255,255,255,${.65 + .35 * Math.sin(p.ph)})`; x.beginPath(); x.arc(px, py, sz * .55, 0, 6.283); x.fill(); }
+      else {
+        const tw = .45 + .55 * Math.abs(Math.sin(t * 3 + p.ph * 3));
+        x.fillStyle = kind === 'album' ? cols[Math.floor(p.hue * 3)] : (p.hue < .7 ? '#ffd36a' : '#fff6d8'); x.globalAlpha = tw;
+        x.save(); x.translate(px, py); x.rotate(t * 1.5 + p.ph); x.fillRect(-sz * .5, -sz * .18, sz, sz * .36); x.restore(); x.globalAlpha = 1;
+      }
+    }
+  },
+};
+addEventListener('resize', () => settings.theme === 'globe' && globe.setup());
+
 /* 손글씨·브라운관용 글꼴 (필요할 때만 불러옴) */
 let extraFontsLoaded = false;
 function loadExtraFonts() {
@@ -2759,7 +2979,7 @@ $('#bNext').onclick = () => ctl.next();
 $('#bPrev').onclick = () => ctl.prev();
 $('#bar').onclick = e => { if (!S.track) return; const r = e.currentTarget.getBoundingClientRect(); ctl.seek(clamp((e.clientX - r.left) / r.width, 0, 1) * S.track.durationMs); };
 
-const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox', 'car'];
+const THEMES = ['lp', 'cd', 'poster', 'radio', 'cassette', 'tv', 'jukebox', 'car', 'receipt', 'globe'];
 function setTheme(t) {
   const was = settings.theme;
   settings.theme = t; saveSettings();
@@ -2767,15 +2987,17 @@ function setTheme(t) {
   body.classList.toggle('theme-flow', t === 'flow');
   $$('#segTheme button').forEach(b => b.classList.toggle('on', b.dataset.v === t));
   spin.apply();
-  const noShelf = x => x === 'flow' || x === 'jukebox' || x === 'car';
+  const noShelf = x => ['flow', 'jukebox', 'car', 'receipt'].includes(x);
   if (noShelf(was) !== noShelf(t) && typeof shelf !== 'undefined') shelf.refresh();
   if (t === 'flow' && typeof flow !== 'undefined') requestAnimationFrame(() => flow.go(flow.idx, true));
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
-  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정', car: '자동차 설정' }[t]; }
+  const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정', car: '자동차 설정', receipt: '영수증 설정', globe: '스노우볼 설정' }[t]; }
   if (['cassette', 'tv', 'jukebox', 'radio'].includes(t)) loadExtraFonts();
   if (t === 'tv' && typeof tv !== 'undefined') tv.fisheye();
   body.classList.toggle('theme-jukebox', t === 'jukebox');
   body.classList.toggle('theme-car', t === 'car');
+  if (t === 'receipt' && typeof receipt !== 'undefined') { receipt.done = ''; setTimeout(() => S.track && receipt.print(S.track), 400); }
+  if (t === 'globe' && typeof globe !== 'undefined') requestAnimationFrame(() => { globe.start(); if (S.track) $('#gbPlaque').textContent = S.track.title; });
   if (t === 'car' && typeof car !== 'undefined') { loadExtraFonts(); car.build(); car.update(); }
   if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
   if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
@@ -2841,6 +3063,9 @@ function syncSettingsUI() {
   $('#rScan').value = settings.tvScan; $('#vScan').textContent = Math.round(settings.tvScan * 100) + '%';
   $('#cStatic').checked = settings.tvStatic; $('#cTvSnd').checked = settings.tvSnd;
   $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles; $('#cBulbs').checked = settings.jbBulbs;
+  $('#cRcSnd').checked = settings.rcSnd; $('#cRcPile').checked = settings.rcPile;
+  $$('#segGbKind button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.gbKind));
+  $('#rGbCount').value = settings.gbCount; $('#vGbCount').textContent = settings.gbCount + '개'; $('#cGbShake').checked = settings.gbShake;
   $('#rCarSpd').value = settings.carSpd; $('#vCarSpd').textContent = '×' + (+settings.carSpd).toFixed(1);
   $$('#segVfd button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carVfd));
   $$('#segLamp button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carLamp));
@@ -2882,6 +3107,9 @@ const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.cl
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
 bindSeg('#segTv', 'tvBody'); bindRange('#rFish', 'tvFish', () => tv.fisheye()); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
+bindCheck('#cRcSnd', 'rcSnd'); bindCheck('#cRcPile', 'rcPile'); $('#bRcPrint').onclick = () => { receipt.done = ''; receipt.print(S.track); };
+bindSeg('#segGbKind', 'gbKind', () => globe.setup()); bindRange('#rGbCount', 'gbCount', () => globe.setup()); bindCheck('#cGbShake', 'gbShake');
+$('#bGbShake').onclick = () => { const v = settings.gbShake; settings.gbShake = true; globe.shake(); settings.gbShake = v; };
 bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp', 'carLamp');
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
@@ -2986,7 +3214,8 @@ async function requestWake() {
   try { wakeLock = await navigator.wakeLock.request('screen'); } catch {}
 }
 document.addEventListener('visibilitychange', async () => {
-  if (document.hidden) return;   // 숨김: rAF 자동 정지, 조회는 POLL_HIDDEN_MS 간격
+  if (document.hidden) return;
+  if (settings.theme === 'globe') globe.start();   // 숨김: rAF 자동 정지, 조회는 POLL_HIDDEN_MS 간격
   startLoop(); spin.apply(); requestWake(); clockTick();
   if (S.source === 'spotify') { try { await sp.token(); } catch (e) { if (e.auth) return authLost(); } sp.poll(); }
 });
