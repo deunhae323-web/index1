@@ -433,7 +433,8 @@ body.has-shelf #tv { --tw: min(32vw, 62vh); }
 #tv[data-body="red"] .tv-body { background: linear-gradient(180deg, #d8473f, #9d2621); }
 .tv-bezel { background: #141414; border-radius: 10% / 13%; padding: 4%; box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.2); }
 .tv-screen { position: relative; aspect-ratio: 4 / 3; border-radius: 14% / 18%; overflow: hidden; background: #000; }
-.tv-img { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: saturate(1.15) contrast(1.06); transition: transform .4s; }
+.tv-img { position: absolute; inset: -3%; background-size: cover; background-position: center; filter: url(#tvFisheye) saturate(1.15) contrast(1.06); transition: transform .4s; }
+.tv-screen { border-radius: 16% / 20% !important; box-shadow: inset 0 0 calc(var(--tw) * .06) rgba(0,0,0,.9); }
 .tv-screen.rolling .tv-img { animation: roll .6s steps(6); }
 @keyframes roll { 0% { transform: translateY(0); } 50% { transform: translateY(-18%); } 100% { transform: translateY(0); } }
 .tv-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.45) 0 1px, transparent 1px 3px); opacity: var(--tv-scan, .35); }
@@ -453,6 +454,37 @@ body.has-shelf #tv { --tw: min(32vw, 62vh); }
 .tv-speaker { width: 80%; flex: 1; border-radius: 6px; background: repeating-linear-gradient(180deg, rgba(0,0,0,.55) 0 3px, transparent 3px 7px); opacity: .8; }
 .tv-legs { display: flex; justify-content: space-between; padding: 0 16%; }
 .tv-legs i { width: calc(var(--tw) * .05); height: calc(var(--tw) * .06); background: #2a2420; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
+
+/* ───────────────── 주크박스 테마: 화면 전체 다이너 무드 ───────────────── */
+#jbScene { position: fixed; inset: 0; z-index: 3; pointer-events: none; display: none; overflow: hidden; --jx: 28vw; --jy: 40vh; }
+body.theme-jukebox #jbScene { display: block; }
+#jbScene .tint { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at var(--jx) var(--jy), rgba(255,140,60,.22), transparent 60%), radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(30,6,24,.55)); }
+#jbScene .rays { position: absolute; left: var(--jx); top: var(--jy); width: 230vmax; aspect-ratio: 1; translate: -50% -50%;
+  background: repeating-conic-gradient(rgba(255,214,140,.13) 0 4deg, transparent 4deg 11deg); animation: rays 90s linear infinite;
+  -webkit-mask-image: radial-gradient(circle, #000 4%, transparent 40%); mask-image: radial-gradient(circle, #000 4%, transparent 40%); }
+#jbScene .spot { position: absolute; top: -6vh; width: 120vh; height: 140vh; transform-origin: 50% 0; opacity: .32; animation: spotsweep 9s ease-in-out infinite alternate;
+  background: conic-gradient(from 165deg at 50% 0%, transparent 0deg, var(--sc) 12deg 18deg, transparent 30deg);
+  -webkit-mask-image: linear-gradient(#000 10%, transparent 85%); mask-image: linear-gradient(#000 10%, transparent 85%); }
+#jbScene .spot.l { left: -45vh; --sc: rgba(255,80,170,.75); --a: 18deg; }
+#jbScene .spot.r { right: -45vh; --sc: rgba(80,210,255,.7); --a: -18deg; animation-delay: -4.5s; }
+@keyframes spotsweep { from { transform: rotate(calc(var(--a) * -1)); } to { transform: rotate(var(--a)); } }
+#jbScene .floor { position: absolute; left: -40%; right: -40%; bottom: -2vh; height: 46vh; transform-origin: 50% 100%; transform: perspective(55vh) rotateX(64deg); opacity: .32;
+  background: repeating-conic-gradient(#f4ead2 0 25%, #18121a 0 50%) 0 0 / 9vh 9vh;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 90%); mask-image: linear-gradient(to top, #000 10%, transparent 90%); }
+#jbMarquee i { position: absolute; width: 11px; height: 11px; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, #fff, var(--bc) 62%); box-shadow: 0 0 6px var(--bc), 0 0 14px var(--bc); opacity: .3;
+  animation: chase 1.8s linear infinite; animation-delay: var(--dl); }
+body.paused #jbMarquee i { animation-duration: 5s; }
+body.no-bulbs #jbMarquee i { animation: none; opacity: .7; }
+/* 시계·제목·가사를 네온사인처럼 */
+body.theme-jukebox #clock .time { color: #fff3f8; text-shadow: 0 0 4px #fff, 0 0 12px #ff4fa3, 0 0 28px #ff2d6f, 0 0 52px #ff2d6f; animation: neonflick 9s infinite; }
+body.theme-jukebox #clock .date { color: #bff6ff; opacity: 1; text-shadow: 0 0 6px #4fd8ff, 0 0 16px #2ab8ff; }
+body.theme-jukebox #clock .np .t { font-family: 'Pacifico', var(--serif-kr), cursive; font-style: normal; color: #fff7d6; text-shadow: 0 0 6px #ffb347, 0 0 18px #ff8a1f; }
+body.theme-jukebox #clock .np .a { color: #bff6ff; text-shadow: 0 0 8px #2ab8ff; opacity: .95; }
+body.theme-jukebox #lyrics .line.active { color: #fff; text-shadow: 0 0 6px #fff, 0 0 16px #ff4fa3, 0 0 34px #ff2d6f; }
+body.theme-jukebox #lyrics .line.near { text-shadow: 0 0 10px rgba(80,210,255,.6); }
+body.theme-jukebox #player { background: rgba(40,10,24,.45); border-color: rgba(255,140,200,.45); box-shadow: 0 0 24px rgba(255,80,170,.35), inset 0 1px 0 rgba(255,255,255,.2); }
+@media (prefers-reduced-motion: reduce) { #jbScene * { animation: none !important; } }
 
 /* ───────────────── 주크박스 (50년대 화려한 불빛) ───────────────── */
 #jukebox { --jw: min(26vw, 38vh); width: var(--jw); position: relative; }
@@ -548,19 +580,6 @@ body.playing .onair::before { background: #ff4a3d; box-shadow: 0 0 10px #ff4a3d,
   background: radial-gradient(circle, rgba(0,0,0,.6) 34%, transparent 40%) 0 0 / calc(var(--rw) * .022) calc(var(--rw) * .022),
               linear-gradient(160deg, color-mix(in srgb, var(--c2) 30%, #4a3c34), color-mix(in srgb, var(--c1) 20%, #2a201b)); }
 .grille { position: relative; display: grid; place-items: center; }
-.rclock { width: 84%; aspect-ratio: 1; border-radius: 50%; padding: 5%; display: none;
-  background: linear-gradient(145deg, #f8f8f6, #a9a9a4 45%, #e9e9e6 60%, #8d8d88); box-shadow: 0 6px 14px rgba(0,0,0,.45), inset 0 1px 0 #fff; }
-body.radio-clock .rclock { display: block; }
-.rclock .face { position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
-  background: repeating-conic-gradient(from -1deg, #3a2a1a 0 2deg, transparent 2deg 30deg), #f1e4c2; box-shadow: inset 0 3px 10px rgba(0,0,0,.35); color: #3a2a1a; }
-.rclock .face::before { content: ''; position: absolute; inset: 7%; border-radius: 50%; background: radial-gradient(circle, #fdf6e3, #f5e9cb); }
-.rclock .face span { position: absolute; translate: -50% -50%; font-family: var(--serif); font-weight: 600; font-size: calc(var(--rw) * .036); z-index: 1; }
-.rclock .face em { position: absolute; left: 0; right: 0; top: 62%; text-align: center; font-family: 'Nanum Pen Script', var(--serif); font-size: calc(var(--rw) * .032); color: #b23a2a; z-index: 1; }
-.rclock .face i { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%; border-radius: 3px; z-index: 2; margin-left: -1px; }
-.rclock .hh { width: 4.5%; height: 25%; background: #2a1d12; translate: -40% 0; }
-.rclock .mh { width: 3%; height: 36%; background: #2a1d12; translate: -35% 0; }
-.rclock .sh { width: 1.2%; height: 40%; background: #c8312a; translate: -10% 0; transition: transform .25s cubic-bezier(.4,2.2,.6,1); }
-.rclock .face b { position: absolute; left: 50%; top: 50%; width: 7%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: #c8312a; z-index: 3; }
 .rright { display: flex; flex-direction: column; gap: calc(var(--rw) * .022); }
 .lcd { aspect-ratio: 1; border-radius: calc(var(--rw) * .018); background: #0b0d0a; padding: calc(var(--rw) * .012);
   box-shadow: inset 0 3px 10px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.18); position: relative; overflow: hidden; }
@@ -671,6 +690,13 @@ body.theme-flow #shelf { display: none !important; }
 <canvas id="bg" width="40" height="23" aria-hidden="true"></canvas>
 <div id="grain"></div>
 <div id="vignette"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="tvFisheye" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+    <feImage id="tvFishMap" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/>
+    <feDisplacementMap in="SourceGraphic" in2="map" id="tvFishDisp" scale="0.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<div id="jbScene" aria-hidden="true"><div class="tint"></div><div class="rays"></div><div class="spot l"></div><div class="spot r"></div><div class="floor"></div><div class="mq" id="jbMarquee"></div></div>
 <div id="edge" aria-hidden="true"><div class="glow"></div><div class="pulse"></div></div>
 
 <main id="scene">
@@ -700,9 +726,7 @@ body.theme-flow #shelf { display: none !important; }
       <div class="rbody">
         <div class="rtop"><span>Ambient · FM / AM</span><span class="onair">On Air</span></div>
         <div class="rmain">
-          <div class="grille"><div class="rclock" id="rClock">
-            <div class="face"><span style="top:15%;left:50%">12</span><span style="top:50%;left:85%">3</span><span style="top:85%;left:50%">6</span><span style="top:50%;left:15%">9</span>
-              <em>Ambient</em><i class="hh"></i><i class="mh"></i><i class="sh"></i><b></b></div></div></div>
+          <div class="grille"></div>
           <div class="rright"><div class="lcd"><canvas id="dotCover"></canvas></div><div class="led"><canvas id="dotText"></canvas></div></div>
         </div>
         <div class="dialrow">
@@ -855,7 +879,6 @@ body.theme-flow #shelf { display: none !important; }
     <div data-for="radio">
       <div class="slab"><span>도트 크기</span><span id="vRes"></span></div>
       <input type="range" id="rRes" min="16" max="56" step="4">
-      <label class="switch"><span>스피커 자리에 시계</span><input type="checkbox" id="cRClock"></label>
       <div class="slab" style="margin-top:4px"><span>LED 색</span></div>
       <div class="seg small" id="segLed"><button data-v="amber">앰버</button><button data-v="green">초록</button><button data-v="accent">앨범색</button></div>
       <div class="slab" style="margin-top:12px"><span>라디오 몸체</span></div>
@@ -873,6 +896,8 @@ body.theme-flow #shelf { display: none !important; }
       <div class="seg small" id="segTv"><button data-v="wood">원목</button><button data-v="ivory">아이보리</button><button data-v="red">레드</button></div>
       <div class="slab" style="margin-top:12px"><span>주사선 세기</span><span id="vScan"></span></div>
       <input type="range" id="rScan" min="0" max="0.8" step="0.05">
+      <div class="slab"><span>볼록 렌즈 효과</span><span id="vFish"></span></div>
+      <input type="range" id="rFish" min="0" max="1" step="0.05">
       <label class="switch"><span>곡 바뀔 때 지지직 화면</span><input type="checkbox" id="cStatic"></label>
       <label class="switch"><span>지지직 소리</span><input type="checkbox" id="cTvSnd"></label>
     </div>
@@ -1049,7 +1074,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'black', radioClock: true, jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -2090,13 +2115,7 @@ const radio = {
       }
     }
   },
-  clock() {
-    if (!settings.radioClock) return;
-    const d = new Date(), s = d.getSeconds(), m = d.getMinutes() + s / 60, h = d.getHours() % 12 + m / 60;
-    const set = (sel, deg) => $(sel).style.transform = `rotate(${deg}deg)`;
-    set('#rClock .hh', h * 30); set('#rClock .mh', m * 6); set('#rClock .sh', s * 6);
-  },
-  redraw() { if (settings.theme !== 'radio') return; this.clock(); this.ledCtx = null; this.drawCover(); this.buildText(); this.drawText(); this.dial(); },
+  redraw() { if (settings.theme !== 'radio') return; this.ledCtx = null; this.drawCover(); this.buildText(); this.drawText(); this.dial(); },
   dial() {
     const p = S.track ? clamp(S.pos() / (S.track.durationMs || 1), 0, 1) : 0, np = 5 + p * 90;
     const st = $('#radio').style; st.setProperty('--np', np.toFixed(2) + '%');
@@ -2107,7 +2126,7 @@ const radio = {
   tick(ts) {
     if (ts - this.last < 66) return; this.last = ts;   // 약 15프레임
     if (S.playing && ts - this.lastStep > 90) { this.lastStep = ts; this.off = (this.off + 1) % (this.bits?.w || 1); this.drawText(); }
-    if (ts - (this.lastDial || 0) > 1000) { this.lastDial = ts; this.dial(); this.clock(); }
+    if (ts - (this.lastDial || 0) > 1000) { this.lastDial = ts; this.dial(); }
   },
 };
 addEventListener('resize', () => settings.theme === 'radio' && radio.redraw());
@@ -2145,6 +2164,23 @@ addEventListener('resize', () => settings.theme === 'cassette' && cassette.updat
 /* ═══════════════ 브라운관 TV ═══════════════ */
 const tv = {
   ch: 1, busy: 0,
+  /* 볼록 렌즈: 가운데는 크게, 가장자리는 휘어 보이게 하는 변위 지도를 한 번 만들어 SVG 필터에 넣음 */
+  fisheye() {
+    if (!this.map) {
+      const W = 160, H = 120, c = document.createElement('canvas'); c.width = W; c.height = H;
+      const x = c.getContext('2d'), img = x.createImageData(W, H), d = img.data, k = .38, SC = .5;
+      for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+        const u = (i + .5) / W * 2 - 1, v = (j + .5) / H * 2 - 1, r2 = Math.min(1.6, u * u + v * v);
+        const f = 1 - k * (1 - r2 / 1.6);          // 가운데일수록 안쪽 픽셀을 끌어와 확대
+        const dx = u / 2 * (f - 1), dy = v / 2 * (f - 1), o = (j * W + i) * 4;
+        d[o] = clamp(Math.round((.5 + dx / SC) * 255), 0, 255); d[o + 1] = clamp(Math.round((.5 + dy / SC) * 255), 0, 255); d[o + 2] = 128; d[o + 3] = 255;
+      }
+      x.putImageData(img, 0, 0); this.map = c.toDataURL();
+      $('#tvFishMap').setAttribute('href', this.map); $('#tvFishMap').setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.map);
+    }
+    $('#tvFishDisp').setAttribute('scale', (settings.tvFish * .5).toFixed(3));
+    $('.tv-img').style.filter = settings.tvFish > 0 ? '' : 'saturate(1.15) contrast(1.06)';
+  },
   switchChannel() {
     const scr = $('#tvScreen'), t = S.track;
     this.ch = t ? (Math.floor(hashHue(t.id) * 98) + 1) : this.ch % 99 + 1;
@@ -2173,6 +2209,29 @@ const tv = {
 
 /* ═══════════════ 주크박스 ═══════════════ */
 const JB_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+/* 주크박스 테마일 때 화면 전체: 가장자리 전구, 빛살, 스포트라이트, 체크 바닥 */
+const jbScene = {
+  build() {
+    if (settings.theme !== 'jukebox') return;
+    const jr = $('#jukebox').getBoundingClientRect();
+    if (jr.width) { const st = $('#jbScene').style; st.setProperty('--jx', (jr.left + jr.width / 2) + 'px'); st.setProperty('--jy', (jr.top + jr.height * .3) + 'px'); }
+    const W = innerWidth, H = innerHeight, gap = 54, m = 16, pts = [];
+    const nx = Math.round((W - 2 * m) / gap), ny = Math.round((H - 2 * m) / gap);
+    for (let i = 0; i <= nx; i++) pts.push([m + i * (W - 2 * m) / nx, m]);
+    for (let j = 1; j <= ny; j++) pts.push([W - m, m + j * (H - 2 * m) / ny]);
+    for (let i = nx - 1; i >= 0; i--) pts.push([m + i * (W - 2 * m) / nx, H - m]);
+    for (let j = ny - 1; j >= 1; j--) pts.push([m, m + j * (H - 2 * m) / ny]);
+    if (this.n === pts.length && this.w === W) return; this.n = pts.length; this.w = W;
+    const box = $('#jbMarquee'), cols = ['#fff4cf', '#ffb347', '#ff5b6e', '#ffe36e'], frag = document.createDocumentFragment();
+    box.innerHTML = '';
+    pts.forEach(([x, y], i) => {
+      const b = document.createElement('i'); b.style.left = x + 'px'; b.style.top = y + 'px';
+      b.style.setProperty('--bc', cols[i % cols.length]); b.style.setProperty('--dl', (-(i % 12) * .15).toFixed(2) + 's'); frag.appendChild(b);
+    });
+    box.appendChild(frag);
+  },
+};
+addEventListener('resize', () => { if (settings.theme === 'jukebox') { jbScene.n = 0; jbScene.build(); } });
 (function buildBulbs() {   // 아치를 따라 도는 전구 24개
   const cr = $('#jbCrown'), N = 24, cols = ['#fff3c4', '#ffb347', '#ff5b4a', '#ffe36e'];
   for (let i = 0; i < N; i++) {
@@ -2419,6 +2478,9 @@ function setTheme(t) {
   if (t === 'radio' && typeof radio !== 'undefined') requestAnimationFrame(() => radio.redraw());
   const to = $('#themeOpts'); if (to) { to.dataset.t = t; $('#themeOptsTitle').textContent = { lp: 'LP 설정', cd: 'CD 설정', poster: '포스터 설정', flow: '플로우 설정', radio: '라디오 설정', cassette: '카세트 설정', tv: 'TV 설정', jukebox: '주크박스 설정' }[t]; }
   if (['cassette', 'tv', 'jukebox', 'radio'].includes(t)) loadExtraFonts();
+  if (t === 'tv' && typeof tv !== 'undefined') tv.fisheye();
+  body.classList.toggle('theme-jukebox', t === 'jukebox');
+  if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
   if (t === 'cassette' && typeof cassette !== 'undefined') cassette.update(true);
   if (t === 'jukebox' && typeof jukebox !== 'undefined') jukebox.ensure();
   if (typeof lyrics !== 'undefined') setTimeout(() => lyrics.update(S.pos(), true), 60);
@@ -2460,7 +2522,6 @@ function applyVisualSettings() {
   $('#cassette').dataset.color = settings.csColor; $('#cassette').classList.toggle('typed', !settings.csHand);
   $('#tv').dataset.body = settings.tvBody; r.setProperty('--tv-scan', settings.tvScan);
   $('#jukebox').dataset.neon = settings.jbNeon; body.classList.toggle('no-bubbles', !settings.jbBubbles); body.classList.toggle('no-bulbs', !settings.jbBulbs);
-  body.classList.toggle('radio-clock', !!settings.radioClock);
   if (settings.theme === 'flow' && typeof flow !== 'undefined') flow.go(flow.idx, true);
   spin.apply(); checkNight(); lastClock = ''; clockTick();
 }
@@ -2476,10 +2537,10 @@ function syncSettingsUI() {
   $$('#segCs button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.csColor)); $('#cHand').checked = settings.csHand;
   $('#rReel').value = settings.reelRpm; $('#vReel').textContent = settings.reelRpm + ' rpm';
   $$('#segTv button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.tvBody));
+  $('#rFish').value = settings.tvFish; $('#vFish').textContent = settings.tvFish ? Math.round(settings.tvFish * 100) + '%' : '끔';
   $('#rScan').value = settings.tvScan; $('#vScan').textContent = Math.round(settings.tvScan * 100) + '%';
   $('#cStatic').checked = settings.tvStatic; $('#cTvSnd').checked = settings.tvSnd;
   $$('#segNeon button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.jbNeon)); $('#cBubbles').checked = settings.jbBubbles; $('#cBulbs').checked = settings.jbBulbs;
-  $('#cRClock').checked = !!settings.radioClock;
   $('#rRes').value = settings.radioRes; $('#vRes').textContent = settings.radioRes + '×' + settings.radioRes;
   $$('#segLed button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.led));
   $$('#segBody button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.rbody));
@@ -2517,9 +2578,8 @@ bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCo
 const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.closest('button')?.dataset.v; if (v == null) return;
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
-bindSeg('#segTv', 'tvBody'); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
+bindSeg('#segTv', 'tvBody'); bindRange('#rFish', 'tvFish', () => tv.fisheye()); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
-bindCheck('#cRClock', 'radioClock', () => radio.clock());
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
