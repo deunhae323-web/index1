@@ -1341,6 +1341,10 @@ $('#gate').addEventListener('click', async e => {
 });
 
 /* ═══════════════ 아티스트의 다른 앨범 선반 ═══════════════ */
+/* 'PRISM (Deluxe)' 와 'PRISM' 처럼 판본만 다른 앨범을 같은 앨범으로 보기 위한 이름 정리 */
+const normAlb = n => (n || '').toLowerCase().replace(/\s*[\(\[][^\)\]]*[\)\]]/g, '')
+  .replace(/\s*[-–:]\s*(deluxe|remaster|expanded|edition|version|anniversary|bonus|special).*$/, '').replace(/\s+/g, ' ').trim();
+const sameAlbum = (a, t) => !!a && !!t && ((a.id && a.id === t.albumId) || (!!t.album && normAlb(a.name) === normAlb(t.album)));
 const shelf = {
   cache: new Map(), artistKey: '', token: 0, el: $('#shelf'), row: $('#shelfRow'),
   async fetchAlbums(t) {
@@ -1349,7 +1353,7 @@ const shelf = {
     try {
       /* 2026년 변경으로 한 번에 최대 10개까지만 받을 수 있어서 여러 페이지로 나눠 받음 */
       let items = [], url = `/artists/${t.artistId}/albums?include_groups=album,single&market=from_token&limit=10`;
-      for (let page = 0; url && page < 4; page++) {
+      for (let page = 0; url && page < 6; page++) {
         const r = await sp.api(url);
         if (!r.ok) { console.warn('[shelf] 앨범 목록 실패', r.status, await r.text().catch(() => '')); break; }
         const j = await r.json(); items = items.concat(j.items || []);
@@ -1357,7 +1361,7 @@ const shelf = {
       }
       const seen = new Set(), out = [];
       for (const a of items) {
-        const key = (a.name || '').toLowerCase().replace(/\s*[\(\[].*?(deluxe|remaster|edition|version).*?[\)\]]/g, '').trim();
+        const key = normAlb(a.name);
         if (seen.has(key)) continue; seen.add(key);
         const img = (a.images || []).slice().sort((x, y) => (x.width || 0) - (y.width || 0)).find(i => (i.width || 0) >= 200) || a.images?.[0];
         out.push({ id: a.id, uri: a.uri, name: a.name, year: (a.release_date || '').slice(0, 4), date: a.release_date || '', cover: img?.url || '', type: a.album_type });
@@ -1367,19 +1371,39 @@ const shelf = {
   },
   async load(t) {
     const key = t.kind === 'track' ? (t.artistId || t.artist) : '';
-    if (!(settings.shelf || settings.theme === 'flow') || !key) { this.hide(); this.artistKey = ''; flow.build(null); return; }
-    if (key === this.artistKey) { this.mark(t); flow.focusCurrent(); return; }
+    if (!(settings.shelf || settings.theme === 'flow') || !key) { this.hide(); this.artistKey = ''; this.cur = null; flow.build(null); return; }
+    if (key === this.artistKey) {   // 같은 아티스트의 다른 곡
+      if (!this.cur) { flow.build(null); return; }
+      if (!this.ensureCurrent(this.cur, t)) { this.mark(t); flow.focusCurrent(); return; }
+      return this.show(t, false);
+    }
     this.artistKey = key; const my = ++this.token;
     this.el.classList.remove('show');
     let list = this.cache.get(key);
     if (list === undefined) { list = await this.fetchAlbums(t); this.cache.set(key, list); }
     if (my !== this.token) return;
+    this.cur = list ? list.slice() : null;
+    if (this.cur) this.ensureCurrent(this.cur, t);
+    this.show(t, true);
+  },
+  /* 지금 곡의 앨범이 목록에 없으면(판본 차이·목록 개수 제한 등) 직접 끼워 넣어서 항상 가운데에 오게 함 */
+  ensureCurrent(list, t) {
+    if (t.kind !== 'track' || !t.album) return false;
+    if (list.some(a => a.id && a.id === t.albumId)) return false;
+    const cur = { id: t.albumId, uri: t.albumUri, name: t.album, year: t.year, date: t.year || '', cover: t.cover, type: 'album' };
+    const k = list.findIndex(a => normAlb(a.name) === normAlb(t.album));
+    if (k >= 0) { cur.type = list[k].type; cur.date = list[k].date || cur.date; list[k] = cur; }
+    else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
+    return true;
+  },
+  show(t, animate) {
+    const list = this.cur;
     flow.build(list);
-    if (!list || list.length < 2) { this.hide(); return; }
-    if (!settings.shelf) { this.list = list; return; }
+    if (!list || list.length < 2 || !settings.shelf) { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; return; }
     body.classList.add('has-shelf');
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = '';
-    this.row.innerHTML = ''; this.row.scrollLeft = 0;
+    const keepScroll = animate ? 0 : this.row.scrollLeft;
+    this.row.innerHTML = '';
     list.forEach((a, i) => {
       const d = document.createElement('div'); d.className = 'alb cover-art'; d.style.setProperty('--i', Math.min(i, 14));
       d.style.backgroundImage = cssUrl(a.cover); d.style.backgroundSize = 'cover'; d.dataset.i = i;
@@ -1387,12 +1411,12 @@ const shelf = {
       this.row.appendChild(d);
     });
     this.list = list; this.mark(t);
-    void this.row.offsetWidth;   // 다시 그려서 '좌라락' 펼침 애니메이션 시작
-    requestAnimationFrame(() => this.el.classList.add('show'));
+    if (animate) { this.row.scrollLeft = 0; void this.row.offsetWidth; requestAnimationFrame(() => this.el.classList.add('show')); }   // '좌라락' 펼침
+    else { this.row.scrollLeft = keepScroll; this.el.classList.add('show'); }
   },
   mark(t) {
     if (!this.list) return;
-    const idx = this.list.findIndex(a => a.id && a.id === t.albumId || a.name === t.album);
+    const idx = this.list.findIndex(a => a.id && a.id === t.albumId) >= 0 ? this.list.findIndex(a => a.id && a.id === t.albumId) : this.list.findIndex(a => sameAlbum(a, t));
     [...this.row.children].forEach((n, i) => n.classList.toggle('current', i === idx));
   },
   hide() { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; },
@@ -1426,7 +1450,12 @@ const flow = {
     });
     this.focusCurrent(true);
   },
-  current() { const t = S.track; if (!t) return 0; return Math.max(0, this.list.findIndex(a => (a.id && a.id === t.albumId) || a.name === t.album)); },
+  current() {
+    const t = S.track; if (!t) return 0;
+    let i = this.list.findIndex(a => a.id && a.id === t.albumId);
+    if (i < 0) i = this.list.findIndex(a => sameAlbum(a, t));
+    return Math.max(0, i);
+  },
   focusCurrent(instant) { this.go(this.current(), instant); },
   go(i, instant) {
     const cards = [...this.st.children]; if (!cards.length) { this.dots.innerHTML = ''; return; }
