@@ -72,6 +72,19 @@ body.has-shelf #poster { width: calc(min(24vw, 34vh) * var(--ps)); }
 body.has-shelf #poster .cap { margin-top: 2vh; padding-top: 1.2vh; }
 body.has-shelf #poster .ptitle { font-size: clamp(22px, 2.2vw, 40px); }
 body.has-shelf #stage { gap: 3vh; }
+/* LP·CD·포스터: 앨범(음반·케이스·포스터 그림)을 화면 세로 정가운데에, 선반·캡션은 그 아래로 */
+@media (orientation: landscape) {
+  #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
+  body.wallpaper #stage[data-theme="lp"], body.wallpaper #stage[data-theme="cd"], body.wallpaper #stage[data-theme="poster"] { transform: translateY(.5vh); }
+  #stage[data-theme="lp"] > .visual, #stage[data-theme="cd"] > .visual, #stage[data-theme="poster"] > .visual { grid-row: 2; }
+  #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 2vh; }
+  #stage[data-theme="poster"] #poster { position: relative; }
+  #stage[data-theme="poster"] #poster .cap { position: absolute; left: 0; right: 0; top: 100%; }
+  #stage[data-theme="poster"] > #shelf { margin-top: calc(1.5vh + 80px); }
+  body.has-shelf { --disc: min(30vw, 36vh); }
+  body.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(20vw, 22vh) * var(--ps)); }
+  body.has-shelf #stage[data-theme="poster"] #poster .ptitle { font-size: clamp(18px, 1.6vw, 28px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 #poster .pmeta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 #poster .pmeta span:last-child { text-align: right; }
 body.has-shelf #poster .pmeta { font-size: clamp(9px, .72vw, 12px); letter-spacing: .08em; }
