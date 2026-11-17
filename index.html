@@ -1297,6 +1297,21 @@ body.theme-city #clock .time { text-shadow: 0 0 2px rgba(0,0,0,.8), 0 0 1.2vh rg
 body.theme-city #clock .date, body.theme-city #clock .np .t { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 12px rgba(0,5,20,.85); }
 body.theme-city #clock .np .a { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 1vh rgba(255,110,70,.5); }
 body.theme-city #lyrics .line { text-shadow: 0 0 2px rgba(0,0,0,.9), 0 1px 4px rgba(0,0,0,.85), 0 0 14px rgba(0,6,22,.85), 0 0 30px rgba(0,6,22,.6); }
+/* ── 네온룸 그래픽 품질 · 빛 세기 · 안개 농도 ── */
+body.theme-city { --cl: 1; --fog: 1; }
+#cityScene .vol, #cityScene .tint, #cityBloom { opacity: var(--cl); }
+#cityScene .cityv .smog { opacity: var(--fog); }
+body.cq-mid #filmGrain, body.cq-low #filmGrain { display: none !important; }
+body.cq-mid #cityScene .room [style*="mix-blend-mode"], body.cq-low #cityScene .room [style*="mix-blend-mode"] { mix-blend-mode: normal !important; }
+body.cq-mid #cityScene .room [style*="mix-blend-mode:screen"], body.cq-low #cityScene .room [style*="mix-blend-mode:screen"] { opacity: .55; }
+body.cq-mid #cityBloom .bl { mix-blend-mode: normal; }
+body.cq-low #cityScene .room [filter], body.cq-low #cityScene .room g, body.cq-low #cityScene .room path { filter: none !important; }
+body.cq-low #cityScene .room rect[filter="url(#grain)"] { display: none; }
+body.cq-low #cityBloom .bl { mix-blend-mode: normal; filter: blur(10px); animation: none; }
+body.cq-low #cityScene .cityv .smog, body.cq-low #cityScene .cityv canvas.spn, body.cq-low #cityScene .vol .beams, body.cq-low #cityKoi { display: none; }
+body.cq-low #cityScene .cityv .had { animation: none; }
+body.cq-low #cityScene .cityv .had .sc, body.cq-low #cityScene .cityv .had .ring { animation: none; }
+body.no-citykoi #cityKoi { display: none; }
 </style>
 </head>
 <body class="paused">
@@ -1857,6 +1872,16 @@ body.theme-city #lyrics .line { text-shadow: 0 0 2px rgba(0,0,0,.9), 0 1px 4px r
       <label class="switch"><span>날아다니는 차</span><input type="checkbox" id="cCityCars"></label>
       <label class="switch"><span>창밖 거대 홀로그램 광고판</span><input type="checkbox" id="cSkyHolo"></label>
       <label class="switch"><span>네온 간판</span><input type="checkbox" id="cSigns"></label>
+      <label class="switch"><span>홀로그램 비단잉어</span><input type="checkbox" id="cCityKoi"></label>
+      <div class="slab" style="margin-top:14px"><span>그래픽 품질</span></div>
+      <div class="seg small" id="segCityQ"><button data-v="low">낮음</button><button data-v="mid">보통</button><button data-v="high">높음</button></div>
+      <p class="note" style="margin-top:4px">화면이 깜빡이거나 물건이 생겼다 없어지면 품질을 낮춰 보세요. 낮음은 그림자·발광 필터와 안개·스피너·잉어를 꺼요.</p>
+      <div class="slab" style="margin-top:12px"><span>빛 효과 세기</span><span id="vCityLight"></span></div>
+      <input type="range" id="rCityLight" min="0" max="1" step="0.05">
+      <div class="slab" style="margin-top:12px"><span>비행차·스피너 밀도</span><span id="vCityDen"></span></div>
+      <input type="range" id="rCityDen" min="0" max="1.5" step="0.1">
+      <div class="slab" style="margin-top:12px"><span>안개·스모그 농도</span><span id="vCityFog"></span></div>
+      <input type="range" id="rCityFog" min="0" max="1" step="0.05">
       <p class="note" style="margin-top:6px">분위기 이펙트의 '비 오는 창가'를 켜면 빗소리가 나요.</p>
     </div>
     <div data-for="aero">
@@ -2042,7 +2067,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -3187,23 +3212,26 @@ const city = {
   layout() { const sc = innerWidth / 1600, vh = innerHeight / sc, y0 = (900 - vh) * (vh < 900 ? .5 : .45); this.sc = sc; this.y0 = y0;
     $('#cityScene .room').setAttribute('viewBox', `0 ${y0.toFixed(1)} 1600 ${vh.toFixed(1)}`);
     $$('#cityScene .sv').forEach(e => e.style.transform = `translate(0,${(-y0 * sc).toFixed(1)}px) scale(${sc})`); },
-  fit() { const c = $('#cityWeather'), d = Math.min(1.5, devicePixelRatio || 1); c.width = innerWidth * d; c.height = innerHeight * d; this.ctx = c.getContext('2d'); this.k = d;
+  fit() { const c = $('#cityWeather'), d = settings.cityQ === 'high' ? Math.min(1.5, devicePixelRatio || 1) : 1; c.width = innerWidth * d; c.height = innerHeight * d; this.ctx = c.getContext('2d'); this.k = d;
     this.layout(); const v = $('#cityV').getBoundingClientRect(); this.tc = [...$$('#cityV .trc')]; this.tc.forEach(t => { t.width = v.width * d; t.height = v.height * d; }); cityFx.fit(d); },
   start() {
     this.build(); this.fit(); this.onTrack(S.track);
     body.classList.toggle('no-flycars', !settings.cityCars); body.classList.toggle('no-skyholo', !settings.skyHolo); body.classList.toggle('no-signs', !settings.citySigns);
+    this.quality();
     const N = settings.cityWx === 'clear' ? 0 : Math.round((settings.cityWx === 'rain' ? 240 : 260) * settings.cityAmt);
     this.parts = Array.from({ length: N }, () => this.part(true));
     if (!this.running) { this.running = true; requestAnimationFrame(t => this.loop(t)); }
   },
+  quality() { const q = settings.cityQ || 'mid'; ['low', 'mid', 'high'].forEach(v => body.classList.toggle('cq-' + v, q === v));
+    body.classList.toggle('no-citykoi', !settings.cityKoi); body.style.setProperty('--cl', settings.cityLight); body.style.setProperty('--fog', settings.cityFog); },
   /* ── 비행 자동차 교통: 먼 고속도로 불빛 띠 / 중간 차량 / 가까운 네온 트레일 ── */
   trafficInit() {
     const R = Math.random, pick = a => a[Math.floor(R() * a.length)];
-    this.lanes = Array.from({ length: 9 }, (_, i) => ({
+    this.lanes = Array.from({ length: 14 }, (_, i) => ({
       y: .26 + i * .042 + R() * .02, sl: (R() - .5) * .07, dir: i % 2 ? 1 : -1, sp: .018 + R() * .03, ph: R() * 6,
       warm: i % 2 === 0, dots: Array.from({ length: 40 + Math.floor(R() * 18) }, () => ({ u: R(), r: .8 + R() * .8, j: (R() - .5) * .006 })) }));
-    this.mid = Array.from({ length: 38 }, () => this.newCar(1, true));
-    this.near = Array.from({ length: 7 }, () => this.newCar(2, true));
+    this.mid = Array.from({ length: 57 }, () => this.newCar(1, true));
+    this.near = Array.from({ length: 11 }, () => this.newCar(2, true));
     this.neon = ['#4fd8ff', '#ff4fd8', '#ffb347', '#7dff9a', '#a98bff'];
   },
   newCar(tier, any) {
@@ -3220,8 +3248,9 @@ const city = {
     if (!on) return;
     const k = this.k, W = cs[0].width, H = cs[0].height;
     /* 먼 배경: 고속도로처럼 흐르는 불빛 점 띠 */
+    const den = (settings.cityDen ?? 1) * (settings.cityQ === 'low' ? .5 : 1), nL = Math.round(9 * den), nM = Math.round(38 * den), nN = Math.round(7 * den);
     let x = cs[0].getContext('2d'); x.globalCompositeOperation = 'lighter';
-    for (const L of this.lanes) {
+    for (const L of this.lanes.slice(0, nL)) {
       x.fillStyle = L.warm ? 'rgba(255,110,80,.95)' : 'rgba(240,248,255,.95)';
       const glow = L.warm ? 'rgba(255,90,70,.18)' : 'rgba(200,230,255,.18)';
       for (const d of L.dots) {
@@ -3233,7 +3262,7 @@ const city = {
     }
     /* 중간 거리 차량 */
     x = cs[1].getContext('2d'); x.globalCompositeOperation = 'lighter'; x.lineCap = 'round';
-    this.mid.forEach((c, i) => {
+    this.mid.forEach((c, i) => { if (i >= nM) return;
       c.x += c.dir * c.sp * dt; c.y += c.vy * dt;
       if (c.x > 1.3 || c.x < -.3 || c.y < .05 || c.y > .7) { this.mid[i] = this.newCar(1); return; }
       const px = c.x * W, py = (c.y + .004 * Math.sin(t * .8 + c.ph)) * H, s = c.s * k, back = -c.dir;
@@ -3247,7 +3276,7 @@ const city = {
     });
     /* 가까운 차량: 차체 실루엣 + 길게 끄는 네온 트레일 */
     x = cs[2].getContext('2d'); x.lineCap = 'round';
-    this.near.forEach((c, i) => {
+    this.near.forEach((c, i) => { if (i >= nN) return;
       c.x += c.dir * c.sp * dt; c.y += c.vy * dt;
       if (c.x > 1.6 || c.x < -.6) { this.near[i] = this.newCar(2); return; }
       const px = c.x * W, py = (c.y + .006 * Math.sin(t * .6 + c.ph)) * H, s = c.s * k, back = -c.dir, col = this.neon[c.col];
@@ -3311,15 +3340,15 @@ const cityFx = {
   fit(d) {
     const k = $('#cityKoi'); this.kd = 1; k.width = innerWidth; k.height = innerHeight; this.kx = k.getContext('2d'); this.d = d; this.box = null;
     const s = $('#cityV canvas.spn'); if (s) { const v = $('#cityV').getBoundingClientRect(); s.width = v.width * d; s.height = v.height * d; this.sx = s.getContext('2d'); }
-    if (!this.spinners) { const R = Math.random; this.spinners = Array.from({ length: 13 }, () => this.spinner(R())); }
+    if (!this.spinners) { const R = Math.random; this.spinners = Array.from({ length: 20 }, () => this.spinner(R())); }
   },
   spinner(x) { const R = Math.random, red = R() < .5; return { x, y: .2 + R() * .36, dir: R() < .5 ? 1 : -1, v: .012 + R() * .03, z: .3 + R() * .7, ph: R() * 6.283, dy: (R() - .5) * .012,
     col: red ? [255, 59, 74] : [74, 184, 255], len: .05 + R() * .1 }; },
-  draw(dt, t) { if (!this.kx) return; this.koi(t); if (settings.cityCars && this.sx) this.spin(dt, t); },
+  draw(dt, t) { if (!this.kx) return; const lo = settings.cityQ === 'low'; if (settings.cityKoi && !lo) this.koi(t); if (settings.cityCars && this.sx && !lo) this.spin(dt, t); },
   spin(dt, t) {
     const x = this.sx, W = x.canvas.width, H = x.canvas.height;
     x.clearRect(0, 0, W, H); x.globalCompositeOperation = 'lighter';
-    for (const s of this.spinners) {
+    for (const s of this.spinners.slice(0, Math.round(13 * (settings.cityDen ?? 1)))) {
       s.x += s.dir * s.v * dt * (.6 + s.z * .6); s.y += s.dy * dt;
       if (s.x < -.2 || s.x > 1.2 || s.y < .12 || s.y > .62) Object.assign(s, this.spinner(s.dir > 0 ? -.15 : 1.15));
       const px = s.x * W, py = (s.y + Math.sin(t * .5 + s.ph) * .006) * H, L = s.len * W * (.5 + s.z * .5), a = .25 + s.z * .45, [r, g, b] = s.col;
@@ -4061,6 +4090,10 @@ function syncSettingsUI() {
   $('#rCityAmt').value = settings.cityAmt; $('#vCityAmt').textContent = '×' + (+settings.cityAmt).toFixed(1);
   $('#cAeroBub').checked = settings.aeroBub; $('#cAeroFlare').checked = settings.aeroFlare; $('#cAeroCity').checked = settings.aeroCity;
   $('#rAeroWind').value = settings.aeroWind; $('#vAeroWind').textContent = settings.aeroWind ? '×' + (+settings.aeroWind).toFixed(1) : '멈춤';
+  $('#cCityKoi').checked = settings.cityKoi; $$('#segCityQ button').forEach(b => b.classList.toggle('on', b.dataset.v === (settings.cityQ || 'mid')));
+  $('#rCityLight').value = settings.cityLight; $('#vCityLight').textContent = Math.round(settings.cityLight * 100) + '%';
+  $('#rCityDen').value = settings.cityDen; $('#vCityDen').textContent = settings.cityDen ? '×' + (+settings.cityDen).toFixed(1) : '없음';
+  $('#rCityFog').value = settings.cityFog; $('#vCityFog').textContent = Math.round(settings.cityFog * 100) + '%';
   $('#cCityCars').checked = settings.cityCars; $('#cSkyHolo').checked = settings.skyHolo; $('#cSigns').checked = settings.citySigns;
   $('#rCarSpd').value = settings.carSpd; $('#vCarSpd').textContent = '×' + (+settings.carSpd).toFixed(1);
   $$('#segVfd button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.carVfd));
@@ -4103,7 +4136,8 @@ const bindSeg = (id, key, after) => $(id).onclick = e => { const v = e.target.cl
   settings[key] = isNaN(+v) ? v : +v; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindSeg('#segCs', 'csColor'); bindCheck('#cHand', 'csHand'); bindRange('#rReel', 'reelRpm');
 bindSeg('#segTv', 'tvBody'); bindRange('#rFish', 'tvFish', () => tv.fisheye()); bindRange('#rScan', 'tvScan'); bindCheck('#cStatic', 'tvStatic'); bindCheck('#cTvSnd', 'tvSnd');
-bindSeg('#segCityWx', 'cityWx', () => city.start()); bindRange('#rCityAmt', 'cityAmt', () => city.start()); bindCheck('#cCityCars', 'cityCars', () => city.start()); bindCheck('#cSkyHolo', 'skyHolo', () => city.start()); bindCheck('#cSigns', 'citySigns', () => city.start());
+bindSeg('#segCityWx', 'cityWx', () => city.start()); bindSeg('#segCityQ', 'cityQ', () => { city.start(); city.fit(); }); bindCheck('#cCityKoi', 'cityKoi', () => city.quality());
+bindRange('#rCityLight', 'cityLight', () => city.quality()); bindRange('#rCityDen', 'cityDen'); bindRange('#rCityFog', 'cityFog', () => city.quality()); bindRange('#rCityAmt', 'cityAmt', () => city.start()); bindCheck('#cCityCars', 'cityCars', () => city.start()); bindCheck('#cSkyHolo', 'skyHolo', () => city.start()); bindCheck('#cSigns', 'citySigns', () => city.start());
 bindCheck('#cAeroBub', 'aeroBub', () => aero.start()); bindCheck('#cAeroFlare', 'aeroFlare', () => aero.start()); bindCheck('#cAeroCity', 'aeroCity', () => aero.start()); bindRange('#rAeroWind', 'aeroWind');
 bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp', 'carLamp');
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
