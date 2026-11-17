@@ -1260,23 +1260,20 @@ body.theme-city #player .ctrls { gap: 5px; }
 /* 원경 스모그 · 안개 층 (빌딩 레이어 사이) */
 #cityScene .cityv .smog { position: absolute; inset: 0; pointer-events: none; }
 #cityScene .cityv .smog.s1 { background: linear-gradient(180deg, transparent 18%, rgba(50,85,140,.10) 36%, rgba(62,100,160,.22) 56%, rgba(40,70,125,.3) 78%, rgba(18,36,76,.26) 100%);
-  -webkit-backdrop-filter: blur(1.4px); backdrop-filter: blur(1.4px);
   -webkit-mask-image: linear-gradient(180deg, transparent 14%, #000 42%); mask-image: linear-gradient(180deg, transparent 14%, #000 42%); }
 #cityScene .cityv .smog.s2 { background:
   radial-gradient(ellipse 55% 22% at 38% 100%, rgba(255,0,127,.12), transparent 70%),
   radial-gradient(ellipse 45% 18% at 75% 96%, rgba(0,243,255,.09), transparent 70%),
   linear-gradient(180deg, transparent 40%, rgba(12,24,52,.24) 62%, rgba(8,16,38,.42) 100%);
-  -webkit-backdrop-filter: blur(.7px); backdrop-filter: blur(.7px);
   -webkit-mask-image: linear-gradient(180deg, transparent 34%, #000 60%); mask-image: linear-gradient(180deg, transparent 34%, #000 60%); }
-#cityScene .cityv .smog i { position: absolute; left: -50%; width: 200%; height: 26%; opacity: .5; mix-blend-mode: screen; filter: blur(6px);
+#cityScene .cityv .smog i { position: absolute; left: -50%; width: 200%; height: 26%; opacity: .5; mix-blend-mode: screen; will-change: transform;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .03' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .6  0 0 0 0 .85  0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='600' height='160' filter='url(%23f)'/%3E%3C/svg%3E") repeat-x 0 0 / 50% 100%;
   animation: smogDrift var(--t, 140s) linear infinite; }
 @keyframes smogDrift { to { transform: translateX(25%); } }
 /* 원경 스피너 궤적 */
-#cityScene .cityv canvas.spn { filter: blur(.5px); }
 body.no-flycars #cityScene .cityv canvas.spn { display: none; }
 /* 원경 홀로그램 광고판 (먼 빌딩 외벽) */
-#cityScene .cityv .had { position: absolute; mix-blend-mode: screen; opacity: .6; filter: blur(.45px); animation: hadFlick 9s steps(1) infinite; animation-delay: var(--d, 0s); overflow: hidden; }
+#cityScene .cityv .had { position: absolute; mix-blend-mode: screen; opacity: .6; animation: hadFlick 9s steps(1) infinite; animation-delay: var(--d, 0s); overflow: hidden; }
 #cityScene .cityv .had::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.5) 0 1px, transparent 1px 3px); }
 #cityScene .cityv .had .sc { position: absolute; left: 0; right: 0; height: 22%; background: linear-gradient(180deg, transparent, rgba(220,250,255,.35), transparent); animation: hadScan 4.5s linear infinite; }
 @keyframes hadScan { from { top: -25%; } to { top: 105%; } }
@@ -1294,9 +1291,8 @@ body.no-flycars #cityScene .cityv canvas.spn { display: none; }
 #cityScene .vol { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; pointer-events: none; }
 #cityScene .vol > i { position: absolute; display: block; }
 #cityScene .vol .shd { mix-blend-mode: multiply; }
-#cityScene .vol .spill { mix-blend-mode: screen; border-radius: 50%; animation: spill var(--t, 7s) ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
-@keyframes spill { 0% { opacity: 1; } 40% { opacity: .82; } 41% { opacity: .55; } 43% { opacity: .9; } 100% { opacity: .7; } }
-#cityScene .vol .beam { mix-blend-mode: screen; filter: blur(10px); animation: spill var(--t, 9s) ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+#cityScene .vol .spill { mix-blend-mode: screen; }
+#cityScene .vol .beams { position: absolute; left: 0; top: 0; mix-blend-mode: screen; }
 #cityScene .vol .mote { mix-blend-mode: screen; }
 /* 시계·가사 가독성: 뒤쪽을 더 어둡게, 그림자 보강 */
 #cityScene .calm { background: radial-gradient(ellipse 36% 48% at 18% 42%, rgba(1,3,10,.66), rgba(1,3,10,.3) 60%, transparent 86%); }
@@ -1604,18 +1600,23 @@ body.theme-city #lyrics .line { text-shadow: 0 0 2px rgba(0,0,0,.9), 0 1px 4px r
 <path class="tn" d="M965 1068Q1260 1096 1570 1068" stroke-width="2.5" fill="none" style="stroke:color-mix(in srgb, var(--c1) 60%, #fff)" opacity=".7"/>
 </svg>
   <div class="sv vol">
-    <i class="shd" style="left:860px;top:-60px;width:760px;height:230px;background:linear-gradient(180deg,rgba(0,0,6,.62),transparent)"></i>
-    <i class="shd" style="left:1150px;top:-40px;width:560px;height:620px;background:radial-gradient(ellipse 60% 55% at 70% 32%,rgba(0,0,8,.55),transparent 75%)"></i>
-    <i class="shd" style="left:950px;top:680px;width:480px;height:280px;background:radial-gradient(ellipse 55% 50% at 50% 60%,rgba(0,0,4,.6),transparent 75%)"></i>
-    <i class="shd" style="left:480px;top:790px;width:560px;height:170px;background:radial-gradient(ellipse 55% 60% at 50% 70%,rgba(0,0,0,.5),transparent 75%)"></i>
-    <i class="beam" style="left:690px;top:120px;width:720px;height:620px;--t:9s;background:linear-gradient(118deg,rgba(0,243,255,.2),rgba(0,243,255,.06) 55%,transparent 82%);clip-path:polygon(0 0,28% 0,100% 84%,64% 100%)"></i>
-    <i class="beam" style="left:640px;top:330px;width:660px;height:540px;--t:11s;--d:-4s;background:linear-gradient(112deg,rgba(255,0,127,.2),rgba(255,0,127,.05) 60%,transparent 86%);clip-path:polygon(0 0,22% 0,100% 78%,70% 100%)"></i>
-    <i class="spill" style="left:800px;top:250px;width:680px;height:440px;--t:6s;background:radial-gradient(ellipse at 14% 40%,rgba(0,243,255,.22),rgba(0,243,255,.07) 45%,transparent 70%)"></i>
-    <i class="spill" style="left:740px;top:510px;width:640px;height:360px;--t:8s;--d:-3s;background:radial-gradient(ellipse at 18% 40%,rgba(255,0,127,.2),rgba(255,0,127,.05) 42%,transparent 66%)"></i>
-    <i class="spill" style="left:1000px;top:548px;width:360px;height:76px;--t:7s;--d:-2s;background:radial-gradient(closest-side,rgba(0,243,255,.3),rgba(0,243,255,.08) 60%,transparent)"></i>
-    <i class="spill" style="left:545px;top:612px;width:400px;height:74px;--t:9s;--d:-5s;background:radial-gradient(closest-side,rgba(255,0,127,.34),rgba(255,0,127,.08) 60%,transparent)"></i>
-    <i class="spill" style="left:930px;top:680px;width:400px;height:110px;--t:10s;--d:-1s;background:radial-gradient(closest-side,rgba(255,0,127,.1),transparent)"></i>
-    <i class="spill" style="left:1290px;top:150px;width:220px;height:320px;--t:12s;--d:-6s;background:radial-gradient(closest-side,rgba(0,243,255,.09),transparent)"></i>
+    <i class="shd" style="left:0;top:0;width:1600px;height:900px;background:
+      linear-gradient(180deg,rgba(0,0,6,.62),transparent 230px) 860px -60px/760px 230px no-repeat,
+      radial-gradient(ellipse 60% 55% at 70% 32%,rgba(0,0,8,.55),transparent 75%) 1150px -40px/560px 620px no-repeat,
+      radial-gradient(ellipse 55% 50% at 50% 60%,rgba(0,0,4,.6),transparent 75%) 950px 680px/480px 280px no-repeat,
+      radial-gradient(ellipse 55% 60% at 50% 70%,rgba(0,0,0,.5),transparent 75%) 480px 790px/560px 170px no-repeat"></i>
+    <svg class="beams" viewBox="0 0 1600 900" width="1600" height="900"><defs>
+      <linearGradient id="bmC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00f3ff" stop-opacity=".2"/><stop offset=".55" stop-color="#00f3ff" stop-opacity=".06"/><stop offset=".85" stop-color="#00f3ff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="bmM" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff007f" stop-opacity=".2"/><stop offset=".6" stop-color="#ff007f" stop-opacity=".05"/><stop offset=".88" stop-color="#ff007f" stop-opacity="0"/></linearGradient>
+      <filter id="bmB" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="10"/></filter></defs>
+      <g filter="url(#bmB)"><path d="M690 120L892 120L1410 641L1151 740Z" fill="url(#bmC)"/><path d="M640 330L785 330L1300 751L1102 870Z" fill="url(#bmM)"/></g></svg>
+    <i class="spill" style="left:0;top:0;width:1600px;height:900px;background:
+      radial-gradient(ellipse 50% 50% at 14% 40%,rgba(0,243,255,.22),rgba(0,243,255,.07) 45%,transparent 70%) 800px 250px/680px 440px no-repeat,
+      radial-gradient(ellipse 50% 50% at 18% 40%,rgba(255,0,127,.2),rgba(255,0,127,.05) 42%,transparent 66%) 740px 510px/640px 360px no-repeat,
+      radial-gradient(closest-side,rgba(0,243,255,.3),rgba(0,243,255,.08) 60%,transparent) 1000px 548px/360px 76px no-repeat,
+      radial-gradient(closest-side,rgba(255,0,127,.34),rgba(255,0,127,.08) 60%,transparent) 545px 612px/400px 74px no-repeat,
+      radial-gradient(closest-side,rgba(255,0,127,.1),transparent) 930px 680px/400px 110px no-repeat,
+      radial-gradient(closest-side,rgba(0,243,255,.09),transparent) 1290px 150px/220px 320px no-repeat"></i>
   </div>
   <div class="tint"></div>
   <div class="vignette2"></div>
@@ -3311,7 +3312,7 @@ const city = {
 /* ═══════════════ 네온룸 추가 효과: 입체 홀로그램 비단잉어 · 원경 스피너 궤적 ═══════════════ */
 const cityFx = {
   fit(d) {
-    const k = $('#cityKoi'); k.width = innerWidth * d; k.height = innerHeight * d; this.kx = k.getContext('2d'); this.d = d;
+    const k = $('#cityKoi'); this.kd = 1; k.width = innerWidth; k.height = innerHeight; this.kx = k.getContext('2d'); this.d = d; this.box = null;
     const s = $('#cityV canvas.spn'); if (s) { const v = $('#cityV').getBoundingClientRect(); s.width = v.width * d; s.height = v.height * d; this.sx = s.getContext('2d'); }
     if (!this.spinners) { const R = Math.random; this.spinners = Array.from({ length: 13 }, () => this.spinner(R())); }
   },
@@ -3335,8 +3336,9 @@ const cityFx = {
   },
   /* ── 홀로그램 비단잉어: 3D 궤도를 따라 헤엄치며 원근(크기·밝기·몸 길이 단축)이 바뀜 ── */
   koi(t) {
-    const x = this.kx, W = x.canvas.width, H = x.canvas.height, sc = city.sc || innerWidth / 1600, y0 = city.y0 || 0, d = this.d;
-    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+    const x = this.kx, W = x.canvas.width, H = x.canvas.height, sc = city.sc || innerWidth / 1600, y0 = city.y0 || 0, d = this.kd;
+    x.setTransform(1, 0, 0, 1, 0, 0); if (this.box) x.clearRect(...this.box); else x.clearRect(0, 0, W, H);
+    const bx = (980 * sc), by0 = (-y0 + 150) * sc, by1 = (-y0 + 640) * sc, bl = Math.max(0, 330 * sc); this.box = [bl, Math.max(0, by0), Math.min(W, bx + 200 * sc) - bl, Math.min(H, by1) - Math.max(0, by0)];
     if (!settings.citySigns) return;
     const fish = [{ T: 44, cx: 790, cy: 405, rx: 130, ry: 78, L: 225, ph: 0, a: 1 }, { T: 61, cx: 770, cy: 255, rx: 120, ry: 26, L: 105, ph: 2.4, a: .42 }];
     for (const f of fish) {
@@ -3351,7 +3353,7 @@ const cityFx = {
     }
     x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1;
     x.globalCompositeOperation = 'destination-out'; x.fillStyle = this.scanPat || (this.scanPat = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 4 * Math.max(1, Math.round(d)); const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(0, 0, 4, Math.max(1, Math.round(d))); return x.createPattern(c, 'repeat'); })());
-    x.fillRect(0, 0, W, H); x.globalCompositeOperation = 'source-over';
+    x.fillRect(...this.box); x.globalCompositeOperation = 'source-over';
   },
   drawKoi(x, L, ph, z) {
     const HW = [[0, .5], [.06, .8], [.16, .97], [.3, 1], [.45, .9], [.6, .66], [.74, .42], [.86, .26], [1, .17]];
@@ -3375,7 +3377,7 @@ const cityFx = {
     // 등지느러미
     fin([[X(.24), Y(.24) - hw(.24) * .95], [X(.3), Y(.3) - hw(.3) - L * .13 + w1 * L * .015], [X(.4), Y(.4) - hw(.4) - L * .09 + w1 * L * .02], [X(.52), Y(.52) - hw(.52) - L * .05 + w1 * L * .02], [X(.62), Y(.62) - hw(.62) - L * .01], [X(.6), Y(.6) - hw(.6) * .9], [X(.4), Y(.4) - hw(.4) * .95]], .45, .1);
     // 몸통: 위는 밝고 배 쪽은 어두운 원통 음영 + 발광
-    x.save(); x.shadowColor = 'rgba(255,40,190,.55)'; x.shadowBlur = L * .12;
+    x.save(); x.shadowColor = 'rgba(255,40,190,.55)'; x.shadowBlur = 14;
     const mh = L * .12, g = x.createLinearGradient(0, -mh, 0, mh);
     g.addColorStop(0, 'rgba(245,253,255,.95)'); g.addColorStop(.3, 'rgba(190,240,255,.8)'); g.addColorStop(.62, 'rgba(90,170,255,.5)'); g.addColorStop(1, 'rgba(60,70,200,.22)');
     body(); x.fillStyle = g; x.fill(); x.restore();
