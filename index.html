@@ -1256,7 +1256,7 @@ body.theme-city #player .ctrls { gap: 5px; }
   radial-gradient(ellipse 30% 25% at 45% 30%, color-mix(in srgb, var(--c1) 10%, transparent), transparent 70%),
   linear-gradient(180deg, #010208 0%, #020818 42%, #05132c 74%, #061634 100%); }
 #cityScene .hkoi { display: none; }
-#cityKoi { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; }
+#cityKoi { position: absolute; inset: 0; width: 100%; height: 100%; }
 /* 원경 스모그 · 안개 층 (빌딩 레이어 사이) */
 #cityScene .cityv .smog { position: absolute; inset: 0; pointer-events: none; }
 #cityScene .cityv .smog.s1 { background: linear-gradient(180deg, transparent 18%, rgba(50,85,140,.10) 36%, rgba(62,100,160,.22) 56%, rgba(40,70,125,.3) 78%, rgba(18,36,76,.26) 100%);
@@ -1266,14 +1266,14 @@ body.theme-city #player .ctrls { gap: 5px; }
   radial-gradient(ellipse 45% 18% at 75% 96%, rgba(0,243,255,.09), transparent 70%),
   linear-gradient(180deg, transparent 40%, rgba(12,24,52,.24) 62%, rgba(8,16,38,.42) 100%);
   -webkit-mask-image: linear-gradient(180deg, transparent 34%, #000 60%); mask-image: linear-gradient(180deg, transparent 34%, #000 60%); }
-#cityScene .cityv .smog i { position: absolute; left: -50%; width: 200%; height: 26%; opacity: .5; mix-blend-mode: screen; will-change: transform;
+#cityScene .cityv .smog i { position: absolute; left: -50%; width: 200%; height: 26%; opacity: .5; will-change: transform;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .03' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .6  0 0 0 0 .85  0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='600' height='160' filter='url(%23f)'/%3E%3C/svg%3E") repeat-x 0 0 / 50% 100%;
   animation: smogDrift var(--t, 140s) linear infinite; }
 @keyframes smogDrift { to { transform: translateX(25%); } }
 /* 원경 스피너 궤적 */
 body.no-flycars #cityScene .cityv canvas.spn { display: none; }
 /* 원경 홀로그램 광고판 (먼 빌딩 외벽) */
-#cityScene .cityv .had { position: absolute; mix-blend-mode: screen; opacity: .6; animation: hadFlick 9s steps(1) infinite; animation-delay: var(--d, 0s); overflow: hidden; }
+#cityScene .cityv .had { position: absolute; opacity: .6; animation: hadFlick 9s steps(1) infinite; animation-delay: var(--d, 0s); overflow: hidden; }
 #cityScene .cityv .had::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.5) 0 1px, transparent 1px 3px); }
 #cityScene .cityv .had .sc { position: absolute; left: 0; right: 0; height: 22%; background: linear-gradient(180deg, transparent, rgba(220,250,255,.35), transparent); animation: hadScan 4.5s linear infinite; }
 @keyframes hadScan { from { top: -25%; } to { top: 105%; } }
@@ -1290,10 +1290,7 @@ body.no-flycars #cityScene .cityv canvas.spn { display: none; }
 /* 실내: 짙은 그림자 · 네온 빛 번짐 · 빛줄기 · 표면 반사 */
 #cityScene .vol { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; pointer-events: none; }
 #cityScene .vol > i { position: absolute; display: block; }
-#cityScene .vol .shd { mix-blend-mode: multiply; }
-#cityScene .vol .spill { mix-blend-mode: screen; }
-#cityScene .vol .beams { position: absolute; left: 0; top: 0; mix-blend-mode: screen; }
-#cityScene .vol .mote { mix-blend-mode: screen; }
+#cityScene .vol .beams { position: absolute; left: 0; top: 0; }
 /* 시계·가사 가독성: 뒤쪽을 더 어둡게, 그림자 보강 */
 #cityScene .calm { background: radial-gradient(ellipse 36% 48% at 18% 42%, rgba(1,3,10,.66), rgba(1,3,10,.3) 60%, transparent 86%); }
 body.theme-city #clock .time { text-shadow: 0 0 2px rgba(0,0,0,.8), 0 0 1.2vh rgba(90,180,255,.6), 0 0 4vh rgba(60,140,255,.35); }
