@@ -1250,6 +1250,60 @@ body.theme-city.playing .ui #bPlay::before { background: linear-gradient(180deg,
 @keyframes hudBlink { 50% { filter: brightness(.7); } }
 body.theme-city #topbar .ibtn { width: 46px; height: 38px; }
 body.theme-city #player .ctrls { gap: 5px; }
+/* ───────────────── 네온룸 몰입감 강화: 깊은 밤하늘 · 빛 번짐 · 스모그 · 원경 스피너 · 원경 홀로그램 광고판 · 입체 잉어 ───────────────── */
+#cityScene .sky { background:
+  radial-gradient(ellipse 45% 40% at 30% 55%, rgba(40,110,230,.16), transparent 70%),
+  radial-gradient(ellipse 30% 25% at 45% 30%, color-mix(in srgb, var(--c1) 10%, transparent), transparent 70%),
+  linear-gradient(180deg, #010208 0%, #020818 42%, #05132c 74%, #061634 100%); }
+#cityScene .hkoi { display: none; }
+#cityKoi { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; }
+/* 원경 스모그 · 안개 층 (빌딩 레이어 사이) */
+#cityScene .cityv .smog { position: absolute; inset: 0; pointer-events: none; }
+#cityScene .cityv .smog.s1 { background: linear-gradient(180deg, transparent 18%, rgba(50,85,140,.10) 36%, rgba(62,100,160,.22) 56%, rgba(40,70,125,.3) 78%, rgba(18,36,76,.26) 100%);
+  -webkit-backdrop-filter: blur(1.4px); backdrop-filter: blur(1.4px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 14%, #000 42%); mask-image: linear-gradient(180deg, transparent 14%, #000 42%); }
+#cityScene .cityv .smog.s2 { background:
+  radial-gradient(ellipse 55% 22% at 38% 100%, rgba(255,0,127,.12), transparent 70%),
+  radial-gradient(ellipse 45% 18% at 75% 96%, rgba(0,243,255,.09), transparent 70%),
+  linear-gradient(180deg, transparent 40%, rgba(12,24,52,.24) 62%, rgba(8,16,38,.42) 100%);
+  -webkit-backdrop-filter: blur(.7px); backdrop-filter: blur(.7px);
+  -webkit-mask-image: linear-gradient(180deg, transparent 34%, #000 60%); mask-image: linear-gradient(180deg, transparent 34%, #000 60%); }
+#cityScene .cityv .smog i { position: absolute; left: -50%; width: 200%; height: 26%; opacity: .5; mix-blend-mode: screen; filter: blur(6px);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .03' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .6  0 0 0 0 .85  0 0 0 .9 -.32'/%3E%3C/filter%3E%3Crect width='600' height='160' filter='url(%23f)'/%3E%3C/svg%3E") repeat-x 0 0 / 50% 100%;
+  animation: smogDrift var(--t, 140s) linear infinite; }
+@keyframes smogDrift { to { transform: translateX(25%); } }
+/* 원경 스피너 궤적 */
+#cityScene .cityv canvas.spn { filter: blur(.5px); }
+body.no-flycars #cityScene .cityv canvas.spn { display: none; }
+/* 원경 홀로그램 광고판 (먼 빌딩 외벽) */
+#cityScene .cityv .had { position: absolute; mix-blend-mode: screen; opacity: .6; filter: blur(.45px); animation: hadFlick 9s steps(1) infinite; animation-delay: var(--d, 0s); overflow: hidden; }
+#cityScene .cityv .had::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.5) 0 1px, transparent 1px 3px); }
+#cityScene .cityv .had .sc { position: absolute; left: 0; right: 0; height: 22%; background: linear-gradient(180deg, transparent, rgba(220,250,255,.35), transparent); animation: hadScan 4.5s linear infinite; }
+@keyframes hadScan { from { top: -25%; } to { top: 105%; } }
+@keyframes hadFlick { 0%, 100% { opacity: .6; } 47% { opacity: .45; } 48% { opacity: .64; } 49% { opacity: .3; } 50% { opacity: .6; } 81% { opacity: .54; } }
+#cityScene .cityv .had.v { left: 58.4%; top: 27%; width: 3.6%; height: 28%; background: linear-gradient(180deg, rgba(0,243,255,.55), rgba(120,80,255,.35) 55%, rgba(255,0,127,.55));
+  box-shadow: 0 0 3vh rgba(0,243,255,.35); display: grid; place-items: center; }
+#cityScene .cityv .had.v b { writing-mode: vertical-rl; font: 600 1.8vh/1 'Exo 2', var(--sans); letter-spacing: .5em; color: #eaffff; text-shadow: 0 0 1vh #00f3ff, 0 0 2.5vh #ff007f; }
+#cityScene .cityv .had.w { left: 3%; top: 62.5%; width: 25%; height: 5.4%; --d: -4s; background: linear-gradient(90deg, rgba(255,0,127,.5), rgba(255,0,127,.18) 40%, rgba(0,243,255,.18) 60%, rgba(0,243,255,.5));
+  box-shadow: 0 0 3vh rgba(255,0,127,.3); display: flex; align-items: center; gap: 4%; padding: 0 4%; }
+#cityScene .cityv .had.w .ring { flex: none; height: 70%; aspect-ratio: 1; border-radius: 50%; border: 2px solid #dffcff; box-shadow: 0 0 1vh #00f3ff, inset 0 0 1vh #ff007f; animation: hadRing 6s linear infinite; }
+@keyframes hadRing { to { transform: rotateY(360deg); } }
+#cityScene .cityv .had.w b { font: 600 1.25vh/1.25 'Exo 2', var(--sans); letter-spacing: .24em; color: #fff; text-shadow: 0 0 1vh #ff007f, 0 0 2vh #00f3ff; white-space: nowrap; }
+#cityScene .cityv .had.w small { display: block; font-size: .78em; letter-spacing: .28em; color: #9ff6ff; }
+/* 실내: 짙은 그림자 · 네온 빛 번짐 · 빛줄기 · 표면 반사 */
+#cityScene .vol { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; pointer-events: none; }
+#cityScene .vol > i { position: absolute; display: block; }
+#cityScene .vol .shd { mix-blend-mode: multiply; }
+#cityScene .vol .spill { mix-blend-mode: screen; border-radius: 50%; animation: spill var(--t, 7s) ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+@keyframes spill { 0% { opacity: 1; } 40% { opacity: .82; } 41% { opacity: .55; } 43% { opacity: .9; } 100% { opacity: .7; } }
+#cityScene .vol .beam { mix-blend-mode: screen; filter: blur(10px); animation: spill var(--t, 9s) ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+#cityScene .vol .mote { mix-blend-mode: screen; }
+/* 시계·가사 가독성: 뒤쪽을 더 어둡게, 그림자 보강 */
+#cityScene .calm { background: radial-gradient(ellipse 36% 48% at 18% 42%, rgba(1,3,10,.66), rgba(1,3,10,.3) 60%, transparent 86%); }
+body.theme-city #clock .time { text-shadow: 0 0 2px rgba(0,0,0,.8), 0 0 1.2vh rgba(90,180,255,.6), 0 0 4vh rgba(60,140,255,.35); }
+body.theme-city #clock .date, body.theme-city #clock .np .t { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 12px rgba(0,5,20,.85); }
+body.theme-city #clock .np .a { text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 1vh rgba(255,110,70,.5); }
+body.theme-city #lyrics .line { text-shadow: 0 0 2px rgba(0,0,0,.9), 0 1px 4px rgba(0,0,0,.85), 0 0 14px rgba(0,6,22,.85), 0 0 30px rgba(0,6,22,.6); }
 </style>
 </head>
 <body class="paused">
@@ -1323,6 +1377,7 @@ body.theme-city #player .ctrls { gap: 5px; }
   <div class="srch"><i style="left:47vw;--a:-9deg;--d:0s"></i><i style="left:57vw;--a:11deg;--d:-7s"></i><i style="left:52vw;--a:6deg;--d:-12s"></i></div>
   <div class="calm"></div>
   <div class="haze"></div>
+  <canvas id="cityKoi"></canvas>
   <div id="cityFly"></div>
   <div class="holo2"><div class="pl">
     <div class="hb cover-bg"></div><div class="hi cover-bg"></div><div class="hr cover-bg"></div><div class="hc cover-bg"></div>
@@ -1548,6 +1603,20 @@ body.theme-city #player .ctrls { gap: 5px; }
 <path class="tn" d="M965 1068Q1260 1096 1570 1068" stroke-width="9" fill="none" style="stroke:var(--c1);mix-blend-mode:screen" opacity=".55" filter="url(#soft)"/>
 <path class="tn" d="M965 1068Q1260 1096 1570 1068" stroke-width="2.5" fill="none" style="stroke:color-mix(in srgb, var(--c1) 60%, #fff)" opacity=".7"/>
 </svg>
+  <div class="sv vol">
+    <i class="shd" style="left:860px;top:-60px;width:760px;height:230px;background:linear-gradient(180deg,rgba(0,0,6,.62),transparent)"></i>
+    <i class="shd" style="left:1150px;top:-40px;width:560px;height:620px;background:radial-gradient(ellipse 60% 55% at 70% 32%,rgba(0,0,8,.55),transparent 75%)"></i>
+    <i class="shd" style="left:950px;top:680px;width:480px;height:280px;background:radial-gradient(ellipse 55% 50% at 50% 60%,rgba(0,0,4,.6),transparent 75%)"></i>
+    <i class="shd" style="left:480px;top:790px;width:560px;height:170px;background:radial-gradient(ellipse 55% 60% at 50% 70%,rgba(0,0,0,.5),transparent 75%)"></i>
+    <i class="beam" style="left:690px;top:120px;width:720px;height:620px;--t:9s;background:linear-gradient(118deg,rgba(0,243,255,.2),rgba(0,243,255,.06) 55%,transparent 82%);clip-path:polygon(0 0,28% 0,100% 84%,64% 100%)"></i>
+    <i class="beam" style="left:640px;top:330px;width:660px;height:540px;--t:11s;--d:-4s;background:linear-gradient(112deg,rgba(255,0,127,.2),rgba(255,0,127,.05) 60%,transparent 86%);clip-path:polygon(0 0,22% 0,100% 78%,70% 100%)"></i>
+    <i class="spill" style="left:800px;top:250px;width:680px;height:440px;--t:6s;background:radial-gradient(ellipse at 14% 40%,rgba(0,243,255,.22),rgba(0,243,255,.07) 45%,transparent 70%)"></i>
+    <i class="spill" style="left:740px;top:510px;width:640px;height:360px;--t:8s;--d:-3s;background:radial-gradient(ellipse at 18% 40%,rgba(255,0,127,.2),rgba(255,0,127,.05) 42%,transparent 66%)"></i>
+    <i class="spill" style="left:1000px;top:548px;width:360px;height:76px;--t:7s;--d:-2s;background:radial-gradient(closest-side,rgba(0,243,255,.3),rgba(0,243,255,.08) 60%,transparent)"></i>
+    <i class="spill" style="left:545px;top:612px;width:400px;height:74px;--t:9s;--d:-5s;background:radial-gradient(closest-side,rgba(255,0,127,.34),rgba(255,0,127,.08) 60%,transparent)"></i>
+    <i class="spill" style="left:930px;top:680px;width:400px;height:110px;--t:10s;--d:-1s;background:radial-gradient(closest-side,rgba(255,0,127,.1),transparent)"></i>
+    <i class="spill" style="left:1290px;top:150px;width:220px;height:320px;--t:12s;--d:-6s;background:radial-gradient(closest-side,rgba(0,243,255,.09),transparent)"></i>
+  </div>
   <div class="tint"></div>
   <div class="vignette2"></div>
 </div>
@@ -3109,19 +3178,19 @@ const city = {
     if (this.built) return; this.built = true;
     $('#cityV').innerHTML =
       this.layer(3, { fill: '#173a68', wMin: 16, wMax: 46, tMin: 110, tMax: 430, spire: .35, wy: 9, wx: 6, ww: 2, wh: 3, win: .08, warm: .3, strip: .5, sw: 2, sign: .12, gap: 10, blur: 2, style: 'opacity:.6;filter:blur(1.2px)' }) +
-      city.PYR + this.deep(9) + '<canvas class="trc"></canvas>' +
+      city.PYR + this.deep(9) + '<canvas class="trc"></canvas>' + '<div class="smog s1"><i style="top:46%;--t:150s"></i><i style="top:62%;--t:110s;opacity:.35"></i></div><canvas class="spn"></canvas><div class="had v"><b>SYNTH·CORP</b><i class="sc"></i></div>' +
       this.layer(17, { fill: '#0b1f40', wMin: 28, wMax: 80, tMin: 240, tMax: 600, spire: .2, wy: 11, wx: 8, ww: 3, wh: 4, win: .13, warm: .45, strip: .35, sw: 3, sign: .3, gap: 18, blur: 3 }) +
-      '<canvas class="trc"></canvas>' +
+      '<canvas class="trc"></canvas>' + '<div class="smog s2"><i style="top:70%;--t:90s;opacity:.4"></i></div>' +
       this.layer(31, { fill: '#050c1c', wMin: 60, wMax: 130, tMin: 420, tMax: 760, spire: .1, wy: 14, wx: 10, ww: 4, wh: 5, win: .16, warm: .55, strip: .25, sw: 4, sign: .35, gap: 30, blur: 3.5 });
-    $('#cityV').insertAdjacentHTML('beforeend', city.STACKS + '<canvas class="trc"></canvas>');
+    $('#cityV').insertAdjacentHTML('beforeend', '<div class="had w"><i class="ring"></i><b>ORIGIN-9<small>REWRITE MEMORY</small></b><i class="sc"></i></div>' + city.STACKS + '<canvas class="trc"></canvas>');
     this.trafficInit();
   },
   onTrack(t) { if (!t) return; $('#holoCap').textContent = (t.album || t.title || '') + '  ·  ' + (t.artist || ''); if (t.cover) $('#roomArt').setAttribute('href', t.cover); },
-  layout() { const sc = innerWidth / 1600, vh = innerHeight / sc, y0 = (900 - vh) * (vh < 900 ? .5 : .45);
+  layout() { const sc = innerWidth / 1600, vh = innerHeight / sc, y0 = (900 - vh) * (vh < 900 ? .5 : .45); this.sc = sc; this.y0 = y0;
     $('#cityScene .room').setAttribute('viewBox', `0 ${y0.toFixed(1)} 1600 ${vh.toFixed(1)}`);
     $$('#cityScene .sv').forEach(e => e.style.transform = `translate(0,${(-y0 * sc).toFixed(1)}px) scale(${sc})`); },
   fit() { const c = $('#cityWeather'), d = Math.min(1.5, devicePixelRatio || 1); c.width = innerWidth * d; c.height = innerHeight * d; this.ctx = c.getContext('2d'); this.k = d;
-    this.layout(); const v = $('#cityV').getBoundingClientRect(); this.tc = [...$$('#cityV .trc')]; this.tc.forEach(t => { t.width = v.width * d; t.height = v.height * d; }); },
+    this.layout(); const v = $('#cityV').getBoundingClientRect(); this.tc = [...$$('#cityV .trc')]; this.tc.forEach(t => { t.width = v.width * d; t.height = v.height * d; }); cityFx.fit(d); },
   start() {
     this.build(); this.fit(); this.onTrack(S.track);
     body.classList.toggle('no-flycars', !settings.cityCars); body.classList.toggle('no-skyholo', !settings.skyHolo); body.classList.toggle('no-signs', !settings.citySigns);
@@ -3220,7 +3289,7 @@ const city = {
     if (ts - this.last < 33) return;
     const dt = Math.min(.05, (ts - this.last) / 1000 || .033); this.last = ts;
     const x = this.ctx, W = x.canvas.width, H = x.canvas.height, rain = settings.cityWx === 'rain', t = ts / 1000;
-    this.traffic(dt, t);
+    this.traffic(dt, t); cityFx.draw(dt, t);
     x.clearRect(0, 0, W, H);
     for (const p of this.parts) {
       if (rain) {
@@ -3236,6 +3305,107 @@ const city = {
       }
       if (p.y > 1.05 || p.x < -.15 || p.x > 1.15) Object.assign(p, this.part(false));
     }
+  },
+};
+
+/* ═══════════════ 네온룸 추가 효과: 입체 홀로그램 비단잉어 · 원경 스피너 궤적 ═══════════════ */
+const cityFx = {
+  fit(d) {
+    const k = $('#cityKoi'); k.width = innerWidth * d; k.height = innerHeight * d; this.kx = k.getContext('2d'); this.d = d;
+    const s = $('#cityV canvas.spn'); if (s) { const v = $('#cityV').getBoundingClientRect(); s.width = v.width * d; s.height = v.height * d; this.sx = s.getContext('2d'); }
+    if (!this.spinners) { const R = Math.random; this.spinners = Array.from({ length: 13 }, () => this.spinner(R())); }
+  },
+  spinner(x) { const R = Math.random, red = R() < .5; return { x, y: .2 + R() * .36, dir: R() < .5 ? 1 : -1, v: .012 + R() * .03, z: .3 + R() * .7, ph: R() * 6.283, dy: (R() - .5) * .012,
+    col: red ? [255, 59, 74] : [74, 184, 255], len: .05 + R() * .1 }; },
+  draw(dt, t) { if (!this.kx) return; this.koi(t); if (settings.cityCars && this.sx) this.spin(dt, t); },
+  spin(dt, t) {
+    const x = this.sx, W = x.canvas.width, H = x.canvas.height;
+    x.clearRect(0, 0, W, H); x.globalCompositeOperation = 'lighter';
+    for (const s of this.spinners) {
+      s.x += s.dir * s.v * dt * (.6 + s.z * .6); s.y += s.dy * dt;
+      if (s.x < -.2 || s.x > 1.2 || s.y < .12 || s.y > .62) Object.assign(s, this.spinner(s.dir > 0 ? -.15 : 1.15));
+      const px = s.x * W, py = (s.y + Math.sin(t * .5 + s.ph) * .006) * H, L = s.len * W * (.5 + s.z * .5), a = .25 + s.z * .45, [r, g, b] = s.col;
+      const tx = px - s.dir * L, ty = py - s.dy * L * 3;
+      const gr = x.createLinearGradient(px, py, tx, ty); gr.addColorStop(0, `rgba(${r},${g},${b},${a})`); gr.addColorStop(.35, `rgba(${r},${g},${b},${a * .35})`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      x.strokeStyle = gr; x.lineWidth = (.7 + s.z * 1.1) * this.d; x.beginPath(); x.moveTo(px, py); x.lineTo(tx, ty); x.stroke();
+      x.fillStyle = `rgba(235,245,255,${(.5 + s.z * .5).toFixed(2)})`; x.beginPath(); x.arc(px, py, (.8 + s.z * 1.1) * this.d, 0, 6.283); x.fill();
+      if (Math.sin(t * 6 + s.ph * 3) > .7) { x.fillStyle = `rgba(${r},${g},${b},.9)`; x.beginPath(); x.arc(px - s.dir * 3 * this.d, py + 1.5 * this.d, 1.1 * this.d, 0, 6.283); x.fill(); }
+    }
+    x.globalCompositeOperation = 'source-over';
+  },
+  /* ── 홀로그램 비단잉어: 3D 궤도를 따라 헤엄치며 원근(크기·밝기·몸 길이 단축)이 바뀜 ── */
+  koi(t) {
+    const x = this.kx, W = x.canvas.width, H = x.canvas.height, sc = city.sc || innerWidth / 1600, y0 = city.y0 || 0, d = this.d;
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, W, H);
+    if (!settings.citySigns) return;
+    const fish = [{ T: 44, cx: 790, cy: 405, rx: 130, ry: 78, L: 225, ph: 0, a: 1 }, { T: 61, cx: 770, cy: 255, rx: 120, ry: 26, L: 105, ph: 2.4, a: .42 }];
+    for (const f of fish) {
+      const P = u => { const w = u / f.T * 6.2832 + f.ph; return [f.cx + f.rx * Math.sin(w), f.cy + f.ry * Math.sin(2 * w + .6) + 12 * Math.sin(u * .37 + f.ph), Math.cos(w)]; };
+      const [px, py, pz] = P(t), [qx, qy, qz] = P(t + .25);
+      let vx = qx - px, vy = qy - py; const vz = (qz - pz) * f.rx, sp = Math.hypot(vx, vy, vz) || 1;
+      const fore = Math.max(.32, Math.hypot(vx, vy) / sp), z = (pz + 1) / 2, s = (.72 + .38 * z), ang = Math.atan2(vy, vx);
+      x.setTransform(sc * d, 0, 0, sc * d, 0, -y0 * sc * d); x.translate(px, py); x.rotate(ang); if (Math.cos(ang) < 0) x.scale(1, -1);
+      x.scale(fore * s, s);
+      x.globalAlpha = f.a * (.55 + .45 * z) * (.92 + .08 * Math.sin(t * 13 + f.ph) * Math.sin(t * 3.1));
+      this.drawKoi(x, f.L, t * (2.4 + (1 - fore) * 1.5) + f.ph, z);
+    }
+    x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1;
+    x.globalCompositeOperation = 'destination-out'; x.fillStyle = this.scanPat || (this.scanPat = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 4 * Math.max(1, Math.round(d)); const g = c.getContext('2d'); g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(0, 0, 4, Math.max(1, Math.round(d))); return x.createPattern(c, 'repeat'); })());
+    x.fillRect(0, 0, W, H); x.globalCompositeOperation = 'source-over';
+  },
+  drawKoi(x, L, ph, z) {
+    const HW = [[0, .5], [.06, .8], [.16, .97], [.3, 1], [.45, .9], [.6, .66], [.74, .42], [.86, .26], [1, .17]];
+    const hw = s => { for (let i = 1; i < HW.length; i++) if (s <= HW[i][0]) { const [a, va] = HW[i - 1], [b, vb] = HW[i], k = (s - a) / (b - a); return (va + (vb - va) * k) * L * .115; } return L * .02; };
+    const N = 26, X = s => L * (.5 - s), Y = s => L * .045 * Math.pow(s, 1.6) * Math.sin(ph - s * 4.2);
+    const top = [], bot = [];
+    for (let i = 0; i <= N; i++) { const s = i / N, w = hw(s); top.push([X(s), Y(s) - w * (i === 0 ? .6 : 1)]); bot.push([X(s), Y(s) + w * (i === 0 ? .6 : 1)]); }
+    const body = () => { x.beginPath(); x.moveTo(L * .5 + L * .015, Y(0)); top.forEach(p => x.lineTo(p[0], p[1])); for (let i = bot.length - 1; i >= 0; i--) x.lineTo(bot[i][0], bot[i][1]); x.closePath(); };
+    const fin = (pts, a1, a2) => { const xs = pts.map(p => p[0]), g = x.createLinearGradient(Math.max(...xs), 0, Math.min(...xs), 0);
+      g.addColorStop(0, `rgba(150,240,255,${a1})`); g.addColorStop(1, `rgba(255,90,200,${a2})`); x.fillStyle = g; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i += 2) x.quadraticCurveTo(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]); x.closePath(); x.fill();
+      x.strokeStyle = 'rgba(210,250,255,.45)'; x.lineWidth = L * .004; x.stroke(); };
+    const rays = (bx, by, pts) => { x.strokeStyle = 'rgba(220,250,255,.22)'; x.lineWidth = L * .003; x.beginPath(); pts.forEach(p => { x.moveTo(bx, by); x.lineTo(p[0], p[1]); }); x.stroke(); };
+    const w1 = Math.sin(ph), w2 = Math.sin(ph - 1.2), w3 = Math.sin(ph * 1.3 + .5);
+    // 꼬리지느러미 (나비 잉어처럼 길게 흩날림)
+    const tb = X(1), ty0 = Y(1);
+    fin([[tb + L * .02, ty0 - L * .03], [tb - L * .2, ty0 - L * .2 + w2 * L * .04], [tb - L * .42, ty0 - L * .2 + w2 * L * .09], [tb - L * .26, ty0 - L * .02 + w2 * L * .05], [tb - L * .44, ty0 + L * .19 + w2 * L * .09], [tb - L * .2, ty0 + L * .17 + w2 * L * .04], [tb + L * .02, ty0 + L * .03]], .55, .08);
+    rays(tb, ty0, [[tb - L * .4, ty0 - L * .17 + w2 * L * .09], [tb - L * .33, ty0 - L * .08 + w2 * L * .07], [tb - L * .33, ty0 + L * .08 + w2 * L * .07], [tb - L * .42, ty0 + L * .17 + w2 * L * .09]]);
+    // 먼 쪽 가슴지느러미 (몸 뒤로 살짝 비침)
+    fin([[X(.2), Y(.2) + hw(.2) * .7], [X(.26) + L * .02, Y(.2) + L * .16 + w3 * L * .03], [X(.36), Y(.3) + L * .15 + w3 * L * .04], [X(.32), Y(.3) + L * .06], [X(.27), Y(.27) + hw(.27) * .8]], .22, .05);
+    // 등지느러미
+    fin([[X(.24), Y(.24) - hw(.24) * .95], [X(.3), Y(.3) - hw(.3) - L * .13 + w1 * L * .015], [X(.4), Y(.4) - hw(.4) - L * .09 + w1 * L * .02], [X(.52), Y(.52) - hw(.52) - L * .05 + w1 * L * .02], [X(.62), Y(.62) - hw(.62) - L * .01], [X(.6), Y(.6) - hw(.6) * .9], [X(.4), Y(.4) - hw(.4) * .95]], .45, .1);
+    // 몸통: 위는 밝고 배 쪽은 어두운 원통 음영 + 발광
+    x.save(); x.shadowColor = 'rgba(255,40,190,.55)'; x.shadowBlur = L * .12;
+    const mh = L * .12, g = x.createLinearGradient(0, -mh, 0, mh);
+    g.addColorStop(0, 'rgba(245,253,255,.95)'); g.addColorStop(.3, 'rgba(190,240,255,.8)'); g.addColorStop(.62, 'rgba(90,170,255,.5)'); g.addColorStop(1, 'rgba(60,70,200,.22)');
+    body(); x.fillStyle = g; x.fill(); x.restore();
+    x.save(); body(); x.clip();
+    // 홍백 무늬 (홀로그램 마젠타·주황)
+    [[.12, -.55, .11, '255,60,110'], [.34, -.5, .14, '255,110,60'], [.52, -.2, .1, '255,50,140'], [.68, -.6, .08, '255,120,70']].forEach(([s, oy, r, c]) => {
+      const cx = X(s), cy = Y(s) + hw(s) * oy, gr = x.createRadialGradient(cx, cy, 0, cx, cy, L * r);
+      gr.addColorStop(0, `rgba(${c},.85)`); gr.addColorStop(.65, `rgba(${c},.55)`); gr.addColorStop(1, `rgba(${c},0)`); x.fillStyle = gr; x.beginPath(); x.ellipse(cx, cy, L * r * 1.3, L * r * .8, 0, 0, 6.283); x.fill(); });
+    // 비늘
+    x.strokeStyle = 'rgba(255,255,255,.22)'; x.lineWidth = L * .0035;
+    for (let s = .13; s < .86; s += .042) for (let j = -2; j <= 2; j++) { const w = hw(s), cy = Y(s) + j * w * .38 + (Math.round(s / .042) % 2 ? w * .19 : 0); if (Math.abs(cy - Y(s)) > w * .85) continue;
+      x.beginPath(); x.arc(X(s) + L * .012, cy, w * .22, 2.2, 4.1); x.stroke(); }
+    // 등 쪽 하이라이트 · 배 쪽 반사광
+    x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.65)'; x.lineWidth = L * .012; x.beginPath();
+    for (let i = 1; i <= N * .82; i++) { const s = i / N; i === 1 ? x.moveTo(X(s), Y(s) - hw(s) * .58) : x.lineTo(X(s), Y(s) - hw(s) * .58); } x.stroke();
+    x.strokeStyle = 'rgba(0,243,255,.45)'; x.lineWidth = L * .008; x.beginPath();
+    for (let i = 2; i <= N * .75; i++) { const s = i / N; i === 2 ? x.moveTo(X(s), Y(s) + hw(s) * .82) : x.lineTo(X(s), Y(s) + hw(s) * .82); } x.stroke();
+    x.restore();
+    body(); x.strokeStyle = 'rgba(170,245,255,.7)'; x.lineWidth = L * .006; x.stroke();
+    // 가까운 쪽 가슴지느러미 · 배지느러미
+    fin([[X(.19), Y(.19) + hw(.19) * .75], [X(.24) + L * .03, Y(.2) + L * .18 + w3 * L * .035], [X(.36), Y(.3) + L * .17 + w3 * L * .05], [X(.31), Y(.3) + L * .07], [X(.26), Y(.26) + hw(.26) * .85]], .5, .12);
+    fin([[X(.5), Y(.5) + hw(.5) * .85], [X(.53), Y(.5) + L * .1 + w1 * L * .02], [X(.6), Y(.58) + L * .08 + w1 * L * .02], [X(.58), Y(.58) + hw(.58)], [X(.55), Y(.55) + hw(.55) * .9]], .4, .1);
+    // 눈 · 수염
+    const ex = X(.07), ey = Y(.07) - hw(.07) * .22, er = L * .02;
+    x.fillStyle = 'rgba(235,252,255,.95)'; x.beginPath(); x.arc(ex, ey, er, 0, 6.283); x.fill();
+    x.fillStyle = 'rgba(10,20,70,.95)'; x.beginPath(); x.arc(ex + er * .15, ey, er * .6, 0, 6.283); x.fill();
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(ex + er * .35, ey - er * .3, er * .22, 0, 6.283); x.fill();
+    x.strokeStyle = 'rgba(210,250,255,.6)'; x.lineWidth = L * .004; x.beginPath();
+    x.moveTo(L * .5, Y(0) + L * .015); x.quadraticCurveTo(L * .5 + L * .03, Y(0) + L * .06 + w1 * L * .01, L * .5 - L * .01, Y(0) + L * .09);
+    x.moveTo(L * .49, Y(0) + L * .02); x.quadraticCurveTo(L * .5 + L * .005, Y(0) + L * .055, L * .47, Y(0) + L * .075); x.stroke();
   },
 };
 let sceneFitT, sceneFitWH = '';
