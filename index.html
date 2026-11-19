@@ -1644,7 +1644,7 @@ body.no-citykoi #cityKoi { display: none; }
     <div class="slab"><span>배경 블러</span><span id="vBlur"></span></div>
     <input type="range" id="rBlur" min="0" max="3" step="1">
     <div class="slab"><span>배경 흐름 속도</span><span id="vMotion"></span></div>
-    <input type="range" id="rMotion" min="0" max="2" step="0.25">
+    <input type="range" id="rMotion" min="0" max="5" step="0.25">
     <div class="slab"><span>엣지 라이트 세기</span><span id="vEdge"></span></div>
     <input type="range" id="rEdge" min="0" max="1" step="0.1">
   </section>
@@ -1919,7 +1919,7 @@ const bg = {
     const fading = this.prev && now - this.fadeStart < CONFIG.CROSSFADE_MS;
     if ((REDUCED || settings.motion === 0) && !fading && !this.dirty) { this.lastT = now; return; }
     const dt = this.lastT ? Math.min(.5, (now - this.lastT) / 1000) : 0; this.lastT = now;
-    this.tt = (this.tt || 0) + dt * settings.motion;
+    this.tt = (this.tt || 0) + dt * settings.motion * 3.5;   // ×1에서도 흐름이 눈에 보이게 기본 속도를 올림
     const t = REDUCED ? 0 : this.tt + 40;
     const x = this.wctx; x.globalAlpha = 1; x.clearRect(0, 0, this.w, this.h);
     if (fading) { this.scene(this.prev, t, 1); this.scene(this.cur, t, (now - this.fadeStart) / CONFIG.CROSSFADE_MS); }
