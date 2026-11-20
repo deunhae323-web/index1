@@ -3765,7 +3765,8 @@ const itunes = {
   norm(x) { return (x || '').toLowerCase().normalize('NFKC').replace(/\s*[\(\[][^\)\]]*[\)\]]/g, '').replace(/\s+-\s+(single|ep|deluxe.*|remaster.*|.*edition)$/i, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim(); },
   same(a, b) { a = this.norm(a); b = this.norm(b); return !!a && !!b && (a === b || a.includes(b) || b.includes(a)); },
   big(u) { return u ? u.replace(/\/\d+x\d+bb\.(jpg|png|webp)$/i, '/3000x3000bb.jpg') : ''; },
-  async q(params) { try { const r = await fetch('https://itunes.apple.com/search?' + new URLSearchParams(params)); return r.ok ? (await r.json()).results || [] : []; } catch { return []; } },
+  /* 실패(요청 제한 403/429·네트워크)는 null, 결과 없음은 [] 로 구분 */
+  async q(params) { try { const r = await fetch('https://itunes.apple.com/search?' + new URLSearchParams(params)); if (!r.ok) { console.info('[itunes] HTTP', r.status); return null; } return (await r.json()).results || []; } catch (e) { console.info('[itunes] 네트워크 오류', e.message); return null; } },
   /* 아티스트의 앨범 목록 (스포티파이 요청 한도를 쓰지 않음). 7일 동안 기기에 저장 */
   async albums(artist) {
     if (!artist) return null;
@@ -3793,20 +3794,23 @@ const itunes = {
   },
   async find(t) {
     if (!t || t.kind !== 'track' || !settings.itunesArt) return '';
-    const artist = t.artists?.[0] || t.artist || '', album = t.album || '', key = artist + '|' + album;
+    const artist = t.artists?.[0] || t.artist || '', album = t.album || '', key = artist + '|' + album, sk = 'itArt.' + this.norm(key);
     if (this.cache.has(key)) return this.cache.get(key);
-    let url = '';
+    /* 찾은 결과는 30일, '없음'은 하루 동안 기기에 저장 → 같은 앨범은 다시 검색하지 않음(요청 제한 예방) */
+    const saved = store.get(sk); if (saved && Date.now() - saved.at < (saved.url ? 30 : 1) * 864e5) { this.cache.set(key, saved.url); return saved.url; }
+    let url = '', failed = false;
     for (const country of ['US', 'KR', 'JP']) {     /* 1) 앨범으로 검색: 아티스트·앨범 이름이 둘 다 맞는 결과 */
-      const res = await this.q({ term: `${artist} ${album}`, entity: 'album', limit: 15, country });
+      const res = await this.q({ term: `${artist} ${album}`, entity: 'album', limit: 15, country }); if (!res) { failed = true; break; }
       const hit = res.find(x => this.same(x.artistName, artist) && this.norm(x.collectionName) === this.norm(album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.collectionName, album));
       if (hit) { url = this.big(hit.artworkUrl100); break; }
     }
-    if (!url) for (const country of ['US', 'KR']) {   /* 2) 싱글 등: 곡으로 검색해서 그 곡이 실린 앨범 커버 */
-      const res = await this.q({ term: `${artist} ${t.title}`, entity: 'song', limit: 15, country });
+    if (!url && !failed) for (const country of ['US', 'KR']) {   /* 2) 싱글 등: 곡으로 검색해서 그 곡이 실린 앨범 커버 */
+      const res = await this.q({ term: `${artist} ${t.title}`, entity: 'song', limit: 15, country }); if (!res) { failed = true; break; }
       const hit = res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title) && this.same(x.collectionName, album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title));
       if (hit) { url = this.big(hit.artworkUrl100); break; }
     }
-    this.cache.set(key, url); return url;
+    if (failed && !url) { console.info('[itunes] 요청 제한 등으로 이번엔 못 찾음 → 다음 곡 때 다시 시도'); return ''; }   // 실패는 저장하지 않음
+    this.cache.set(key, url); store.set(sk, { at: Date.now(), url }); return url;
   },
 };
 
@@ -3994,8 +3998,12 @@ const coverFull = {
   similar(h) {
     if (!this.thumb) return true;
     try { const T = 12, c = document.createElement('canvas'); c.width = c.height = T; const x = c.getContext('2d'); x.drawImage(h, 0, 0, T, T); const d = x.getImageData(0, 0, T, T).data;
-      let diff = 0; for (let i = 0; i < d.length; i += 4) diff += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]);
-      return diff / (T * T * 3) < 28; } catch { return false; }
+      const gray = (a, i) => .299 * a[i] + .587 * a[i + 1] + .114 * a[i + 2]; let ma = 0, mb = 0, n = T * T;
+      for (let i = 0; i < d.length; i += 4) { ma += gray(d, i); mb += gray(this.thumb, i); } ma /= n; mb /= n;
+      let g = 0, c = 0; for (let i = 0; i < d.length; i += 4) { g += Math.abs((gray(d, i) - ma) - (gray(this.thumb, i) - mb)); c += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]); }
+      g /= n; c /= n * 3; const ok = g < 26 || c < 34;
+      if (!ok) console.info('[cover] iTunes 커버가 스포티파이 커버와 달라서 안 씀', { 명암차: g.toFixed(1), 색차: c.toFixed(1) });
+      return ok; } catch { return false; }
   },
   /* 화면보다 많이 작은 이미지는 살짝 흐리게 해서 깨진 픽셀이 덜 보이게 */
   soft() {
