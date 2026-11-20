@@ -1209,6 +1209,12 @@ body.lyr-cine #lyrics:not(.plain) .line { margin-left: auto !important; margin-r
   filter: blur(calc(min(var(--ad), 4) * 1.4px)); opacity: calc(.75 - min(var(--ad), 4) * .14) !important; transform: scale(calc(1 - min(var(--ad), 4) * .04)) !important;
   transition: filter .9s, opacity .9s, transform .9s !important; }
 body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !important; transform: scale(1.18) !important; letter-spacing: .02em; }
+/* 긴 제목: 본 제목은 최대 2줄(넘치면 …), feat 등 꼬리는 작은 한 줄 */
+#poster .ptitle, #clock .np .t, #coverFull .cf-meta b { overflow-wrap: anywhere; }
+#poster .ptitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+#poster .ptitle .tx, #clock .np .t .tx, #coverFull .cf-meta b .tx { display: block; margin-top: .35em; font-size: .38em; line-height: 1.3; font-style: normal; letter-spacing: .04em; opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#clock .np .t .tx { font-size: .55em; }
+#coverFull .cf-meta b .tx { font-size: .6em; font-family: var(--sans); font-weight: 500; }
 </style>
 </head>
 <body class="paused">
@@ -2115,14 +2121,26 @@ function setPlayback({ track, playing, progressMs }) {
   if (typeof playing === 'boolean' && playing !== S.playing) { if (!playing) S.progressMs = S.pos(), S.at = performance.now(); S.playing = playing; onPlayState(); }
   if (S.playing) S.lastPlayingAt = Date.now();
 }
+/* 긴 제목 정리: (feat. …)·(with …)·[feat …]·" - Remastered …" 같은 꼬리는 작은 줄로 내리고 본 제목만 크게 */
+function splitTitle(title) {
+  let main = title || '', extra = [];
+  main = main.replace(/\s*[\(\[]\s*((?:feat|ft|featuring|with|prod)\.?\s[^\)\]]*)[\)\]]/gi, (m, g) => { extra.push(g.trim()); return ''; });
+  main = main.replace(/\s+-\s+((?:feat|ft)\.?\s.*)$/i, (m, g) => { extra.push(g.trim()); return ''; });
+  main = main.replace(/\s+-\s+((?:\d{4}\s+)?remaster(?:ed)?(?:\s+\d{4})?.*|.*(?:version|edit|mix|live|mono|stereo)(?:\s+\d{4})?)$/i, (m, g) => { extra.push(g.trim()); return ''; });
+  main = main.trim() || title; return { main, extra: extra.join(' · ') };
+}
+function setTitleEl(el, title) {
+  const { main, extra } = splitTitle(title); el.textContent = main; el.title = title || '';
+  if (extra) { const sm = document.createElement('small'); sm.className = 'tx'; sm.textContent = extra; el.appendChild(sm); }
+}
 function onTrack(t) {
   S.track = t;
   const kr = hasHangul(t.title);
-  $('#npTitle').textContent = t.title; $('#npTitle').classList.toggle('kr', kr);
+  setTitleEl($('#npTitle'), t.title); $('#npTitle').classList.toggle('kr', kr);
   $('#npArtist').textContent = t.artist;
   $('#plTitle').textContent = t.title;
   $('#plSub').textContent = [t.artist, t.album].filter(Boolean).join(' · ');
-  $('#pTitle').textContent = t.title; $('#pTitle').classList.toggle('kr', kr);
+  setTitleEl($('#pTitle'), t.title); $('#pTitle').classList.toggle('kr', kr);
   $('#pArtist').textContent = t.artist; $('#pAlbum').textContent = [t.album, t.year].filter(Boolean).join(' · ');
   $('#pKick').textContent = t.kind === 'episode' ? 'Podcast' : (t.year ? 'No. ' + t.year : 'Side A');
   $('#tDur').textContent = fmt(t.durationMs);
@@ -4023,7 +4041,7 @@ const coverFull = {
     $('#coverFull .cf-shade').style.background = `linear-gradient(${right ? 'to left' : 'to right'}, rgba(0,0,0,.62), rgba(0,0,0,.35) 38%, transparent 62%)`;
   },
   meta() {
-    const m = $('#coverFull .cf-meta'); m.querySelector('b').textContent = S.track?.title || ''; m.querySelector('span').textContent = S.track?.artist || '';
+    const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track?.title || ''); m.querySelector('span').textContent = S.track?.artist || '';
     $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
     this.metaT = setTimeout(() => $('#coverFull .cf-hint').classList.remove('show'), 4000);
   },
