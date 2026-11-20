@@ -1125,11 +1125,10 @@ body.no-citykoi #cityKoi { display: none; }
 #coverFull .cf-blur { position: absolute; inset: -8%; background-size: cover; background-position: center; filter: blur(40px) saturate(1.2) brightness(.7); opacity: 0; transition: opacity .6s; }
 #coverFull.fit .cf-blur { opacity: 1; }
 #coverFull .cf-img { position: absolute; inset: 0; background-repeat: no-repeat; background-size: cover; background-position: var(--cfx, 50%) var(--cfy, 50%);
-  transform: scale(1.06); transition: transform 1.4s cubic-bezier(.2,.7,.2,1), background-position 1s ease, opacity .5s; animation: cfDrift 40s ease-in-out infinite alternate paused; }
-#coverFull.on .cf-img { transform: scale(1); animation-play-state: running; }
-#coverFull.fit .cf-img { background-size: contain; background-position: center; animation: none; box-shadow: none; }
+  transform: scale(1.04); transition: transform .9s cubic-bezier(.2,.7,.2,1), background-position .22s ease-out, opacity .5s; }
+#coverFull.on .cf-img { transform: scale(1); }
+#coverFull.fit .cf-img { background-size: contain; background-position: center; box-shadow: none; }
 #coverFull .cf-img.swap { opacity: 0; }
-@keyframes cfDrift { from { scale: 1; } to { scale: 1.05; } }
 #coverFull .cf-meta { position: absolute; left: 4vw; bottom: 5vh; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.6); opacity: .92; transition: opacity 1.2s; pointer-events: none; }
 #coverFull .cf-meta.show { opacity: .92; }
 #coverFull .cf-meta b { display: block; font: 600 clamp(18px, 1.6vw, 28px)/1.2 var(--serif, Georgia), serif; }
