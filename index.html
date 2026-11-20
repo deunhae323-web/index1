@@ -2191,20 +2191,43 @@ const lyrics = {
     if (t.kind !== 'track') return null;
     const title = this.clean(t.title), artist = t.artists?.[0] || t.artist, dur = Math.round(t.durationMs / 1000);
     const base = 'https://lrclib.net/api/';
+    /* 같은 곡에 사람마다 올린 싱크가 여러 개 있고, 그중엔 뮤비 버전처럼 몇 초씩 밀린 것도 있음
+       (예: Future – Mile High Memories는 정확 매칭 결과가 10초 가까이 늦음).
+       → 정확 매칭 + 검색 결과를 모아서, 서로 타이밍이 가장 많이 일치하는 싱크를 고름 */
+    const all = [];
     try {   /* 1) 제목·아티스트·앨범·길이로 정확 매칭 */
       const q = new URLSearchParams({ track_name: title, artist_name: artist, album_name: t.album || '', duration: dur });
       const r = await fetch(base + 'get?' + q);
-      if (r.ok) { const j = await r.json(); if (j.syncedLyrics || j.plainLyrics || j.instrumental) return this.pick([j], dur); }
+      if (r.ok) { const j = await r.json(); if (j.instrumental && !j.syncedLyrics) return { instrumental: true }; if (j.syncedLyrics || j.plainLyrics) all.push(j); }
     } catch {}
-    for (const q of [{ track_name: title, artist_name: artist }, { q: `${title} ${artist}` }]) {   /* 2) 검색 후 길이가 가장 가까운 결과 */
+    for (const q of [{ track_name: title, artist_name: artist }, { q: `${title} ${artist}` }]) {   /* 2) 검색 결과도 후보로 */
       try {
         const r = await fetch(base + 'search?' + new URLSearchParams(q));
         if (!r.ok) continue;
-        const res = this.pick(await r.json(), dur);
-        if (res) return res;
+        const list = await r.json(); if (Array.isArray(list)) all.push(...list);
+        if (all.some(x => x && x.syncedLyrics && Math.abs((x.duration || 0) - dur) <= 8)) break;
       } catch {}
     }
-    return null;
+    return this.vote(all, dur) || this.pick(all, dur);
+  },
+  /* 싱크 가사 후보끼리 비교: 앞쪽 가사 줄들의 시간이 1초 안으로 맞으면 '같은 싱크'로 보고 표를 셈.
+     글자까지 똑같은 복사본은 한 표로 침 */
+  vote(list, dur) {
+    const seen = new Set(), C = [];
+    for (const x of list || []) {
+      if (!x || !x.syncedLyrics || Math.abs((x.duration || 0) - dur) > 8 || seen.has(x.syncedLyrics)) continue;
+      seen.add(x.syncedLyrics);
+      const L = this.parse(x.syncedLyrics).filter(l => l.text).slice(0, 14).map(l => ({ t: l.t, k: l.text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '') }));
+      if (L.length >= 4) C.push({ x, L });
+    }
+    if (C.length < 2) return null;
+    const agree = (a, b) => { let n = 0, ok = 0; const m = Math.min(a.L.length, b.L.length);
+      for (let i = 0; i < m; i++) { if (a.L[i].k !== b.L[i].k) continue; n++; if (Math.abs(a.L[i].t - b.L[i].t) <= 1000) ok++; }
+      return n >= 3 && ok / n >= .6; };
+    for (const c of C) c.v = C.reduce((s, o) => s + (o !== c && agree(c, o) ? 1 : 0), 0);
+    C.sort((a, b) => (b.v - a.v) || (Math.abs(a.x.duration - dur) - Math.abs(b.x.duration - dur)));
+    if (C[0].v === 0) return null;   // 표가 하나도 안 모이면 기존 방식(길이 가까운 것)
+    return { synced: C[0].x.syncedLyrics, plain: C[0].x.plainLyrics || null };
   },
   pick(list, dur) {
     const c = (list || []).filter(x => x && Math.abs((x.duration || 0) - dur) <= 8)
