@@ -74,7 +74,7 @@ body.has-shelf #poster .ptitle { font-size: clamp(22px, 2.2vw, 40px); }
 body.has-shelf #stage { gap: 3vh; }
 /* LP·CD·포스터: 앨범(음반·케이스·포스터 그림)을 화면 세로 정가운데에, 선반·캡션은 그 아래로 */
 @media (orientation: landscape) {
-  #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
+  #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
   body.wallpaper #stage[data-theme="lp"], body.wallpaper #stage[data-theme="cd"], body.wallpaper #stage[data-theme="poster"] { transform: translateY(.5vh); }
   #stage[data-theme="lp"] > .visual, #stage[data-theme="cd"] > .visual, #stage[data-theme="poster"] > .visual { grid-row: 2; }
   #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 2vh; }
@@ -90,7 +90,7 @@ body.has-shelf #stage { gap: 3vh; }
 body.has-shelf #poster .pmeta { font-size: clamp(9px, .72vw, 12px); letter-spacing: .08em; }
 
 /* 아티스트의 다른 앨범 선반 */
-#shelf { width: min(40vw, 100%); display: none; }
+#shelf { width: min(40vw, 100%); max-width: 100%; min-width: 0; display: none; }
 body.has-shelf #shelf { display: block; }
 #shelf .head { display: flex; align-items: baseline; gap: .8em; margin-bottom: 1.3vh; font-size: clamp(9px, .7vw, 12px); letter-spacing: .3em; text-transform: uppercase; opacity: .75; }
 #shelf .head b { font-family: var(--serif); font-style: var(--title-style); font-weight: 500; letter-spacing: .02em; text-transform: none; font-size: clamp(13px, 1.05vw, 18px); opacity: 1; }
@@ -1130,7 +1130,7 @@ body.no-citykoi #cityKoi { display: none; }
 #coverFull.fit .cf-img { background-size: contain; background-position: center; animation: none; box-shadow: none; }
 #coverFull .cf-img.swap { opacity: 0; }
 @keyframes cfDrift { from { scale: 1; } to { scale: 1.05; } }
-#coverFull .cf-meta { position: absolute; left: 4vw; bottom: 5vh; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.6); opacity: 0; transition: opacity 1.2s; pointer-events: none; }
+#coverFull .cf-meta { position: absolute; left: 4vw; bottom: 5vh; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.6); opacity: .92; transition: opacity 1.2s; pointer-events: none; }
 #coverFull .cf-meta.show { opacity: .92; }
 #coverFull .cf-meta b { display: block; font: 600 clamp(18px, 1.6vw, 28px)/1.2 var(--serif, Georgia), serif; }
 #coverFull .cf-meta span { display: block; margin-top: .4em; font-size: clamp(12px, .95vw, 16px); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
@@ -1639,7 +1639,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !impor
 <div id="chip" class="glass"></div>
 <div id="toast" class="glass"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lyrFish" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB"><feImage id="lyrFishMap" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="0.34" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
-<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 전체 보기 · 휠/↑↓ 위치 조정(기억됨) · R 자동</div></div>
+<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 전체 보기 · Ctrl+휠/↑↓ 위치 조정(기억됨) · R 자동</div></div>
 
 <aside id="lists" class="glass">
   <div class="lhead">
@@ -2393,7 +2393,7 @@ const sp = {
       year: (it.release_date || '').slice(0, 4), durationMs: it.duration_ms, cover: pickImg(it.images) || pickImg(it.show?.images) };
     return { id: it.id || it.uri || it.name, kind: 'track', title: it.name, artist: (it.artists || []).map(a => a.name).join(', '), artists: (it.artists || []).map(a => a.name),
       artistId: it.artists?.[0]?.id || '', albumId: it.album?.id || '', albumUri: it.album?.uri || '',
-      album: it.album?.name || '', year: (it.album?.release_date || '').slice(0, 4), durationMs: it.duration_ms, cover: pickImg(it.album?.images) };
+      album: it.album?.name || '', year: (it.album?.release_date || '').slice(0, 4), durationMs: it.duration_ms, cover: pickImg(it.album?.images), explicit: !!it.explicit };
   },
   async poll() {
     clearTimeout(this.pollTimer);
@@ -3899,6 +3899,20 @@ const coverFull = {
           for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const yy = y + dy, xq = xx + dx; if (yy < 0 || yy >= N || xq < 0 || xq >= N) continue; const j = yy * N + xq; if (skm[j] && !seen[j]) { seen[j] = 1; st.push(j); } } }
         if (!big || n > big.n) big = { n, y0, y1, x0, x1 }; }
       this.skin = big && big.n >= N * N * .0015 ? { ...big, N } : null;
+      /* 아래 구석의 'PARENTAL ADVISORY' 딱지 찾기: 무채색(검정·흰색)이면서 글자 윤곽이 빽빽한 줄이 바닥 근처에 몰려 있는지 */
+      this.pa = null;
+      for (const side of [0, 1]) {
+        const xa = side ? Math.round(N * .6) : 0, xb = side ? N : Math.round(N * .4), w = xb - xa; let top = -1, bot = -1, gap = 0, edSum = 0;
+        for (let y = N - 1; y > N * .7; y--) {
+          let bw = 0, ed = 0;
+          for (let xx = xa + 1; xx < xb - 1; xx++) { const i = y * N + xx, mx = Math.max(R[i], G[i], B[i]), mn = Math.min(R[i], G[i], B[i]);
+            if (mx - mn < 40 && (L[i] < 70 || L[i] > 185)) bw++; if (Math.abs(L[i + 1] - L[i - 1]) > 90 || Math.abs(L[i + N] - (L[i - N] ?? L[i])) > 90) ed++; }
+          if (bw / w > .3) { if (bot < 0) bot = y; top = y; gap = 0; edSum += ed; } else if (bot >= 0 && ++gap > 2) break;
+          if (bot < 0 && y < N * .9) break;
+        }
+        const hh = bot - top + 1;
+        if (top >= 0 && hh / N > .035 && hh / N < .2 && edSum / (w * hh) > .07) { this.pa = { top: top / N - .01, bot: (bot + 1) / N }; break; }
+      }
       const T = 12, tc = document.createElement('canvas'); tc.width = tc.height = T; const tx = tc.getContext('2d'); tx.drawImage(img, 0, 0, T, T); this.thumb = tx.getImageData(0, 0, T, T).data;
       for (let y = 1; y < N - 1; y++) for (let xx = 1; xx < N - 1; xx++) {
         const i = y * N + xx, gx = L[i + 1] - L[i - 1], gy = L[i + N] - L[i - N];
@@ -3937,6 +3951,13 @@ const coverFull = {
     let fx = 50, fy = 50;
     if (A > 1) { const fr = 1 / A, [lo, hi] = range(fr, y0, y1); fy = this.best(this.rows, fr, lo, hi); }
     else if (A < 1) { const fr = A, [lo, hi] = range(fr, x0, x1); fx = this.best(this.cols, fr, lo, hi); }
+    if (A > 1 && this.pa && S.track?.explicit !== false) {   /* 딱지가 잘리게 되면: 숨길 수 있으면 숨기고, 아니면 전부 보이게 */
+      const fr = 1 / A, t = fy / 100 * (1 - fr), bottom = t + fr;
+      if (bottom > this.pa.top && bottom < .995) {
+        const hideT = this.pa.top - fr, faceOk = !F.length || hideT + fr >= Math.min(1, Math.max(...F.map(f => f.y + f.h * 1.1)));
+        fy = (hideT >= 0 && faceOk) ? hideT / (1 - fr) * 100 : 100;
+      }
+    }
     const man = store.get('cfPos.' + this.key());
     if (man) { if (A > 1 && man.y != null) fy = man.y; if (A < 1 && man.x != null) fx = man.x; }
     this.auto = { fx, fy }; el.style.setProperty('--cfx', fx + '%'); el.style.setProperty('--cfy', fy + '%');
@@ -3992,8 +4013,8 @@ const coverFull = {
   },
   meta() {
     const m = $('#coverFull .cf-meta'); m.querySelector('b').textContent = S.track?.title || ''; m.querySelector('span').textContent = S.track?.artist || '';
-    m.classList.add('show'); $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
-    this.metaT = setTimeout(() => { m.classList.remove('show'); $('#coverFull .cf-hint').classList.remove('show'); }, 4000);
+    $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
+    this.metaT = setTimeout(() => $('#coverFull .cf-hint').classList.remove('show'), 4000);
   },
   open(on) {
     const el = $('#coverFull'); if (on && !this.url) return;
@@ -4008,7 +4029,7 @@ const coverFull = {
 ['#lp .vinyl', '#cd .case', '#poster .art'].forEach(sel => $(sel)?.addEventListener('click', e => {
   if (!['lp', 'cd', 'poster'].includes(settings.theme)) return; e.stopPropagation(); coverFull.open(true); }));
 $('#coverFull').addEventListener('click', () => coverFull.open(false));
-$('#coverFull').addEventListener('wheel', e => { if (!$('#coverFull').classList.contains('on')) return; e.preventDefault(); coverFull.nudge(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+$('#coverFull').addEventListener('wheel', e => { if (!$('#coverFull').classList.contains('on') || !(e.ctrlKey || e.metaKey)) return; e.preventDefault(); coverFull.nudge(e.deltaY > 0 ? 1 : -1); }, { passive: false });
 $('#coverFull').addEventListener('mousemove', () => { const el = $('#coverFull'); if (!el.classList.contains('on')) return; coverFull.meta();
   el.classList.remove('still'); clearTimeout(coverFull.curT); coverFull.curT = setTimeout(() => el.classList.add('still'), 1800); });
 addEventListener('resize', () => { coverFull.place(); coverFull.soft(); });
