@@ -3811,24 +3811,29 @@ const itunes = {
     return list.length ? list : null;
   },
   async find(t) {
-    if (!t || t.kind !== 'track' || !settings.itunesArt) return '';
-    const artist = t.artists?.[0] || t.artist || '', album = t.album || '', key = artist + '|' + album, sk = 'itArt.' + this.norm(key);
+    if (!t || t.kind !== 'track' || !settings.itunesArt) return [];
+    const artist = t.artists?.[0] || t.artist || '', album = t.album || '', key = artist + '|' + album, sk = 'itArt2.' + this.norm(key) + '|' + (t.album || '').toLowerCase();
     if (this.cache.has(key)) return this.cache.get(key);
     /* 찾은 결과는 30일, '없음'은 하루 동안 기기에 저장 → 같은 앨범은 다시 검색하지 않음(요청 제한 예방) */
-    const saved = store.get(sk); if (saved && Date.now() - saved.at < (saved.url ? 30 : 1) * 864e5) { this.cache.set(key, saved.url); return saved.url; }
-    let url = '', failed = false;
-    for (const country of ['US', 'KR', 'JP']) {     /* 1) 앨범으로 검색: 아티스트·앨범 이름이 둘 다 맞는 결과 */
-      const res = await this.q({ term: `${artist} ${album}`, entity: 'album', limit: 15, country }); if (!res) { failed = true; break; }
-      const hit = res.find(x => this.same(x.artistName, artist) && this.norm(x.collectionName) === this.norm(album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.collectionName, album));
-      if (hit) { url = this.big(hit.artworkUrl100); break; }
+    const saved = store.get(sk); if (saved && Date.now() - saved.at < (saved.urls?.length ? 30 : 1) * 864e5 && saved.urls) { this.cache.set(key, saved.urls); return saved.urls; }
+    const lc = x => (x || '').toLowerCase().trim(), urls = [], add = x => { const u = this.big(x.artworkUrl100); if (u && !urls.includes(u)) urls.push(u); };
+    let failed = false;
+    for (const country of ['US', 'KR', 'JP']) {     /* 1) 앨범으로 검색 — 일반판/디럭스판이 섞여 있어도 다 후보로 */
+      const res = await this.q({ term: `${artist} ${album}`, entity: 'album', limit: 20, country }); if (!res) { failed = true; break; }
+      const mine = res.filter(x => this.same(x.artistName, artist));
+      mine.filter(x => lc(x.collectionName) === lc(album)).forEach(add);                       // 이름이 글자 그대로 같은 것 먼저
+      mine.filter(x => this.norm(x.collectionName) === this.norm(album)).forEach(add);         // 괄호(디럭스 등) 무시하고 같은 것
+      mine.filter(x => this.same(x.collectionName, album)).forEach(add);                       // 비슷한 것
+      if (urls.length) break;
     }
-    if (!url && !failed) for (const country of ['US', 'KR']) {   /* 2) 싱글 등: 곡으로 검색해서 그 곡이 실린 앨범 커버 */
-      const res = await this.q({ term: `${artist} ${t.title}`, entity: 'song', limit: 15, country }); if (!res) { failed = true; break; }
-      const hit = res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title) && this.same(x.collectionName, album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title));
-      if (hit) { url = this.big(hit.artworkUrl100); break; }
+    if (!urls.length && !failed) for (const country of ['US', 'KR']) {   /* 2) 싱글 등: 곡으로 검색해서 그 곡이 실린 앨범 커버 */
+      const res = await this.q({ term: `${artist} ${t.title}`, entity: 'song', limit: 20, country }); if (!res) { failed = true; break; }
+      res.filter(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title) && this.same(x.collectionName, album)).forEach(add);
+      res.filter(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title)).forEach(add);
+      if (urls.length) break;
     }
-    if (failed && !url) { console.info('[itunes] 요청 제한 등으로 이번엔 못 찾음 → 다음 곡 때 다시 시도'); return ''; }   // 실패는 저장하지 않음
-    this.cache.set(key, url); store.set(sk, { at: Date.now(), url }); return url;
+    if (failed && !urls.length) { console.info('[itunes] 요청 제한 등으로 이번엔 못 찾음 → 다음 곡 때 다시 시도'); return []; }   // 실패는 저장하지 않음
+    const out = urls.slice(0, 4); this.cache.set(key, out); store.set(sk, { at: Date.now(), urls: out }); return out;
   },
 };
 
@@ -4012,7 +4017,7 @@ const coverFull = {
         this.url = hi; this.nat = h.naturalWidth; im.style.backgroundImage = cssUrl(hi); this.soft(); this.findFaces(h, hi + '|' + want); if (settings.theme === 'poster') $('#poster .art').style.backgroundImage = cssUrl(hi); };
       h.onerror = () => next && next(); h.src = hi; };
     const spHi = /ab67616d0000b273/.test(want) ? want.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
-    itunes.find(track).then(u => { if (this.url === want) tryHi(u, () => tryHi(spHi)); });
+    itunes.find(track).then(list => { if (this.url !== want) return; const run = k => k < list.length ? tryHi(list[k], () => run(k + 1)) : tryHi(spHi); run(0); });
   },
   /* 같은 그림인지: 12×12로 줄여 색 차이 평균 비교 (디럭스판·다른 앨범이 잘못 잡히는 것 방지) */
   similar(h) {
