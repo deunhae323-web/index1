@@ -1163,6 +1163,20 @@ body.lyr-dm #lyrics { -webkit-mask-image: linear-gradient(transparent 0, #000 22
 #coverFull .cf-lyr #lyrics .line.active { text-shadow: 0 1px 3px rgba(0,0,0,.85), 0 0 26px rgba(0,0,0,.65), 0 0 30px color-mix(in srgb, var(--c1) 50%, transparent); }
 body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35vw, 24px) * var(--ls)) !important; }
 #coverFull .cf-img.soft { filter: blur(var(--cfsoft, 0px)); }
+/* ───── 설정창: 분류별 접이식 메뉴 ───── */
+#settings .grp { border-top: 1px solid rgba(255,255,255,.14); }
+#settings .grp:last-of-type { border-bottom: 1px solid rgba(255,255,255,.14); }
+#settings .grp > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px 4px; font-size: 14.5px; font-weight: 600; letter-spacing: .02em; user-select: none; border-radius: 10px; transition: background .2s; }
+#settings .grp > summary::-webkit-details-marker { display: none; }
+#settings .grp > summary:hover { background: rgba(255,255,255,.07); }
+#settings .grp > summary .gi { width: 22px; text-align: center; font-size: 15px; }
+#settings .grp > summary .chev { margin-left: auto; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); opacity: .6; transition: transform .25s; margin-right: 6px; }
+#settings .grp[open] > summary .chev { transform: rotate(-135deg); }
+#settings .grp .gbody { padding: 2px 4px 16px; animation: grpIn .25s ease; }
+@keyframes grpIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+#settings .grp section { border-top: 0; padding: 0; }
+#settings .grp section#themeOpts { margin-top: 14px; }
+#settings .grp h4 { margin: 18px 0 10px; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; opacity: .7; font-weight: 500; }
 </style>
 </head>
 <body class="paused">
@@ -1611,10 +1625,9 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
 
 <aside id="settings" class="glass">
   <h2>설정 <button class="ibtn" id="bSetClose" title="닫기"><svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg></button></h2>
-  <section>
-    <h3>중앙 비주얼</h3>
+  <details class="grp" name="sg" data-g="theme" open><summary><span class="gi">🎨</span>테마<i class="chev"></i></summary>
+  <div class="gbody">
     <div class="seg" id="segTheme"><button data-v="lp">LP</button><button data-v="cd">CD</button><button data-v="poster">포스터</button><button data-v="radio">라디오</button><button data-v="jukebox">주크박스</button><button data-v="car">자동차</button><button data-v="city">네온룸</button></div>
-  </section>
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
     <div data-for="lp">
@@ -1686,54 +1699,14 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
       <p class="note" style="margin-top:6px">분위기 이펙트의 '비 오는 창가'를 같이 켜면 비 오는 밤 드라이브가 돼요.</p>
     </div>
   </section>
-  <section>
-    <h3>움직임 · 빛</h3>
-    <div class="slab"><span>배경 블러</span><span id="vBlur"></span></div>
-    <input type="range" id="rBlur" min="0" max="3" step="1">
-    <div class="slab"><span>배경 흐름 속도</span><span id="vMotion"></span></div>
-    <input type="range" id="rMotion" min="0" max="5" step="0.25">
-    <div class="slab"><span>엣지 라이트 세기</span><span id="vEdge"></span></div>
-    <input type="range" id="rEdge" min="0" max="1" step="0.1">
-  </section>
-  <section>
-    <h3>글씨체</h3>
+  </div></details>
+  <details class="grp" name="sg" data-g="clock"><summary><span class="gi">🕒</span>시계 · 글씨체<i class="chev"></i></summary>
+  <div class="gbody">
     <div class="fonts" id="fontList"></div>
     <label class="switch" style="margin-top:10px"><span>24시간제 시계</span><input type="checkbox" id="c24"></label>
-  </section>
-  <section>
-    <h3>분위기 이펙트</h3>
-    <div class="fxgrid" id="fxList">
-      <button data-fx="none"><span class="e">○</span>없음</button>
-      <button data-fx="vinyl"><span class="e">💿</span>LP 노이즈</button>
-      <button data-fx="rain"><span class="e">🌧️</span>비 오는 창가</button>
-      <button data-fx="radio"><span class="e">📻</span>심야 라디오</button>
-    </div>
-    <div class="slab" style="margin-top:12px"><span>효과음 볼륨</span><span id="vFxVol"></span></div>
-    <input type="range" id="rFxVol" min="0" max="1" step="0.05">
-    <label class="switch"><span>음악 멈추면 효과음도 멈춤</span><input type="checkbox" id="cFxFollow"></label>
-    <p class="note" style="margin-top:4px">효과음은 음악 위에 겹쳐지는 배경 소리예요. 스포티파이 음악 자체를 바꾸지는 않아요.</p>
-  </section>
-  <section>
-    <h3>플레이리스트 띄워두기</h3>
-    <label class="switch"><span>트랙리스트로 띄워두기</span><input type="checkbox" id="cListPin"></label>
-    <div class="slab" style="margin-top:6px"><span>위치</span></div>
-    <div class="seg small" id="segPlSide"><button data-v="left">왼쪽</button><button data-v="right">오른쪽</button></div>
-    <div class="slab" style="margin-top:12px"><span>글씨 굵기</span></div>
-    <div class="seg small" id="segPlW"><button data-v="300">얇게</button><button data-v="400">보통</button><button data-v="500">진하게</button></div>
-    <div class="slab" style="margin-top:12px"><span>글씨 크기</span><span id="vPlSize"></span></div>
-    <input type="range" id="rPlSize" min="0.8" max="1.5" step="0.05">
-    <div class="slab"><span>다른 곡 밝기</span><span id="vPlDim"></span></div>
-    <input type="range" id="rPlDim" min="0.15" max="0.9" step="0.05">
-    <label class="switch"><span>작은 커버 보이기</span><input type="checkbox" id="cPlCov"></label>
-    <label class="switch"><span>지금 곡 주변 5곡만</span><input type="checkbox" id="cPlNear"></label>
-  </section>
-  <section>
-    <h3>화면 구성</h3>
-    <label class="switch"><span>아티스트의 다른 앨범 선반</span><input type="checkbox" id="cShelf"></label>
-    <label class="switch"><span>밤 모드 (23~7시 자동으로 어둡게)</span><input type="checkbox" id="cNight"></label>
-  </section>
-  <section>
-    <h3>가사</h3>
+  </div></details>
+  <details class="grp" name="sg" data-g="lyrics"><summary><span class="gi">🎤</span>가사<i class="chev"></i></summary>
+  <div class="gbody">
     <div class="slab"><span>가사 스타일</span></div>
     <div class="seg small" id="segLyrStyle"><button data-v="normal">기본</button><button data-v="dm">메시지(DM)</button></div>
     <div class="slab" style="margin-top:12px"><span>가사 크기</span><span id="vLs"></span></div>
@@ -1746,17 +1719,60 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
       <span id="sOffV" style="min-width:44px;text-align:center;font-size:13px">0.0s</span>
       <button class="btn small" id="sOffP">+0.5s</button>
     </div>
-  </section>
+  </div></details>
+  <details class="grp" name="sg" data-g="bg"><summary><span class="gi">🌫️</span>배경 · 빛<i class="chev"></i></summary>
+  <div class="gbody">
+    <div class="slab"><span>배경 블러</span><span id="vBlur"></span></div>
+    <input type="range" id="rBlur" min="0" max="3" step="1">
+    <div class="slab"><span>배경 흐름 속도</span><span id="vMotion"></span></div>
+    <input type="range" id="rMotion" min="0" max="5" step="0.25">
+    <div class="slab"><span>엣지 라이트 세기</span><span id="vEdge"></span></div>
+    <input type="range" id="rEdge" min="0" max="1" step="0.1">
+    <label class="switch"><span>밤 모드 (23~7시 자동으로 어둡게)</span><input type="checkbox" id="cNight"></label>
+  </div></details>
+  <details class="grp" name="sg" data-g="cover"><summary><span class="gi">🖼️</span>앨범 커버<i class="chev"></i></summary>
+  <div class="gbody">
+    <label class="switch"><span>아티스트의 다른 앨범 선반</span><input type="checkbox" id="cShelf"></label>
+    <label class="switch"><span>iTunes 고화질 커버 쓰기 (커버 전체화면·포스터)</span><input type="checkbox" id="cItunes"></label>
+    <p class="note" style="margin-top:4px">스포티파이 커버(640px) 대신 애플 뮤직 스토어에서 같은 앨범의 원본 크기 커버를 찾아 써요. 못 찾으면 스포티파이 커버 그대로예요. LP·CD·포스터에서 커버를 클릭하면 전체화면으로 볼 수 있어요.</p>
+  </div></details>
+  <details class="grp" name="sg" data-g="list"><summary><span class="gi">📋</span>플레이리스트<i class="chev"></i></summary>
+  <div class="gbody">
+    <label class="switch"><span>트랙리스트로 띄워두기</span><input type="checkbox" id="cListPin"></label>
+    <div class="slab" style="margin-top:6px"><span>위치</span></div>
+    <div class="seg small" id="segPlSide"><button data-v="left">왼쪽</button><button data-v="right">오른쪽</button></div>
+    <div class="slab" style="margin-top:12px"><span>글씨 굵기</span></div>
+    <div class="seg small" id="segPlW"><button data-v="300">얇게</button><button data-v="400">보통</button><button data-v="500">진하게</button></div>
+    <div class="slab" style="margin-top:12px"><span>글씨 크기</span><span id="vPlSize"></span></div>
+    <input type="range" id="rPlSize" min="0.8" max="1.5" step="0.05">
+    <div class="slab"><span>다른 곡 밝기</span><span id="vPlDim"></span></div>
+    <input type="range" id="rPlDim" min="0.15" max="0.9" step="0.05">
+    <label class="switch"><span>작은 커버 보이기</span><input type="checkbox" id="cPlCov"></label>
+    <label class="switch"><span>지금 곡 주변 5곡만</span><input type="checkbox" id="cPlNear"></label>
+  </div></details>
+  <details class="grp" name="sg" data-g="fx"><summary><span class="gi">🔊</span>분위기 이펙트<i class="chev"></i></summary>
+  <div class="gbody">
+    <div class="fxgrid" id="fxList">
+      <button data-fx="none"><span class="e">○</span>없음</button>
+      <button data-fx="vinyl"><span class="e">💿</span>LP 노이즈</button>
+      <button data-fx="rain"><span class="e">🌧️</span>비 오는 창가</button>
+      <button data-fx="radio"><span class="e">📻</span>심야 라디오</button>
+    </div>
+    <div class="slab" style="margin-top:12px"><span>효과음 볼륨</span><span id="vFxVol"></span></div>
+    <input type="range" id="rFxVol" min="0" max="1" step="0.05">
+    <label class="switch"><span>음악 멈추면 효과음도 멈춤</span><input type="checkbox" id="cFxFollow"></label>
+    <p class="note" style="margin-top:4px">효과음은 음악 위에 겹쳐지는 배경 소리예요. 스포티파이 음악 자체를 바꾸지는 않아요.</p>
+  </div></details>
+  <details class="grp" name="sg" data-g="conn"><summary><span class="gi">🎧</span>스포티파이 · 연결<i class="chev"></i></summary>
+  <div class="gbody">
   <section id="secSpotify">
-    <h3>스포티파이</h3>
     <div class="row" style="margin-bottom:10px">
       <button class="btn small" id="sSdk">이 브라우저에서 재생</button>
       <button class="btn small danger" id="sLogout">로그아웃</button>
     </div>
     <div class="note" id="sAcct" style="margin-top:0"></div>
   </section>
-  <section>
-    <h3>바탕화면(월페이퍼)용 연결</h3>
+    <h4>바탕화면(월페이퍼)용 연결</h4>
     <div class="warn">아래 정보에는 스포티파이 계정에 접근할 수 있는 토큰이 들어 있어요. 다른 사람에게 보내거나 공개된 곳에 붙여넣지 마세요.</div>
     <div class="row" style="margin-top:10px">
       <button class="btn small" id="sCopyUrl">월페이퍼용 URL 복사</button>
@@ -1765,13 +1781,11 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
     <textarea id="sPaste" placeholder="다른 곳에서 복사한 연결 정보를 여기에 붙여넣기" style="margin-top:10px"></textarea>
     <div class="row" style="margin-top:8px"><button class="btn small" id="sPasteGo">붙여넣은 정보로 연결</button></div>
     <p class="note">Lively Wallpaper(윈도우)나 Plash(맥)에는 "월페이퍼용 URL"을 그대로 등록하면 돼요. 연결이 끊기면 여기서 다시 복사해 등록하세요.</p>
-  </section>
-  <section>
-    <h3>앱 정보</h3>
+    <h4>앱 정보</h4>
     <div class="row"><button class="btn small" id="sClient">Client ID 바꾸기</button><button class="btn small" id="sDemo">샘플 화면 보기</button></div>
-  </section>
-  <section>
-    <h3>단축키</h3>
+  </div></details>
+  <details class="grp" name="sg" data-g="keys"><summary><span class="gi">⌨️</span>단축키<i class="chev"></i></summary>
+  <div class="gbody">
     <div class="keys">
       <div><b>Space</b>재생 / 일시정지</div>
       <div><b>←</b><b>→</b>이전 곡 / 다음 곡</div>
@@ -1781,7 +1795,7 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
       <div><b>[</b><b>]</b>가사 싱크 −0.5s / +0.5s</div>
       <div><b>Z</b>바로 Zen 모드 &nbsp; <b>S</b>설정</div>
     </div>
-  </section>
+  </div></details>
 </aside>
 
 <div id="gate"><div class="card glass" id="gateCard"></div></div>
@@ -1853,7 +1867,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, lyrStyle: 'normal', cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, itunesArt: true, lyrStyle: 'normal', cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -3577,6 +3591,7 @@ function syncSettingsUI() {
   $('#rFxVol').value = settings.fxVol; $('#vFxVol').textContent = settings.fxVol === 0 ? '소리 끔' : Math.round(settings.fxVol * 100) + '%';
   $('#cFxFollow').checked = settings.fxFollow;
   $$('#fxList button').forEach(b => b.classList.toggle('on', b.dataset.fx === settings.fx));
+  $('#cItunes').checked = settings.itunesArt;
   $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
 }
 function renderFonts() {
@@ -3606,6 +3621,7 @@ bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); b
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
 bindSeg('#segLyrStyle', 'lyrStyle', () => { body.classList.toggle('lyr-dm', settings.lyrStyle === 'dm'); setTimeout(() => lyrics.update(S.pos(), true), 80); });
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
+bindCheck('#cItunes', 'itunesArt');
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
 $('#cListPin').onchange = e => lists.pin(e.target.checked);
 $('#cShelf').onchange = e => { settings.shelf = e.target.checked; saveSettings(); shelf.refresh(); };
@@ -3683,6 +3699,32 @@ function clockTick() {
 }
 
 
+/* ═══════════════ iTunes 고화질 커버 (Ben Dodson의 iTunes Artwork Finder와 같은 방식: iTunes 검색 API → 원본 크기 주소) ═══════════════ */
+const itunes = {
+  cache: new Map(),
+  norm(x) { return (x || '').toLowerCase().normalize('NFKC').replace(/\s*[\(\[][^\)\]]*[\)\]]/g, '').replace(/\s+-\s+(single|ep|deluxe.*|remaster.*|.*edition)$/i, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim(); },
+  same(a, b) { a = this.norm(a); b = this.norm(b); return !!a && !!b && (a === b || a.includes(b) || b.includes(a)); },
+  big(u) { return u ? u.replace(/\/\d+x\d+bb\.(jpg|png|webp)$/i, '/3000x3000bb.jpg') : ''; },
+  async q(params) { try { const r = await fetch('https://itunes.apple.com/search?' + new URLSearchParams(params)); return r.ok ? (await r.json()).results || [] : []; } catch { return []; } },
+  async find(t) {
+    if (!t || t.kind !== 'track' || !settings.itunesArt) return '';
+    const artist = t.artists?.[0] || t.artist || '', album = t.album || '', key = artist + '|' + album;
+    if (this.cache.has(key)) return this.cache.get(key);
+    let url = '';
+    for (const country of ['US', 'KR', 'JP']) {     /* 1) 앨범으로 검색: 아티스트·앨범 이름이 둘 다 맞는 결과 */
+      const res = await this.q({ term: `${artist} ${album}`, entity: 'album', limit: 15, country });
+      const hit = res.find(x => this.same(x.artistName, artist) && this.norm(x.collectionName) === this.norm(album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.collectionName, album));
+      if (hit) { url = this.big(hit.artworkUrl100); break; }
+    }
+    if (!url) for (const country of ['US', 'KR']) {   /* 2) 싱글 등: 곡으로 검색해서 그 곡이 실린 앨범 커버 */
+      const res = await this.q({ term: `${artist} ${t.title}`, entity: 'song', limit: 15, country });
+      const hit = res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title) && this.same(x.collectionName, album)) || res.find(x => this.same(x.artistName, artist) && this.same(x.trackName, t.title));
+      if (hit) { url = this.big(hit.artworkUrl100); break; }
+    }
+    this.cache.set(key, url); return url;
+  },
+};
+
 /* ═══════════════ 커버 전체화면: 커버 안에서 디테일이 몰린 곳을 찾아 자동으로 잘라 보여 줌 ═══════════════ */
 const coverFull = {
   url: '', rows: null, cols: null, metaT: 0,
@@ -3726,9 +3768,12 @@ const coverFull = {
     const apply = () => { im.style.backgroundImage = cssUrl(this.url); $('#coverFull .cf-blur').style.backgroundImage = cssUrl(this.url); this.place(); this.soft(); im.classList.remove('swap'); };
     if (on) { im.classList.add('swap'); setTimeout(() => { apply(); this.side(); }, 450); this.meta(); } else apply();
     /* 스포티파이 기본 커버는 640px → 같은 이미지의 고해상도 버전이 있으면 바꿔 끼움 (비공식 주소라 없으면 그대로) */
-    const hi = /ab67616d0000b273/.test(this.url) ? this.url.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
-    if (hi) { const want = this.url, h = new Image(); h.onload = () => { if (this.url !== want || h.naturalWidth <= 640) return; this.url = hi; this.nat = h.naturalWidth;
-      im.style.backgroundImage = cssUrl(hi); this.soft(); }; h.src = hi; }
+    const want = this.url, track = S.track;
+    const tryHi = (hi, next) => { if (!hi) return next && next(); const h = new Image(); h.onload = () => { if (this.url !== want) return; if (h.naturalWidth <= (this.nat || 640)) return next && next();
+        this.url = hi; this.nat = h.naturalWidth; im.style.backgroundImage = cssUrl(hi); this.soft(); if (settings.theme === 'poster') $('#poster .art').style.backgroundImage = cssUrl(hi); };
+      h.onerror = () => next && next(); h.src = hi; };
+    const spHi = /ab67616d0000b273/.test(want) ? want.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
+    itunes.find(track).then(u => { if (this.url === want) tryHi(u, () => tryHi(spHi)); });
   },
   /* 화면보다 많이 작은 이미지는 살짝 흐리게 해서 깨진 픽셀이 덜 보이게 */
   soft() {
