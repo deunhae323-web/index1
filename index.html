@@ -1829,7 +1829,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !impor
       <div><b>Space</b>재생 / 일시정지</div>
       <div><b>←</b><b>→</b>이전 곡 / 다음 곡</div>
       <div><b>T</b>테마 &nbsp; <b>L</b>가사 &nbsp; <b>F</b>전체화면</div>
-      <div><b>P</b>플레이리스트 &nbsp; <b>A</b>앨범 선반 켜기/끄기</div>
+      <div><b>P</b>플레이리스트 띄우기/숨기기 &nbsp; <b>A</b>앨범 선반 켜기/끄기</div>
       <div><b>E</b>분위기 이펙트 바꾸기</div>
       <div><b>[</b><b>]</b>가사 싱크 −0.5s / +0.5s</div>
       <div><b>Z</b>바로 Zen 모드 &nbsp; <b>S</b>설정</div>
@@ -3733,7 +3733,7 @@ addEventListener('keydown', e => {
   else if (k === '[') lyrics.nudge(-.5);
   else if (k === ']') lyrics.nudge(+.5);
   else if (k === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); }
-  else if (k === 'p' || k === 'P') lists.open(!lists.isOpen());
+  else if (k === 'p' || k === 'P') lists.pin(!settings.listPin);   // P = 고정 플레이리스트 켜기/끄기
   else if (k === 'e' || k === 'E') { const L = Object.keys(FX_NAMES), n = L[(L.indexOf(settings.fx) + 1) % L.length]; fx.set(n); toast('이펙트: ' + FX_NAMES[n], 1400); }
   else if (k === 'a' || k === 'A') { settings.shelf = !settings.shelf; saveSettings(); shelf.refresh(); toast(settings.shelf ? '앨범 선반 켜짐' : '앨범 선반 꺼짐', 1400); }
   else if (k === 'z' || k === 'Z') { setTimeout(() => body.classList.add('zen'), 50); return; }
