@@ -1178,6 +1178,33 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
 #settings .grp section { border-top: 0; padding: 0; }
 #settings .grp section#themeOpts { margin-top: 14px; }
 #settings .grp h4 { margin: 18px 0 10px; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; opacity: .7; font-weight: 500; }
+/* ───── 가사 스타일: 어안 · 노래방 · 타자기 · 시네마 ───── */
+@property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
+#segLyrStyle { display: grid; grid-template-columns: repeat(3, 1fr); }
+#lyrics .line { --d: 0; --ad: 0; }
+/* 어안: 원통형 드럼처럼 위아래 줄이 뒤로 휘어 들어감 */
+body.lyr-fish #lyrics:not(.plain) { perspective: 520px; perspective-origin: 30% 42%; }
+body.lyr-fish #lyrics:not(.plain) .line { transform-origin: 0 50% !important; transform: rotateX(calc(var(--d) * -21deg)) scale(calc(1.2 - var(--ad) * .1)) translateZ(calc(var(--ad) * -30px)) !important;
+  opacity: calc(1 - var(--ad) * .2) !important; filter: blur(calc(max(var(--ad) - 1, 0) * .7px)); transition: transform .8s cubic-bezier(.22,.8,.24,1), opacity .8s, filter .8s !important; }
+/* 노래방: 지금 줄만 크게, 진행에 맞춰 글자가 왼쪽부터 차오름 */
+body.lyr-kara #lyrics:not(.plain) .line { opacity: 0 !important; transform: scale(.9) !important; transition: opacity .5s, transform .5s !important; }
+body.lyr-kara #lyrics:not(.plain) .line.active { opacity: 1 !important; transform: scale(1.22) !important; font-weight: 700 !important; color: transparent !important; -webkit-text-fill-color: transparent !important;
+  background: linear-gradient(90deg, #fff calc(var(--p) * 100%), rgba(255,255,255,.32) calc(var(--p) * 100% + 4%)); -webkit-background-clip: text; background-clip: text;
+  text-shadow: none !important; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c1) 55%, transparent)) drop-shadow(0 1px 3px rgba(0,0,0,.45)); transition: --p .12s linear, opacity .5s, transform .5s !important; }
+body.lyr-kara #lyrics:not(.plain) .line.near:not(.past) { opacity: .45 !important; transform: scale(.95) !important; }
+/* 타자기: 지금 줄이 한 글자씩 타이핑됨 */
+body.lyr-type #lyrics:not(.plain) .line { font-family: ui-monospace, 'D2Coding', Menlo, Consolas, monospace !important; font-style: normal !important; letter-spacing: 0 !important; font-weight: 500 !important;
+  opacity: 0 !important; transform: none !important; transition: opacity .6s !important; }
+body.lyr-type #lyrics:not(.plain) .line.past { opacity: .32 !important; }
+body.lyr-type #lyrics:not(.plain) .line.past.near { opacity: .55 !important; }
+body.lyr-type #lyrics:not(.plain) .line.active { opacity: 1 !important; width: fit-content; clip-path: inset(-20% calc((1 - min(1, var(--p) * 2.6)) * 100%) -20% -2%); transition: --p .12s linear, opacity .3s !important; }
+body.lyr-type #lyrics:not(.plain) .line.active::after { content: '▍'; margin-left: .1em; animation: caret .9s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+/* 시네마: 가운데 정렬, 지금 줄만 또렷하고 나머지는 초점이 나감 */
+body.lyr-cine #lyrics:not(.plain) .line { margin-left: auto !important; margin-right: auto !important; text-align: center; transform-origin: center !important;
+  filter: blur(calc(min(var(--ad), 4) * 1.4px)); opacity: calc(.75 - min(var(--ad), 4) * .14) !important; transform: scale(calc(1 - min(var(--ad), 4) * .04)) !important;
+  transition: filter .9s, opacity .9s, transform .9s !important; }
+body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !important; transform: scale(1.18) !important; letter-spacing: .02em; }
 </style>
 </head>
 <body class="paused">
@@ -1709,7 +1736,7 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
   <details class="grp" name="sg" data-g="lyrics"><summary><span class="gi">🎤</span>가사<i class="chev"></i></summary>
   <div class="gbody">
     <div class="slab"><span>가사 스타일</span></div>
-    <div class="seg small" id="segLyrStyle"><button data-v="normal">기본</button><button data-v="dm">메시지(DM)</button></div>
+    <div class="seg small" id="segLyrStyle"><button data-v="normal">기본</button><button data-v="dm">메시지(DM)</button><button data-v="fish">어안</button><button data-v="kara">노래방</button><button data-v="type">타자기</button><button data-v="cine">시네마</button></div>
     <div class="slab" style="margin-top:12px"><span>가사 크기</span><span id="vLs"></span></div>
     <input type="range" id="rLs" min="0.8" max="1.5" step="0.05">
     <div class="row">
@@ -2201,9 +2228,14 @@ const lyrics = {
     const t = pos + this.offset() * 1000;
     let lo = 0, hi = this.lines.length - 1, i = -1;
     while (lo <= hi) { const m = (lo + hi) >> 1; if (this.lines[m].t <= t) { i = m; lo = m + 1; } else hi = m - 1; }
+    if (i >= 0 && this.nodes[i]) {   /* 노래방·타자기용: 지금 줄 안에서 얼마나 지났는지 (0~1) */
+      const a = this.lines[i].t, b = this.lines[i + 1]?.t ?? a + 4000, pr = clamp((t - a) / Math.max(400, (b - a) * .9), 0, 1);
+      this.nodes[i].style.setProperty('--p', pr.toFixed(3));
+    }
     if (i === this.idx && !force) return;
     const prev = this.idx; this.idx = i;
-    this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); n.classList.toggle('past', k < i); });
+    this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); n.classList.toggle('past', k < i);
+      const dd = Math.max(-6, Math.min(6, k - i)); n.style.setProperty('--d', dd); n.style.setProperty('--ad', Math.abs(dd)); if (k !== i) n.style.setProperty('--p', k < i ? 1 : 0); });
     const target = this.nodes[Math.max(0, i)];
     const y = target ? target.offsetTop + target.offsetHeight / 2 - box * .42 : 0;
     this.el.style.transform = `translateY(${-Math.max(-box * .3, y)}px)`;
@@ -3587,7 +3619,7 @@ function syncSettingsUI() {
   $('#vBlur').textContent = BLUR_NAMES[settings.blur];
   $('#rMotion').value = settings.motion; $('#vMotion').textContent = settings.motion === 0 ? '멈춤' : '×' + settings.motion;
   $('#rEdge').value = settings.edge; $('#vEdge').textContent = settings.edge === 0 ? '끔' : Math.round(settings.edge * 100) + '%';
-  $$('#segLyrStyle button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.lyrStyle)); body.classList.toggle('lyr-dm', settings.lyrStyle === 'dm');
+  $$('#segLyrStyle button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.lyrStyle)); applyLyrStyle();
   $('#rLs').value = settings.ls; $('#vLs').textContent = '×' + (+settings.ls).toFixed(2);
   $('#rFxVol').value = settings.fxVol; $('#vFxVol').textContent = settings.fxVol === 0 ? '소리 끔' : Math.round(settings.fxVol * 100) + '%';
   $('#cFxFollow').checked = settings.fxFollow;
@@ -3620,7 +3652,8 @@ bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
-bindSeg('#segLyrStyle', 'lyrStyle', () => { body.classList.toggle('lyr-dm', settings.lyrStyle === 'dm'); setTimeout(() => lyrics.update(S.pos(), true), 80); });
+function applyLyrStyle() { ['dm', 'fish', 'kara', 'type', 'cine'].forEach(v => body.classList.toggle('lyr-' + v, settings.lyrStyle === v)); }
+bindSeg('#segLyrStyle', 'lyrStyle', () => { applyLyrStyle(); setTimeout(() => lyrics.update(S.pos(), true), 80); });
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
 bindCheck('#cItunes', 'itunesArt');
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
