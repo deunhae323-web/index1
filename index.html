@@ -205,7 +205,8 @@ body.playing #lp .tonearm { transform: rotate(21deg); }
   box-shadow: 0 18px 50px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18); }
 .ui { transition: opacity .9s ease, visibility .9s ease; }
 body.zen .ui { opacity: 0; visibility: hidden; }
-body.zen, body.wallpaper { cursor: none; }
+body.zen, body.wallpaper, body.zen *, body.wallpaper * { cursor: none !important; }
+#coverFull.still, #coverFull.still * { cursor: none !important; }
 body.wallpaper .ui, body.wallpaper #chip { display: none !important; }
 
 #player { position: fixed; left: 50%; bottom: 3.6vh; transform: translateX(-50%); z-index: 6; width: min(780px, 92vw);
@@ -3797,6 +3798,7 @@ const coverFull = {
     const el = $('#coverFull'); if (on && !this.url) return;
     el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true');
     const ly = $('#lyrics');
+    clearTimeout(this.curT); el.classList.toggle('still', on); 
     if (on) { this.place(); this.soft(); this.side(); this.meta(); this.home = this.home || ly.parentNode; this.next = ly.nextSibling; $('#coverFull .cf-lyr').appendChild(ly); }
     else if (this.home && ly.parentNode !== this.home) this.home.insertBefore(ly, this.home.querySelector('#lyrics') ? null : (this.home.children[1] || null));
     setTimeout(() => lyrics.update(S.pos(), true), 60);
@@ -3805,7 +3807,8 @@ const coverFull = {
 ['#lp .vinyl', '#cd .case', '#poster .art'].forEach(sel => $(sel)?.addEventListener('click', e => {
   if (!['lp', 'cd', 'poster'].includes(settings.theme)) return; e.stopPropagation(); coverFull.open(true); }));
 $('#coverFull').addEventListener('click', () => coverFull.open(false));
-$('#coverFull').addEventListener('mousemove', () => { if ($('#coverFull').classList.contains('on')) coverFull.meta(); });
+$('#coverFull').addEventListener('mousemove', () => { const el = $('#coverFull'); if (!el.classList.contains('on')) return; coverFull.meta();
+  el.classList.remove('still'); clearTimeout(coverFull.curT); coverFull.curT = setTimeout(() => el.classList.add('still'), 1800); });
 addEventListener('resize', () => { coverFull.place(); coverFull.soft(); });
 
 /* ═══════════════ 메인 루프 (프레임 제한) ═══════════════ */
