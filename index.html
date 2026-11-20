@@ -1135,6 +1135,34 @@ body.no-citykoi #cityKoi { display: none; }
 #coverFull .cf-meta span { display: block; margin-top: .4em; font-size: clamp(12px, .95vw, 16px); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
 #coverFull .cf-hint { position: absolute; right: 3vw; bottom: 4vh; font-size: 12px; color: #fff; opacity: 0; transition: opacity 1.2s; text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
 #coverFull .cf-hint.show { opacity: .6; }
+/* ───── 가사 스타일: 메시지(DM) 말풍선 ───── */
+#lyrics .dmhead { display: none; }
+body.lyr-dm #lyrics .dmhead { display: block; width: fit-content; max-width: 80%; margin: 0 0 .6em; padding: .55em 1em; border-radius: 1.1em; background: rgba(30,24,18,.62);
+  color: #f2e3c6; font-size: calc(clamp(13px, 1vw, 17px) * var(--ls)); font-weight: 600; line-height: 1.35; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+body.lyr-dm #lyrics .dmhead small { display: block; margin-top: .25em; font-size: .82em; font-weight: 500; opacity: .75; }
+body.lyr-dm #lyrics .line { width: fit-content !important; max-width: 80% !important; margin: .5em 0 !important; padding: .5em 1em !important; border-radius: 1.1em !important;
+  background: rgba(30,24,18,.66) !important; color: #f2e3c6 !important; -webkit-text-fill-color: #f2e3c6 !important; font-family: var(--sans) !important; font-style: normal !important;
+  font-weight: 600 !important; letter-spacing: 0 !important; text-transform: none !important; font-size: calc(clamp(15px, 1.15vw, 21px) * var(--ls)) !important; line-height: 1.35 !important;
+  text-shadow: none !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: 0 2px 10px rgba(0,0,0,.18) !important;
+  opacity: 0 !important; transform: translateY(14px) scale(.92) !important; transform-origin: left bottom !important; outline: 1.5px solid transparent; outline-offset: 7px;
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,1.5,.4,1), outline-color .5s, background .5s !important; }
+body.lyr-dm #lyrics .line.past { opacity: .5 !important; transform: none !important; }
+body.lyr-dm #lyrics .line.past.near { opacity: .78 !important; }
+body.lyr-dm #lyrics .line.active { opacity: 1 !important; transform: none !important; outline-color: rgba(255,236,205,.4); background: rgba(40,32,22,.78) !important; }
+body.lyr-dm #lyrics .line.gap { letter-spacing: .2em !important; }
+body.lyr-dm #lyrics .line.gap.active { animation: dmTyping 1.2s ease-in-out infinite; }
+@keyframes dmTyping { 50% { color: rgba(242,227,198,.4); -webkit-text-fill-color: rgba(242,227,198,.4); } }
+body.lyr-dm #lyrics.plain .line { opacity: .85 !important; transform: none !important; }
+body.lyr-dm #lyrics { -webkit-mask-image: linear-gradient(transparent 0, #000 22%, #000 100%); mask-image: linear-gradient(transparent 0, #000 22%, #000 100%); }
+/* ───── 커버 전체화면 안의 가사 ───── */
+#coverFull .cf-shade { position: absolute; inset: 0; pointer-events: none; transition: background 1s; }
+#coverFull .cf-lyr { position: absolute; top: 0; bottom: 0; width: 46vw; display: flex; align-items: center; pointer-events: none; }
+#coverFull .cf-lyr.l { left: 5vw; } #coverFull .cf-lyr.r { right: 3vw; }
+#coverFull .cf-lyr #lyrics { height: 64vh; width: 100%; }
+#coverFull .cf-lyr #lyrics .line { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.85), 0 0 22px rgba(0,0,0,.6); font-size: calc(clamp(20px, 1.9vw, 34px) * var(--ls)); }
+#coverFull .cf-lyr #lyrics .line.active { text-shadow: 0 1px 3px rgba(0,0,0,.85), 0 0 26px rgba(0,0,0,.65), 0 0 30px color-mix(in srgb, var(--c1) 50%, transparent); }
+body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35vw, 24px) * var(--ls)) !important; }
+#coverFull .cf-img.soft { filter: blur(var(--cfsoft, 0px)); }
 </style>
 </head>
 <body class="paused">
@@ -1563,7 +1591,7 @@ body.no-citykoi #cityKoi { display: none; }
 
 <div id="chip" class="glass"></div>
 <div id="toast" class="glass"></div>
-<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 꽉 채우기 ↔ 전체 보기</div></div>
+<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 꽉 채우기 ↔ 전체 보기</div></div>
 
 <aside id="lists" class="glass">
   <div class="lhead">
@@ -1706,7 +1734,9 @@ body.no-citykoi #cityKoi { display: none; }
   </section>
   <section>
     <h3>가사</h3>
-    <div class="slab"><span>가사 크기</span><span id="vLs"></span></div>
+    <div class="slab"><span>가사 스타일</span></div>
+    <div class="seg small" id="segLyrStyle"><button data-v="normal">기본</button><button data-v="dm">메시지(DM)</button></div>
+    <div class="slab" style="margin-top:12px"><span>가사 크기</span><span id="vLs"></span></div>
     <input type="range" id="rLs" min="0.8" max="1.5" step="0.05">
     <div class="row">
       <button class="btn small" id="sLyr">가사 끄기</button>
@@ -1823,7 +1853,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, lyrStyle: 'normal', cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -2128,8 +2158,9 @@ const lyrics = {
     if (!this.lines.length) return;
     const frag = document.createDocumentFragment();
     for (const l of this.lines) { const d = document.createElement('div'); d.className = 'line' + (l.text ? '' : ' gap'); d.textContent = l.text || '· · ·'; frag.appendChild(d); }
-    this.el.appendChild(frag);
-    this.nodes = [...this.el.children];
+    const hd = document.createElement('div'); hd.className = 'dmhead'; hd.textContent = '♪ ' + (t.title || ''); const sm = document.createElement('small'); sm.textContent = t.artist || ''; hd.appendChild(sm);
+    this.el.appendChild(hd); this.el.appendChild(frag);
+    this.nodes = [...this.el.querySelectorAll('.line')];
     $('#lyrics').classList.toggle('plain', !this.synced);
     this.el.classList.toggle('plain-scroll', !this.synced);
     this.show(true); this.update(S.pos(), true);
@@ -2157,7 +2188,7 @@ const lyrics = {
     while (lo <= hi) { const m = (lo + hi) >> 1; if (this.lines[m].t <= t) { i = m; lo = m + 1; } else hi = m - 1; }
     if (i === this.idx && !force) return;
     const prev = this.idx; this.idx = i;
-    this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); });
+    this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); n.classList.toggle('past', k < i); });
     const target = this.nodes[Math.max(0, i)];
     const y = target ? target.offsetTop + target.offsetHeight / 2 - box * .42 : 0;
     this.el.style.transform = `translateY(${-Math.max(-box * .3, y)}px)`;
@@ -3541,6 +3572,7 @@ function syncSettingsUI() {
   $('#vBlur').textContent = BLUR_NAMES[settings.blur];
   $('#rMotion').value = settings.motion; $('#vMotion').textContent = settings.motion === 0 ? '멈춤' : '×' + settings.motion;
   $('#rEdge').value = settings.edge; $('#vEdge').textContent = settings.edge === 0 ? '끔' : Math.round(settings.edge * 100) + '%';
+  $$('#segLyrStyle button').forEach(b => b.classList.toggle('on', b.dataset.v === settings.lyrStyle)); body.classList.toggle('lyr-dm', settings.lyrStyle === 'dm');
   $('#rLs').value = settings.ls; $('#vLs').textContent = '×' + (+settings.ls).toFixed(2);
   $('#rFxVol').value = settings.fxVol; $('#vFxVol').textContent = settings.fxVol === 0 ? '소리 끔' : Math.round(settings.fxVol * 100) + '%';
   $('#cFxFollow').checked = settings.fxFollow;
@@ -3572,6 +3604,7 @@ bindRange('#rCarSpd', 'carSpd'); bindSeg('#segVfd', 'carVfd'); bindSeg('#segLamp
 bindSeg('#segNeon', 'jbNeon'); bindCheck('#cBubbles', 'jbBubbles'); bindCheck('#cBulbs', 'jbBulbs');
 bindSeg('#segLed', 'led', () => radio.redraw()); bindSeg('#segBody', 'rbody'); bindSeg('#segPlSide', 'plSide', () => settings.theme === 'flow' && setTimeout(() => flow.go(flow.idx, true), 500)); bindSeg('#segPlW', 'plW');
 bindRange('#rLs', 'ls', () => setTimeout(() => lyrics.update(S.pos(), true), 50));
+bindSeg('#segLyrStyle', 'lyrStyle', () => { body.classList.toggle('lyr-dm', settings.lyrStyle === 'dm'); setTimeout(() => lyrics.update(S.pos(), true), 80); });
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
 $('#cListPin').onchange = e => lists.pin(e.target.checked);
@@ -3688,10 +3721,27 @@ const coverFull = {
     el.style.setProperty('--cfy', (A > 1 ? this.best(this.rows, 1 / A) : 50) + '%');
   },
   setImage(img, url) {
-    this.url = url || ''; if (img) this.analyze(img); else this.rows = this.cols = null;
+    this.url = url || ''; this.nat = img ? (img.naturalWidth || 640) : 640; if (img) this.analyze(img); else this.rows = this.cols = null;
     const im = $('#coverFull .cf-img'), on = $('#coverFull').classList.contains('on');
-    const apply = () => { im.style.backgroundImage = cssUrl(this.url); $('#coverFull .cf-blur').style.backgroundImage = cssUrl(this.url); this.place(); im.classList.remove('swap'); };
-    if (on) { im.classList.add('swap'); setTimeout(apply, 450); this.meta(); } else apply();
+    const apply = () => { im.style.backgroundImage = cssUrl(this.url); $('#coverFull .cf-blur').style.backgroundImage = cssUrl(this.url); this.place(); this.soft(); im.classList.remove('swap'); };
+    if (on) { im.classList.add('swap'); setTimeout(() => { apply(); this.side(); }, 450); this.meta(); } else apply();
+    /* 스포티파이 기본 커버는 640px → 같은 이미지의 고해상도 버전이 있으면 바꿔 끼움 (비공식 주소라 없으면 그대로) */
+    const hi = /ab67616d0000b273/.test(this.url) ? this.url.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
+    if (hi) { const want = this.url, h = new Image(); h.onload = () => { if (this.url !== want || h.naturalWidth <= 640) return; this.url = hi; this.nat = h.naturalWidth;
+      im.style.backgroundImage = cssUrl(hi); this.soft(); }; h.src = hi; }
+  },
+  /* 화면보다 많이 작은 이미지는 살짝 흐리게 해서 깨진 픽셀이 덜 보이게 */
+  soft() {
+    const need = Math.max(innerWidth, innerHeight) * (devicePixelRatio || 1), k = need / (this.nat || 640);
+    const b = k > 1.5 ? Math.min(2.2, (k - 1.5) * 1.1) : 0, im = $('#coverFull .cf-img');
+    im.classList.toggle('soft', b > 0); im.style.setProperty('--cfsoft', b.toFixed(2) + 'px');
+  },
+  /* 가사는 커버에서 덜 복잡한 쪽(왼쪽/오른쪽)에 띄우고, 그쪽만 어둡게 */
+  side() {
+    let l = 1, r = 1; if (this.cols) { const n = this.cols.length; for (let k = 0; k < n; k++) (k < n / 2 ? (l += this.cols[k]) : (r += this.cols[k])); }
+    const right = r < l * .85, box = $('#coverFull .cf-lyr');
+    box.classList.toggle('r', right); box.classList.toggle('l', !right);
+    $('#coverFull .cf-shade').style.background = `linear-gradient(${right ? 'to left' : 'to right'}, rgba(0,0,0,.62), rgba(0,0,0,.35) 38%, transparent 62%)`;
   },
   meta() {
     const m = $('#coverFull .cf-meta'); m.querySelector('b').textContent = S.track?.title || ''; m.querySelector('span').textContent = S.track?.artist || '';
@@ -3701,14 +3751,17 @@ const coverFull = {
   open(on) {
     const el = $('#coverFull'); if (on && !this.url) return;
     el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true');
-    if (on) { this.place(); this.meta(); }
+    const ly = $('#lyrics');
+    if (on) { this.place(); this.soft(); this.side(); this.meta(); this.home = this.home || ly.parentNode; this.next = ly.nextSibling; $('#coverFull .cf-lyr').appendChild(ly); }
+    else if (this.home && ly.parentNode !== this.home) this.home.insertBefore(ly, this.home.querySelector('#lyrics') ? null : (this.home.children[1] || null));
+    setTimeout(() => lyrics.update(S.pos(), true), 60);
   },
 };
 ['#lp .vinyl', '#cd .case', '#poster .art'].forEach(sel => $(sel)?.addEventListener('click', e => {
   if (!['lp', 'cd', 'poster'].includes(settings.theme)) return; e.stopPropagation(); coverFull.open(true); }));
 $('#coverFull').addEventListener('click', () => coverFull.open(false));
 $('#coverFull').addEventListener('mousemove', () => { if ($('#coverFull').classList.contains('on')) coverFull.meta(); });
-addEventListener('resize', () => coverFull.place());
+addEventListener('resize', () => { coverFull.place(); coverFull.soft(); });
 
 /* ═══════════════ 메인 루프 (프레임 제한) ═══════════════ */
 let lastFrame = 0, looping = false, lastCur = '';
