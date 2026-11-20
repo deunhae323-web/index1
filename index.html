@@ -1135,7 +1135,7 @@ body.no-citykoi #cityKoi { display: none; }
 #coverFull .cf-meta span { display: block; margin-top: .4em; font-size: clamp(12px, .95vw, 16px); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
 #coverFull .cf-hint { position: absolute; right: 3vw; bottom: 4vh; font-size: 12px; color: #fff; opacity: 0; transition: opacity 1.2s; text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
 #coverFull .cf-hint.show { opacity: .6; }
-body.zen #coverFull .cf-hint, body.wallpaper #coverFull .cf-hint { opacity: 0; transition-duration: .4s; }   /* Z 모드에선 단축키 안내도 숨김 */
+body.zen #coverFull .cf-hint, body.wallpaper #coverFull .cf-hint, #coverFull.zq .cf-hint { opacity: 0; transition: none; }   /* Z 모드에선 단축키 안내도 숨김 */
 /* ───── 가사 스타일: 메시지(DM) 말풍선 ───── */
 #lyrics .dmhead { display: none; }
 body.lyr-dm #lyrics .dmhead { display: block; width: fit-content; max-width: 80%; margin: 0 0 .6em; padding: .55em 1em; border-radius: 1.1em; background: rgba(30,24,18,.62);
@@ -3714,6 +3714,12 @@ $('#sDemo').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer); d
 addEventListener('keydown', e => {
   if ($('#coverFull').classList.contains('on')) {
     if (e.key === 'Escape') { coverFull.open(false); return; }
+    if (e.code === 'KeyZ' || /^[zZㅋ]$/.test(e.key)) {   // Z: 단축키 안내 바로 숨기기/다시 보이기 (한글 입력 상태도 인식)
+      if (e.repeat) return; const cf = $('#coverFull'), q = !cf.classList.contains('zq');
+      cf.classList.toggle('zq', q); clearTimeout(coverFull.metaT); $('#coverFull .cf-hint').classList.remove('show');
+      if (q) setTimeout(() => body.classList.add('zen'), 50); else { wake(); coverFull.meta(); }
+      return;
+    }
     if (e.key === 'c' || e.key === 'C') { $('#coverFull').classList.toggle('fit'); coverFull.meta(); return; }
     if (e.key === 'ArrowUp') { e.preventDefault(); coverFull.nudge(-1); return; }
     if (e.key === 'ArrowDown') { e.preventDefault(); coverFull.nudge(1); return; }
@@ -3723,7 +3729,7 @@ addEventListener('keydown', e => {
   }
   if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
-  if (e.repeat && (e.key === 'z' || e.key === 'Z')) return;
+  if (e.repeat && (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ')) return;
   const k = e.key;
   if (k === ' ') { e.preventDefault(); ctl.toggle(); }
   else if (k === 'ArrowRight') ctl.next();
@@ -3738,14 +3744,14 @@ addEventListener('keydown', e => {
   else if (k === 'p' || k === 'P') lists.pin(!settings.listPin);   // P = 고정 플레이리스트 켜기/끄기
   else if (k === 'e' || k === 'E') { const L = Object.keys(FX_NAMES), n = L[(L.indexOf(settings.fx) + 1) % L.length]; fx.set(n); toast('이펙트: ' + FX_NAMES[n], 1400); }
   else if (k === 'a' || k === 'A') { settings.shelf = !settings.shelf; saveSettings(); shelf.refresh(); toast(settings.shelf ? '앨범 선반 켜짐' : '앨범 선반 꺼짐', 1400); }
-  else if (k === 'z' || k === 'Z') { setTimeout(() => body.classList.add('zen'), 50); return; }
+  else if (k === 'z' || k === 'Z' || e.code === 'KeyZ') { setTimeout(() => body.classList.add('zen'), 50); return; }
 }, true);
 
 /* ═══════════════ Zen · 대기 화면 · 밤 모드 · 번인 방지 · 시계 ═══════════════ */
 let zenTimer;
 function wake(e) {
   if (WALLPAPER) return;
-  if (e && e.type === 'keydown' && (e.repeat || e.key === 'z' || e.key === 'Z')) return;
+  if (e && e.type === 'keydown' && (e.repeat || e.code === 'KeyZ' || e.key === 'z' || e.key === 'Z' || e.key === 'ㅋ')) return;
   body.classList.remove('zen'); clearTimeout(zenTimer);
   zenTimer = setTimeout(() => { if (!$('#settings').classList.contains('open') && !(lists.isOpen() && !settings.listPin) && !$('#gate').classList.contains('show')) body.classList.add('zen'); }, CONFIG.ZEN_DELAY_MS);
 }
@@ -4049,12 +4055,13 @@ const coverFull = {
   },
   meta() {
     const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track?.title || ''); m.querySelector('span').textContent = S.track?.artist || '';
+    if ($('#coverFull').classList.contains('zq')) return;   // Z로 숨긴 동안엔 안내를 다시 띄우지 않음
     $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
     this.metaT = setTimeout(() => $('#coverFull .cf-hint').classList.remove('show'), 4000);
   },
   open(on) {
     const el = $('#coverFull'); if (on && !this.url) return;
-    el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true');
+    el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true'); if (!on) el.classList.remove('zq');
     const ly = $('#lyrics');
     clearTimeout(this.curT); el.classList.toggle('still', on); 
     if (on) { this.place(); this.soft(); this.side(); this.meta(); this.home = this.home || ly.parentNode; this.next = ly.nextSibling; $('#coverFull .cf-lyr').appendChild(ly); }
