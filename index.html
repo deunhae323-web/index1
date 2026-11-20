@@ -1639,7 +1639,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !impor
 <div id="chip" class="glass"></div>
 <div id="toast" class="glass"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lyrFish" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB"><feImage id="lyrFishMap" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="0.34" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
-<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 꽉 채우기 ↔ 전체 보기</div></div>
+<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 전체 보기 · 휠/↑↓ 위치 조정(기억됨) · R 자동</div></div>
 
 <aside id="lists" class="glass">
   <div class="lhead">
@@ -3696,6 +3696,9 @@ addEventListener('keydown', e => {
   if ($('#coverFull').classList.contains('on')) {
     if (e.key === 'Escape') { coverFull.open(false); return; }
     if (e.key === 'c' || e.key === 'C') { $('#coverFull').classList.toggle('fit'); coverFull.meta(); return; }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); coverFull.nudge(-1); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); coverFull.nudge(1); return; }
+    if (e.key === 'r' || e.key === 'R') { coverFull.nudge(0); return; }
   }
   if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
@@ -3860,15 +3863,15 @@ const faces = {
     try { if ('FaceDetector' in window) { const W = img.naturalWidth, H = img.naturalHeight;
       out = (await new FaceDetector({ maxDetectedFaces: 8, fastMode: false }).detect(img)).map(f => ({ x: f.boundingBox.x / W, y: f.boundingBox.y / H, w: f.boundingBox.width / W, h: f.boundingBox.height / H })); } } catch { out = []; }
     if (!out.length) try {
-      const cls = await this.cascade(), N = 400, c = document.createElement('canvas'); c.width = c.height = N;
+      const cls = await this.cascade(), N = 640, c = document.createElement('canvas'); c.width = c.height = N;
       const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, N, N); const d = x.getImageData(0, 0, N, N).data, g = new Uint8Array(N * N);
       for (let i = 0; i < N * N; i++) g[i] = (2 * d[i * 4] + 7 * d[i * 4 + 1] + d[i * 4 + 2]) / 10;
       const dets = [];
-      for (let sc = 24; sc <= N; sc *= 1.1) { const st = Math.max(.1 * sc, 1) | 0, off = (sc / 2 + 1) | 0;
+      for (let sc = 16; sc <= N; sc *= 1.1) { const st = Math.max(.1 * sc, 1) | 0, off = (sc / 2 + 1) | 0;
         for (let r = off; r <= N - off; r += st) for (let cc = off; cc <= N - off; cc += st) { const q = cls(r, cc, sc, g, N); if (q > 0) dets.push([r, cc, sc, q]); } }
       out = this.cluster(dets, .2).filter(v => v[3] > 30).map(([r, cc, sc]) => ({ x: (cc - sc / 2) / N, y: (r - sc / 2) / N, w: sc / N, h: sc / N }));
     } catch { out = []; }
-    out = out.filter(f => f.w > .06).sort((a, b) => b.w - a.w).slice(0, 6);
+    out = out.filter(f => f.w > .022).sort((a, b) => b.w - a.w).slice(0, 6);
     this.cache.set(key, out); return out;
   },
 };
@@ -3878,9 +3881,9 @@ const coverFull = {
   url: '', rows: null, cols: null, metaT: 0,
   /* 64×64로 줄여서 칸마다 '볼거리 점수'(윤곽선 세기 + 평균색과 다른 정도)를 계산 → 행·열 합계 */
   analyze(img) {
-    this.rows = this.cols = null; this.skin = null;
+    this.rows = this.cols = null; this.skin = null; this.thumb = null;
     try {
-      const N = 64, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d', { willReadFrequently: true });
+      const N = 128, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d', { willReadFrequently: true });
       x.drawImage(img, 0, 0, N, N); const d = x.getImageData(0, 0, N, N).data;
       const L = new Float32Array(N * N), R = [], G = [], B = []; let mr = 0, mg = 0, mb = 0;
       for (let i = 0; i < N * N; i++) { const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2]; L[i] = .299 * r + .587 * g + .114 * b; R[i] = r; G[i] = g; B[i] = b; mr += r; mg += g; mb += b; }
@@ -3890,6 +3893,7 @@ const coverFull = {
         const mx = Math.max(r, g, b), sat = mx ? (mx - Math.min(r, g, b)) / mx : 0;
         if (Y > 30 && mx < 236 && sat > .16 && sat < .68 && cb > 77 && cb < 127 && cr > 135 && cr < 180 && r > b && r >= g * .92) { sRows[(i / N) | 0]++; sCols[i % N]++; sk++; } }
       this.skin = (sk / (N * N) > .008 && sk / (N * N) < .4) ? { rows: sRows, cols: sCols, n: sk } : null;
+      const T = 12, tc = document.createElement('canvas'); tc.width = tc.height = T; const tx = tc.getContext('2d'); tx.drawImage(img, 0, 0, T, T); this.thumb = tx.getImageData(0, 0, T, T).data;
       for (let y = 1; y < N - 1; y++) for (let xx = 1; xx < N - 1; xx++) {
         const i = y * N + xx, gx = L[i + 1] - L[i - 1], gy = L[i + N] - L[i - N];
         const edge = Math.hypot(gx, gy), dist = Math.hypot(R[i] - mr, G[i] - mg, B[i] - mb);
@@ -3913,8 +3917,9 @@ const coverFull = {
   },
   place() {
     const A = innerWidth / innerHeight, el = $('#coverFull'); let F = this.faces || [];
-    if (!F.length && this.skin) {   /* 얼굴을 못 찾았으면 피부색이 시작되는 맨 위(대개 머리)부터 아래로 일정 구간을 '사람'으로 봄 */
-      const sr = this.skin.rows, sc = this.skin.cols, N = sr.length, th = Math.max(1, this.skin.n * .004);
+    const G = !F.length && this.skin;
+    if (G) {   /* 그래도 없으면 피부색이 시작되는 맨 위 */
+      const sr = G.rows, sc = G.cols, N = sr.length, th = Math.max(1, G.n * .01);
       let top = sr.findIndex(v => v >= th), l = sc.findIndex(v => v >= th), r = N - 1 - [...sc].reverse().findIndex(v => v >= th);
       if (top >= 0) F = [{ x: l / N, y: Math.max(0, top / N - .03), w: Math.max(.05, (r - l) / N * .5), h: .2 }];
     }
@@ -3928,7 +3933,17 @@ const coverFull = {
     let fx = 50, fy = 50;
     if (A > 1) { const fr = 1 / A, [lo, hi] = range(fr, y0, y1); fy = this.best(this.rows, fr, lo, hi); }
     else if (A < 1) { const fr = A, [lo, hi] = range(fr, x0, x1); fx = this.best(this.cols, fr, lo, hi); }
-    el.style.setProperty('--cfx', fx + '%'); el.style.setProperty('--cfy', fy + '%');
+    const man = store.get('cfPos.' + this.key());
+    if (man) { if (A > 1 && man.y != null) fy = man.y; if (A < 1 && man.x != null) fx = man.x; }
+    this.auto = { fx, fy }; el.style.setProperty('--cfx', fx + '%'); el.style.setProperty('--cfy', fy + '%');
+  },
+  key() { return (S.track?.artist || '') + '|' + (S.track?.album || S.track?.title || ''); },
+  nudge(dir) {   /* 사용자가 직접 위치를 고치면 그 앨범은 다음에도 그 위치로 */
+    const el = $('#coverFull'), A = innerWidth / innerHeight, k = 'cfPos.' + this.key(), cur = store.get(k) || {};
+    if (dir === 0) { store.set(k, null); this.place(); toast('자동 위치로 되돌렸어요', 1400); return; }
+    if (A >= 1) { const y = clamp(parseFloat(el.style.getPropertyValue('--cfy')) + dir * 8, 0, 100); cur.y = y; el.style.setProperty('--cfy', y + '%'); }
+    else { const x = clamp(parseFloat(el.style.getPropertyValue('--cfx')) + dir * 8, 0, 100); cur.x = x; el.style.setProperty('--cfx', x + '%'); }
+    store.set(k, cur); this.meta();
   },
   async findFaces(img, key) {
     if (!img) return; const want = this.url; const F = await faces.detect(img, key);
@@ -3943,11 +3958,18 @@ const coverFull = {
     if (on) { im.classList.add('swap'); setTimeout(() => { apply(); this.side(); }, 450); this.meta(); } else apply();
     /* 스포티파이 기본 커버는 640px → 같은 이미지의 고해상도 버전이 있으면 바꿔 끼움 (비공식 주소라 없으면 그대로) */
     const want = this.url, track = S.track;
-    const tryHi = (hi, next) => { if (!hi) return next && next(); const h = new Image(); h.crossOrigin = 'anonymous'; h.onload = () => { if (this.url !== want) return; if (h.naturalWidth <= (this.nat || 640)) return next && next();
+    const tryHi = (hi, next) => { if (!hi) return next && next(); const h = new Image(); h.crossOrigin = 'anonymous'; h.onload = () => { if (this.url !== want) return; if (h.naturalWidth <= (this.nat || 640) || !this.similar(h)) return next && next();
         this.url = hi; this.nat = h.naturalWidth; im.style.backgroundImage = cssUrl(hi); this.soft(); this.findFaces(h, hi + '|' + want); if (settings.theme === 'poster') $('#poster .art').style.backgroundImage = cssUrl(hi); };
       h.onerror = () => next && next(); h.src = hi; };
     const spHi = /ab67616d0000b273/.test(want) ? want.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
     itunes.find(track).then(u => { if (this.url === want) tryHi(u, () => tryHi(spHi)); });
+  },
+  /* 같은 그림인지: 12×12로 줄여 색 차이 평균 비교 (디럭스판·다른 앨범이 잘못 잡히는 것 방지) */
+  similar(h) {
+    if (!this.thumb) return true;
+    try { const T = 12, c = document.createElement('canvas'); c.width = c.height = T; const x = c.getContext('2d'); x.drawImage(h, 0, 0, T, T); const d = x.getImageData(0, 0, T, T).data;
+      let diff = 0; for (let i = 0; i < d.length; i += 4) diff += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]);
+      return diff / (T * T * 3) < 28; } catch { return false; }
   },
   /* 화면보다 많이 작은 이미지는 살짝 흐리게 해서 깨진 픽셀이 덜 보이게 */
   soft() {
@@ -3982,6 +4004,7 @@ const coverFull = {
 ['#lp .vinyl', '#cd .case', '#poster .art'].forEach(sel => $(sel)?.addEventListener('click', e => {
   if (!['lp', 'cd', 'poster'].includes(settings.theme)) return; e.stopPropagation(); coverFull.open(true); }));
 $('#coverFull').addEventListener('click', () => coverFull.open(false));
+$('#coverFull').addEventListener('wheel', e => { if (!$('#coverFull').classList.contains('on')) return; e.preventDefault(); coverFull.nudge(e.deltaY > 0 ? 1 : -1); }, { passive: false });
 $('#coverFull').addEventListener('mousemove', () => { const el = $('#coverFull'); if (!el.classList.contains('on')) return; coverFull.meta();
   el.classList.remove('still'); clearTimeout(coverFull.curT); coverFull.curT = setTimeout(() => el.classList.add('still'), 1800); });
 addEventListener('resize', () => { coverFull.place(); coverFull.soft(); });
