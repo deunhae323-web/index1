@@ -3785,6 +3785,16 @@ function clockTick() {
 }
 
 
+/* 이미지를 T×T로 줄인 픽셀. 한 번에 확 줄이면 브라우저가 듬성듬성 몇 픽셀만 뽑아서
+   같은 그림도 크기(640 vs 1425px)에 따라 전혀 다르게 나옴 → 반씩 단계적으로 부드럽게 줄임 */
+function miniPix(img, T) {
+  let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height, src = img;
+  while (w > T * 4 || h > T * 4) { w = Math.max(T * 4, Math.round(w / 2)); h = Math.max(T * 4, Math.round(h / 2));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, w, h); src = c; }
+  const c = document.createElement('canvas'); c.width = c.height = T; const x = c.getContext('2d', { willReadFrequently: true }); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, T, T);
+  return x.getImageData(0, 0, T, T).data;
+}
+
 /* ═══════════════ iTunes 고화질 커버 (Ben Dodson의 iTunes Artwork Finder와 같은 방식: iTunes 검색 API → 원본 크기 주소) ═══════════════ */
 const itunes = {
   cache: new Map(),
@@ -3949,7 +3959,7 @@ const coverFull = {
         const hh = bot - top + 1;
         if (top >= 0 && hh / N > .035 && hh / N < .2 && edSum / (w * hh) > .07) { this.pa = { top: top / N - .01, bot: (bot + 1) / N }; break; }
       }
-      const T = 12, tc = document.createElement('canvas'); tc.width = tc.height = T; const tx = tc.getContext('2d'); tx.drawImage(img, 0, 0, T, T); this.thumb = tx.getImageData(0, 0, T, T).data;
+      this.thumb = miniPix(img, 12);
       for (let y = 1; y < N - 1; y++) for (let xx = 1; xx < N - 1; xx++) {
         const i = y * N + xx, gx = L[i + 1] - L[i - 1], gy = L[i + N] - L[i - N];
         const edge = Math.hypot(gx, gy), dist = Math.hypot(R[i] - mr, G[i] - mg, B[i] - mb);
@@ -4030,7 +4040,7 @@ const coverFull = {
   /* 같은 그림인지: 12×12로 줄여 색 차이 평균 비교 (디럭스판·다른 앨범이 잘못 잡히는 것 방지) */
   similar(h) {
     if (!this.thumb) return true;
-    try { const T = 12, c = document.createElement('canvas'); c.width = c.height = T; const x = c.getContext('2d'); x.drawImage(h, 0, 0, T, T); const d = x.getImageData(0, 0, T, T).data;
+    try { const T = 12, d = miniPix(h, T);
       const gray = (a, i) => .299 * a[i] + .587 * a[i + 1] + .114 * a[i + 2]; let ma = 0, mb = 0, n = T * T;
       for (let i = 0; i < d.length; i += 4) { ma += gray(d, i); mb += gray(this.thumb, i); } ma /= n; mb /= n;
       let g = 0, cd = 0; for (let i = 0; i < d.length; i += 4) { g += Math.abs((gray(d, i) - ma) - (gray(this.thumb, i) - mb)); cd += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]); }
