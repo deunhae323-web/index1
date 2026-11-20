@@ -4000,9 +4000,9 @@ const coverFull = {
     try { const T = 12, c = document.createElement('canvas'); c.width = c.height = T; const x = c.getContext('2d'); x.drawImage(h, 0, 0, T, T); const d = x.getImageData(0, 0, T, T).data;
       const gray = (a, i) => .299 * a[i] + .587 * a[i + 1] + .114 * a[i + 2]; let ma = 0, mb = 0, n = T * T;
       for (let i = 0; i < d.length; i += 4) { ma += gray(d, i); mb += gray(this.thumb, i); } ma /= n; mb /= n;
-      let g = 0, c = 0; for (let i = 0; i < d.length; i += 4) { g += Math.abs((gray(d, i) - ma) - (gray(this.thumb, i) - mb)); c += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]); }
-      g /= n; c /= n * 3; const ok = g < 26 || c < 34;
-      if (!ok) console.info('[cover] iTunes 커버가 스포티파이 커버와 달라서 안 씀', { 명암차: g.toFixed(1), 색차: c.toFixed(1) });
+      let g = 0, cd = 0; for (let i = 0; i < d.length; i += 4) { g += Math.abs((gray(d, i) - ma) - (gray(this.thumb, i) - mb)); cd += Math.abs(d[i] - this.thumb[i]) + Math.abs(d[i + 1] - this.thumb[i + 1]) + Math.abs(d[i + 2] - this.thumb[i + 2]); }
+      g /= n; cd /= n * 3; const ok = g < 26 || cd < 34;
+      if (!ok) console.info('[cover] iTunes 커버가 스포티파이 커버와 달라서 안 씀', { 명암차: g.toFixed(1), 색차: cd.toFixed(1) });
       return ok; } catch { return false; }
   },
   /* 화면보다 많이 작은 이미지는 살짝 흐리게 해서 깨진 픽셀이 덜 보이게 */
