@@ -3963,11 +3963,13 @@ const coverFull = {
         fy = (hideT >= 0 && faceOk) ? hideT / (1 - fr) * 100 : 100;
       }
     }
-    const man = store.get('cfPos.' + this.key());
+    let man = store.get('cfPos.' + this.key());
+    if (!man && S.track) { const old = store.get('cfPos.' + (S.track.artist || '') + '|' + (S.track.album || S.track.title || '')); if (old) { man = old; store.set('cfPos.' + this.key(), old); } }
     if (man) { if (A > 1 && man.y != null) fy = man.y; if (A < 1 && man.x != null) fx = man.x; }
     this.auto = { fx, fy }; el.style.setProperty('--cfx', fx + '%'); el.style.setProperty('--cfy', fy + '%');
   },
-  key() { return (S.track?.artist || '') + '|' + (S.track?.album || S.track?.title || ''); },
+  /* 같은 앨범이면 곡이 달라도(피처링 아티스트가 달라도) 같은 위치를 씀: 스포티파이 앨범 ID → 없으면 대표 아티스트 + 앨범 이름 */
+  key() { const t = S.track || {}; return t.albumId ? 'alb:' + t.albumId : (t.artists?.[0] || t.artist || '') + '|' + (t.album || t.title || ''); },
   nudge(dir) {   /* 사용자가 직접 위치를 고치면 그 앨범은 다음에도 그 위치로 */
     const el = $('#coverFull'), A = innerWidth / innerHeight, k = 'cfPos.' + this.key(), cur = store.get(k) || {};
     if (dir === 0) { store.set(k, null); this.place(); toast('자동 위치로 되돌렸어요', 1400); return; }
