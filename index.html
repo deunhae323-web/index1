@@ -3765,7 +3765,7 @@ const itunes = {
   /* 아티스트의 앨범 목록 (스포티파이 요청 한도를 쓰지 않음). 7일 동안 기기에 저장 */
   async albums(artist) {
     if (!artist) return null;
-    const key = 'itAlb.' + this.norm(artist), saved = store.get(key);
+    const key = 'itAlb2.' + this.norm(artist), saved = store.get(key);
     if (saved && Date.now() - saved.at < 7 * 864e5 && saved.list?.length) return saved.list;
     let id = 0, cc = 'US';
     for (const country of ['US', 'KR', 'JP']) {
