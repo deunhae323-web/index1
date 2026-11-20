@@ -3888,11 +3888,17 @@ const coverFull = {
       const L = new Float32Array(N * N), R = [], G = [], B = []; let mr = 0, mg = 0, mb = 0;
       for (let i = 0; i < N * N; i++) { const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2]; L[i] = .299 * r + .587 * g + .114 * b; R[i] = r; G[i] = g; B[i] = b; mr += r; mg += g; mb += b; }
       mr /= N * N; mg /= N * N; mb /= N * N;
-      const rows = new Float32Array(N), cols = new Float32Array(N), sRows = new Float32Array(N), sCols = new Float32Array(N); let sk = 0;
+      const rows = new Float32Array(N), cols = new Float32Array(N), sRows = new Float32Array(N), sCols = new Float32Array(N), skm = new Uint8Array(N * N); let sk = 0;
       for (let i = 0; i < N * N; i++) { const r = R[i], g = G[i], b = B[i], Y = L[i], cb = 128 - .1687 * r - .3313 * g + .5 * b, cr = 128 + .5 * r - .4187 * g - .0813 * b;
         const mx = Math.max(r, g, b), sat = mx ? (mx - Math.min(r, g, b)) / mx : 0;
-        if (Y > 30 && mx < 236 && sat > .16 && sat < .68 && cb > 77 && cb < 127 && cr > 135 && cr < 180 && r > b && r >= g * .92) { sRows[(i / N) | 0]++; sCols[i % N]++; sk++; } }
-      this.skin = (sk / (N * N) > .008 && sk / (N * N) < .4) ? { rows: sRows, cols: sCols, n: sk } : null;
+        if (Y > 30 && mx < 236 && sat > .16 && sat < .68 && cb > 77 && cb < 127 && cr > 135 && cr < 180 && r > b && r >= g * .92) { sRows[(i / N) | 0]++; sCols[i % N]++; sk++; skm[i] = 1; } }
+      /* 피부색 픽셀 중 가장 큰 덩어리 하나 = 얼굴(또는 몸)일 가능성이 큼. 작은 인물·고개 숙인 얼굴도 잡히게 */
+      let big = null; const seen = new Uint8Array(N * N);
+      if (sk / (N * N) < .4) for (let i0 = 0; i0 < N * N; i0++) { if (!skm[i0] || seen[i0]) continue; const st = [i0]; seen[i0] = 1; let n = 0, y0 = N, y1 = 0, x0 = N, x1 = 0;
+        while (st.length) { const i = st.pop(), y = (i / N) | 0, xx = i % N; n++; if (y < y0) y0 = y; if (y > y1) y1 = y; if (xx < x0) x0 = xx; if (xx > x1) x1 = xx;
+          for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const yy = y + dy, xq = xx + dx; if (yy < 0 || yy >= N || xq < 0 || xq >= N) continue; const j = yy * N + xq; if (skm[j] && !seen[j]) { seen[j] = 1; st.push(j); } } }
+        if (!big || n > big.n) big = { n, y0, y1, x0, x1 }; }
+      this.skin = big && big.n >= N * N * .0015 ? { ...big, N } : null;
       const T = 12, tc = document.createElement('canvas'); tc.width = tc.height = T; const tx = tc.getContext('2d'); tx.drawImage(img, 0, 0, T, T); this.thumb = tx.getImageData(0, 0, T, T).data;
       for (let y = 1; y < N - 1; y++) for (let xx = 1; xx < N - 1; xx++) {
         const i = y * N + xx, gx = L[i + 1] - L[i - 1], gy = L[i + N] - L[i - N];
@@ -3917,11 +3923,9 @@ const coverFull = {
   },
   place() {
     const A = innerWidth / innerHeight, el = $('#coverFull'); let F = this.faces || [];
-    const G = !F.length && this.skin;
-    if (G) {   /* 그래도 없으면 피부색이 시작되는 맨 위 */
-      const sr = G.rows, sc = G.cols, N = sr.length, th = Math.max(1, G.n * .01);
-      let top = sr.findIndex(v => v >= th), l = sc.findIndex(v => v >= th), r = N - 1 - [...sc].reverse().findIndex(v => v >= th);
-      if (top >= 0) F = [{ x: l / N, y: Math.max(0, top / N - .03), w: Math.max(.05, (r - l) / N * .5), h: .2 }];
+    if (!F.length && this.skin) {   /* 얼굴을 못 찾았으면 가장 큰 피부색 덩어리를 얼굴 자리로 봄 (위로 머리카락, 아래로 목까지 포함됨) */
+      const k = this.skin, N = k.N, h = Math.min(.3, (k.y1 - k.y0 + 1) / N);
+      F = [{ x: k.x0 / N, y: k.y0 / N, w: (k.x1 - k.x0 + 1) / N, h }];
     }
     const range = (frac, a0, a1) => {      // 얼굴 구간 [a0,a1]을 다 담는 창 위치 범위
       if (!F.length) return [0, 1];
