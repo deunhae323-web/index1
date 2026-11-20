@@ -1117,6 +1117,24 @@ body.cq-low #cityScene .cityv .smog, body.cq-low #cityScene .cityv canvas.spn, b
 body.cq-low #cityScene .cityv .had { animation: none; }
 body.cq-low #cityScene .cityv .had .sc, body.cq-low #cityScene .cityv .had .ring { animation: none; }
 body.no-citykoi #cityKoi { display: none; }
+/* ───── 커버 전체화면 (LP·CD·포스터에서 커버 클릭) ───── */
+#stage[data-theme="lp"] #lp .vinyl, #stage[data-theme="cd"] #cd .case, #stage[data-theme="poster"] #poster .art { cursor: zoom-in; }
+#coverFull { position: fixed; inset: 0; z-index: 30; background: #000; opacity: 0; visibility: hidden; transition: opacity .6s ease, visibility 0s .6s; cursor: zoom-out; overflow: hidden; }
+#coverFull.on { opacity: 1; visibility: visible; transition: opacity .6s ease; }
+#coverFull .cf-blur { position: absolute; inset: -8%; background-size: cover; background-position: center; filter: blur(40px) saturate(1.2) brightness(.7); opacity: 0; transition: opacity .6s; }
+#coverFull.fit .cf-blur { opacity: 1; }
+#coverFull .cf-img { position: absolute; inset: 0; background-repeat: no-repeat; background-size: cover; background-position: var(--cfx, 50%) var(--cfy, 50%);
+  transform: scale(1.06); transition: transform 1.4s cubic-bezier(.2,.7,.2,1), background-position 1s ease, opacity .5s; animation: cfDrift 40s ease-in-out infinite alternate paused; }
+#coverFull.on .cf-img { transform: scale(1); animation-play-state: running; }
+#coverFull.fit .cf-img { background-size: contain; background-position: center; animation: none; box-shadow: none; }
+#coverFull .cf-img.swap { opacity: 0; }
+@keyframes cfDrift { from { scale: 1; } to { scale: 1.05; } }
+#coverFull .cf-meta { position: absolute; left: 4vw; bottom: 5vh; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8), 0 0 18px rgba(0,0,0,.6); opacity: 0; transition: opacity 1.2s; pointer-events: none; }
+#coverFull .cf-meta.show { opacity: .92; }
+#coverFull .cf-meta b { display: block; font: 600 clamp(18px, 1.6vw, 28px)/1.2 var(--serif, Georgia), serif; }
+#coverFull .cf-meta span { display: block; margin-top: .4em; font-size: clamp(12px, .95vw, 16px); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+#coverFull .cf-hint { position: absolute; right: 3vw; bottom: 4vh; font-size: 12px; color: #fff; opacity: 0; transition: opacity 1.2s; text-shadow: 0 1px 3px rgba(0,0,0,.8); pointer-events: none; }
+#coverFull .cf-hint.show { opacity: .6; }
 </style>
 </head>
 <body class="paused">
@@ -1545,6 +1563,7 @@ body.no-citykoi #cityKoi { display: none; }
 
 <div id="chip" class="glass"></div>
 <div id="toast" class="glass"></div>
+<div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · C 꽉 채우기 ↔ 전체 보기</div></div>
 
 <aside id="lists" class="glass">
   <div class="lhead">
@@ -1955,6 +1974,7 @@ async function applyArt(url, seed) {
   if (!img) { setPalette(moodPalette(seed), .4); return; }
   try { info = analyzeImage(img); } catch { info = null; }   // CORS 막히면 무드 팔레트
   bg.setImage(img, seed);
+  coverFull.setImage(img, url);
   if (typeof radio !== 'undefined') radio.setArt(img, !!info);
   if (info) setPalette(info.cols, info.lum); else setPalette(moodPalette(seed), .4);
 }
@@ -3568,6 +3588,10 @@ $('#sClient').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer);
 $('#sDemo').onclick = () => { openSettings(false); clearTimeout(sp.pollTimer); demo.start(); };
 
 addEventListener('keydown', e => {
+  if ($('#coverFull').classList.contains('on')) {
+    if (e.key === 'Escape') { coverFull.open(false); return; }
+    if (e.key === 'c' || e.key === 'C') { $('#coverFull').classList.toggle('fit'); coverFull.meta(); return; }
+  }
   if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
   if (e.repeat && (e.key === 'z' || e.key === 'Z')) return;
@@ -3624,6 +3648,67 @@ function clockTick() {
   $('#clockDate').textContent = $('#idleDate').textContent = ds;
   checkNight();
 }
+
+
+/* ═══════════════ 커버 전체화면: 커버 안에서 디테일이 몰린 곳을 찾아 자동으로 잘라 보여 줌 ═══════════════ */
+const coverFull = {
+  url: '', rows: null, cols: null, metaT: 0,
+  /* 64×64로 줄여서 칸마다 '볼거리 점수'(윤곽선 세기 + 평균색과 다른 정도)를 계산 → 행·열 합계 */
+  analyze(img) {
+    this.rows = this.cols = null;
+    try {
+      const N = 64, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d', { willReadFrequently: true });
+      x.drawImage(img, 0, 0, N, N); const d = x.getImageData(0, 0, N, N).data;
+      const L = new Float32Array(N * N), R = [], G = [], B = []; let mr = 0, mg = 0, mb = 0;
+      for (let i = 0; i < N * N; i++) { const r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2]; L[i] = .299 * r + .587 * g + .114 * b; R[i] = r; G[i] = g; B[i] = b; mr += r; mg += g; mb += b; }
+      mr /= N * N; mg /= N * N; mb /= N * N;
+      const rows = new Float32Array(N), cols = new Float32Array(N);
+      for (let y = 1; y < N - 1; y++) for (let xx = 1; xx < N - 1; xx++) {
+        const i = y * N + xx, gx = L[i + 1] - L[i - 1], gy = L[i + N] - L[i - N];
+        const edge = Math.hypot(gx, gy), dist = Math.hypot(R[i] - mr, G[i] - mg, B[i] - mb);
+        const v = (edge * .6 + dist * 1.1) ** 1.5; rows[y] += v; cols[xx] += v;
+      }
+      this.rows = rows; this.cols = cols;
+    } catch { /* 이미지 정보를 못 읽으면 가운데 기준 */ }
+  },
+  /* 화면 비율로 보이는 구간 길이를 정하고, 점수 합이 가장 큰 구간을 고름 (가운데 쪽에 살짝 가산점) */
+  best(arr, frac) {
+    if (!arr || frac >= 1) return 50;
+    const N = arr.length, w = Math.max(1, Math.round(N * frac)); let bestS = -1, bestT = 0, tot = 0; for (const v of arr) tot += v;
+    if (tot <= 0) return 50;
+    for (let t = 0; t + w <= N; t++) { let sum = 0; for (let k = t; k < t + w; k++) sum += arr[k];
+      const mid = (t + w / 2) / N, bias = 1 - .3 * Math.abs(mid - .5) * 2; sum *= bias; if (sum > bestS) { bestS = sum; bestT = t; } }
+    let cy = 0; arr.forEach((v, k) => cy += v * (k + .5)); cy /= tot;              // 볼거리의 무게중심
+    const center = (bestT + w / 2) * .5 + cy * .5, t = Math.min(N - w, Math.max(0, center - w / 2));
+    return Math.round(t / (N - w) * 1000) / 10;
+  },
+  place() {
+    const A = innerWidth / innerHeight, el = $('#coverFull');
+    el.style.setProperty('--cfx', (A < 1 ? this.best(this.cols, A) : 50) + '%');
+    el.style.setProperty('--cfy', (A > 1 ? this.best(this.rows, 1 / A) : 50) + '%');
+  },
+  setImage(img, url) {
+    this.url = url || ''; if (img) this.analyze(img); else this.rows = this.cols = null;
+    const im = $('#coverFull .cf-img'), on = $('#coverFull').classList.contains('on');
+    const apply = () => { im.style.backgroundImage = cssUrl(this.url); $('#coverFull .cf-blur').style.backgroundImage = cssUrl(this.url); this.place(); im.classList.remove('swap'); };
+    if (on) { im.classList.add('swap'); setTimeout(apply, 450); this.meta(); } else apply();
+  },
+  meta() {
+    const m = $('#coverFull .cf-meta'); m.querySelector('b').textContent = S.track?.title || ''; m.querySelector('span').textContent = S.track?.artist || '';
+    m.classList.add('show'); $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
+    this.metaT = setTimeout(() => { m.classList.remove('show'); $('#coverFull .cf-hint').classList.remove('show'); }, 4000);
+  },
+  open(on) {
+    const el = $('#coverFull'); if (on && !this.url) return;
+    el.classList.toggle('on', on); el.setAttribute('aria-hidden', on ? 'false' : 'true');
+    if (on) { this.place(); this.meta(); }
+  },
+};
+['#lp .vinyl', '#cd .case', '#poster .art'].forEach(sel => $(sel)?.addEventListener('click', e => {
+  if (!['lp', 'cd', 'poster'].includes(settings.theme)) return; e.stopPropagation(); coverFull.open(true); }));
+$('#coverFull').addEventListener('click', () => coverFull.open(false));
+$('#coverFull').addEventListener('mousemove', () => { if ($('#coverFull').classList.contains('on')) coverFull.meta(); });
+addEventListener('resize', () => coverFull.place());
 
 /* ═══════════════ 메인 루프 (프레임 제한) ═══════════════ */
 let lastFrame = 0, looping = false, lastCur = '';
