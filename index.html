@@ -3818,6 +3818,42 @@ function miniPix(img, T) {
   return x.getImageData(0, 0, T, T).data;
 }
 
+/* ═══════════════ 고화질 커버 보관함: 한 번 받은 고화질 이미지를 브라우저 Cache Storage에 7일 보관 ═══════════════
+   키 = 스포티파이 커버 주소, 값(localStorage artHi.) = { hi: 고화질 주소, nat: 가로 픽셀, at: 마지막 사용 시각 }
+   들을 때마다 at이 갱신돼서, 자주 듣는 앨범은 계속 남고 7일 동안 안 들은 앨범만 지워짐 */
+const artCache = {
+  NAME: 'avp-art-v1', DAYS: 7, MAX: 150, blob: '', pruned: false,
+  key(want) { return 'artHi.' + want.replace(/^https?:\/\/[^/]+\//, ''); },
+  async get(want) {
+    if (!('caches' in window)) return null;
+    const m = store.get(this.key(want)); if (!m || !m.hi || Date.now() - m.at > this.DAYS * 864e5) return null;
+    try { const r = await (await caches.open(this.NAME)).match(m.hi); if (!r) return null;
+      const src = URL.createObjectURL(await r.blob()); store.set(this.key(want), { ...m, at: Date.now() }); return { src, hi: m.hi, nat: m.nat }; } catch { return null; }
+  },
+  async put(want, hi, nat) {
+    store.set(this.key(want), { hi, nat, at: Date.now() });
+    if (!('caches' in window)) return;
+    try { const c = await caches.open(this.NAME); if (!(await c.match(hi))) { const r = await fetch(hi, { mode: 'cors' }); if (r.ok) await c.put(hi, r); } } catch {}
+    this.prune();
+  },
+  /* 화면에 쓰던 blob: 주소는 다음 곡으로 넘어간 뒤 조금 있다가 풀어 줌(메모리) */
+  swapBlob(src) { const old = this.blob; this.blob = src; if (old && old !== src) setTimeout(() => URL.revokeObjectURL(old), 3000); },
+  /* 7일 지난 것과 150개 넘는 오래된 것 정리 (세션당 한 번) */
+  async prune() {
+    if (this.pruned || !('caches' in window)) return; this.pruned = true;
+    try {
+      const all = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('avp.artHi.')) { try { all.push([k, JSON.parse(localStorage.getItem(k))]); } catch {} } }
+      all.sort((a, b) => (b[1]?.at || 0) - (a[1]?.at || 0));
+      const keep = new Set(), drop = [];
+      all.forEach(([k, v], i) => { if (v && v.hi && i < this.MAX && Date.now() - v.at <= this.DAYS * 864e5) keep.add(v.hi); else drop.push(k); });
+      drop.forEach(k => localStorage.removeItem(k));
+      const c = await caches.open(this.NAME);
+      for (const req of await c.keys()) if (!keep.has(req.url)) await c.delete(req);
+    } catch {}
+  },
+};
+setTimeout(() => artCache.prune(), 20000);
+
 /* ═══════════════ iTunes 고화질 커버 (Ben Dodson의 iTunes Artwork Finder와 같은 방식: iTunes 검색 API → 원본 크기 주소) ═══════════════ */
 const itunes = {
   cache: new Map(),
@@ -4054,11 +4090,18 @@ const coverFull = {
     if (on) { im.classList.add('swap'); setTimeout(() => { apply(); this.side(); }, 450); this.meta(); } else apply();
     /* 스포티파이 기본 커버는 640px → 같은 이미지의 고해상도 버전이 있으면 바꿔 끼움 (비공식 주소라 없으면 그대로) */
     const want = this.url, track = S.track;
+    /* 고화질로 바꿔 끼우기. src는 실제로 그릴 주소(저장해 둔 걸 꺼내면 blob: 주소), hi는 원래 고화질 주소 */
+    const useHi = (h, src, hi) => { this.url = src; this.nat = h.naturalWidth; im.style.backgroundImage = cssUrl(src); $('#coverFull .cf-blur').style.backgroundImage = cssUrl(src); this.soft(); this.findFaces(h, hi + '|' + want); if (settings.theme === 'poster') $('#poster .art').style.backgroundImage = cssUrl(src); };
     const tryHi = (hi, next) => { if (!hi) return next && next(); const h = new Image(); h.crossOrigin = 'anonymous'; h.onload = () => { if (this.url !== want) return; if (h.naturalWidth <= (this.nat || 640) || !this.similar(h)) return next && next();
-        this.url = hi; this.nat = h.naturalWidth; im.style.backgroundImage = cssUrl(hi); this.soft(); this.findFaces(h, hi + '|' + want); if (settings.theme === 'poster') $('#poster .art').style.backgroundImage = cssUrl(hi); };
+        useHi(h, hi, hi); artCache.put(want, hi, h.naturalWidth); };
       h.onerror = () => next && next(); h.src = hi; };
     const spHi = /ab67616d0000b273/.test(want) ? want.replace('ab67616d0000b273', 'ab67616d000082c1') : '';
-    itunes.find(track).then(list => { if (this.url !== want) return; const run = k => k < list.length ? tryHi(list[k], () => run(k + 1)) : tryHi(spHi); run(0); });
+    const search = () => itunes.find(track).then(list => { if (this.url !== want) return; const run = k => k < list.length ? tryHi(list[k], () => run(k + 1)) : tryHi(spHi); run(0); });
+    /* 1주일 안에 받아 둔 고화질이 있으면 검색·비교·다운로드 없이 바로 꺼내 씀 */
+    if (!want) return;
+    artCache.get(want).then(c => { if (this.url !== want) return; if (!c) return search();
+      const h = new Image(); h.onload = () => { if (this.url !== want) return URL.revokeObjectURL(c.src); useHi(h, c.src, c.hi); artCache.swapBlob(c.src); };
+      h.onerror = () => { URL.revokeObjectURL(c.src); search(); }; h.src = c.src; });
   },
   /* 같은 그림인지: 12×12로 줄여 색 차이 평균 비교 (디럭스판·다른 앨범이 잘못 잡히는 것 방지) */
   similar(h) {
