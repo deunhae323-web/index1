@@ -1207,9 +1207,11 @@ body.lyr-fish #lyrics:not(.plain) #lyrFx { display: block; }
 @media (prefers-reduced-motion: reduce) { #lyrFx .w.on { animation-duration: .01s; } }
 /* 노래방: 지금 줄만 크게, 진행에 맞춰 글자가 왼쪽부터 차오름 */
 body.lyr-kara #lyrics:not(.plain) .line { opacity: 0 !important; transform: scale(.9) !important; transition: opacity .5s, transform .5s !important; }
-body.lyr-kara #lyrics:not(.plain) .line.active { opacity: 1 !important; transform: scale(1.22) !important; font-weight: 700 !important; color: transparent !important; -webkit-text-fill-color: transparent !important;
-  background: linear-gradient(90deg, #fff calc(var(--p) * 100%), rgba(255,255,255,.32) calc(var(--p) * 100% + 4%)); -webkit-background-clip: text; background-clip: text;
-  text-shadow: none !important; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c1) 55%, transparent)) drop-shadow(0 1px 3px rgba(0,0,0,.45)); transition: --p .12s linear, opacity .5s, transform .5s !important; }
+/* 크게 키워도 오른쪽이 안 잘리게 폭을 줄여 줄바꿈. 채우기는 안쪽 span(.lt)에 걸어서 두 줄이어도 첫 줄 끝 → 둘째 줄 순서로 차오름 */
+body.lyr-kara #lyrics:not(.plain) .line.active { max-width: calc(84% / 1.22) !important; opacity: 1 !important; transform: scale(1.22) !important; font-weight: 700 !important;
+  text-shadow: none !important; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c1) 55%, transparent)) drop-shadow(0 1px 3px rgba(0,0,0,.45)); transition: opacity .5s, transform .5s !important; }
+body.lyr-kara #lyrics:not(.plain) .line.active .lt { color: transparent; -webkit-text-fill-color: transparent; -webkit-box-decoration-break: slice; box-decoration-break: slice;
+  background: linear-gradient(90deg, #fff calc(var(--p) * 100%), rgba(255,255,255,.32) calc(var(--p) * 100% + 2%)); -webkit-background-clip: text; background-clip: text; transition: --p .12s linear; }
 body.lyr-kara #lyrics:not(.plain) .line.near:not(.past) { opacity: .45 !important; transform: scale(.95) !important; }
 /* 타자기: 지금 줄이 한 글자씩 타이핑됨 */
 body.lyr-type #lyrics:not(.plain) .line { font-family: ui-monospace, 'D2Coding', Menlo, Consolas, monospace !important; font-style: normal !important; letter-spacing: 0 !important; font-weight: 500 !important;
@@ -2239,7 +2241,26 @@ const lyrFx = {
 };
 
 const lyrics = {
-  cache: new Map(), offsets: new Map(), lines: [], synced: false, idx: -1, token: 0,
+  cache: new Map(), offsets: new Map(Object.entries(store.get('lrcOff', {}))), lines: [], synced: false, idx: -1, token: 0,
+  /* 받아 온 가사를 브라우저 Cache Storage에 보관 (30일, 들을 때마다 다시 30일). 찾지 못한 곡은 3일 뒤 다시 찾아봄 */
+  LRC: 'avp-lrc-v1',
+  async saved(id) {
+    if (!id || !('caches' in window)) return undefined;
+    try { const c = await caches.open(this.LRC), r = await c.match('https://lrc.cache/' + encodeURIComponent(id)); if (!r) return undefined;
+      const j = await r.json(), age = Date.now() - j.at, keep = j.res ? 30 : 3;
+      if (age > keep * 864e5) { c.delete('https://lrc.cache/' + encodeURIComponent(id)); return undefined; }
+      if (j.res && age > 864e5) this.save(id, j.res);   // 하루 이상 지났으면 보관 기간 새로 시작
+      return j.res; } catch { return undefined; }
+  },
+  async save(id, res) {
+    if (!id || !('caches' in window)) return;
+    try { const c = await caches.open(this.LRC); await c.put('https://lrc.cache/' + encodeURIComponent(id), new Response(JSON.stringify({ at: Date.now(), res }), { headers: { 'content-type': 'application/json' } })); } catch {}
+  },
+  async prune() {
+    if (!('caches' in window)) return;
+    try { const c = await caches.open(this.LRC); for (const req of await c.keys()) { const r = await c.match(req); const j = await r.json().catch(() => null);
+      if (!j || Date.now() - j.at > (j.res ? 30 : 3) * 864e5) await c.delete(req); } } catch {}
+  },
   el: $('#lyricsInner'),
   clean(t) {
     return t.replace(/\s*[-–]\s*(\d{4}\s*)?(remaster(ed)?|live|mono|stereo|version|edit|mix|remix|single|radio).*$/i, '')
@@ -2308,14 +2329,16 @@ const lyrics = {
     const my = ++this.token;
     this.show(false); this.lines = []; this.idx = -1; this.el.innerHTML = ''; this.el.style.transform = 'translateY(0)'; lyrFx.reset();
     let res = this.cache.get(t.id);
-    if (res === undefined) { res = await this.fetchLrc(t); this.cache.set(t.id, res); }
+    if (res === undefined && !t.lrc) res = await this.saved(t.id);
+    if (res === undefined) { res = await this.fetchLrc(t); if (!t.lrc) this.save(t.id, res ?? null); }
+    this.cache.set(t.id, res);
     if (my !== this.token) return;
     if (!res || res.instrumental || (!res.synced && !res.plain)) return;
     this.synced = !!res.synced;
     this.lines = this.synced ? this.parse(res.synced) : res.plain.split(/\r?\n/).map(text => ({ text: text.trim() })).filter((l, i, a) => l.text || (a[i - 1] && a[i - 1].text));
     if (!this.lines.length) return;
     const frag = document.createDocumentFragment();
-    for (const l of this.lines) { const d = document.createElement('div'); d.className = 'line' + (l.text ? '' : ' gap'); d.textContent = l.text || '· · ·'; frag.appendChild(d); }
+    for (const l of this.lines) { const d = document.createElement('div'); d.className = 'line' + (l.text ? '' : ' gap'); const sp = document.createElement('span'); sp.className = 'lt'; sp.textContent = l.text || '· · ·'; d.appendChild(sp); frag.appendChild(d); }
     const hd = document.createElement('div'); hd.className = 'dmhead'; hd.textContent = '♪ ' + (t.title || ''); const sm = document.createElement('small'); sm.textContent = t.artist || ''; hd.appendChild(sm);
     this.el.appendChild(hd); this.el.appendChild(frag);
     this.nodes = [...this.el.querySelectorAll('.line')];
@@ -2327,7 +2350,7 @@ const lyrics = {
   offset() { return this.offsets.get(S.track?.id) || 0; },
   nudge(d) {
     if (!S.track) return;
-    const v = Math.round((this.offset() + d) * 10) / 10; this.offsets.set(S.track.id, v);
+    const v = Math.round((this.offset() + d) * 10) / 10; if (v) this.offsets.set(S.track.id, v); else this.offsets.delete(S.track.id); store.set('lrcOff', Object.fromEntries(this.offsets));   // 곡별 싱크 조정도 계속 기억
     $('#sOffV').textContent = (v > 0 ? '+' : '') + v.toFixed(1) + 's';
     toast(`가사 싱크 ${(v > 0 ? '+' : '') + v.toFixed(1)}초 ${v > 0 ? '(가사가 빨리 나옴)' : v < 0 ? '(가사가 늦게 나옴)' : ''}`, 1600);
     this.idx = -2; this.update(S.pos(), true);
@@ -2346,13 +2369,13 @@ const lyrics = {
     while (lo <= hi) { const m = (lo + hi) >> 1; if (this.lines[m].t <= t) { i = m; lo = m + 1; } else hi = m - 1; }
     if (i >= 0 && this.nodes[i]) {   /* 노래방·타자기용: 지금 줄 안에서 얼마나 지났는지 (0~1) */
       const a = this.lines[i].t, b = this.lines[i + 1]?.t ?? a + 4000, pr = clamp((t - a) / Math.max(400, (b - a) * .9), 0, 1);
-      this.nodes[i].style.setProperty('--p', pr.toFixed(3));
+      this.nodes[i].style.setProperty('--p', pr.toFixed(3)); this.nodes[i].firstChild?.style?.setProperty('--p', pr.toFixed(3));
     }
     lyrFx.update(i, t, force);
     if (i === this.idx && !force) return;
     const prev = this.idx; this.idx = i;
     this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); n.classList.toggle('past', k < i);
-      const dd = Math.max(-6, Math.min(6, k - i)); n.style.setProperty('--d', dd); n.style.setProperty('--ad', Math.abs(dd)); if (k !== i) n.style.setProperty('--p', k < i ? 1 : 0); });
+      const dd = Math.max(-6, Math.min(6, k - i)); n.style.setProperty('--d', dd); n.style.setProperty('--ad', Math.abs(dd)); if (k !== i) { n.style.setProperty('--p', k < i ? 1 : 0); n.firstChild?.style?.setProperty('--p', k < i ? 1 : 0); } });
     const target = this.nodes[Math.max(0, i)];
     const y = target ? target.offsetTop + target.offsetHeight / 2 - box * .42 : 0;
     this.el.style.transform = `translateY(${-Math.max(-box * .3, y)}px)`;
@@ -3922,6 +3945,7 @@ const artCache = {
   },
 };
 setTimeout(() => artCache.prune(), 20000);
+setTimeout(() => lyrics.prune(), 30000);
 /* 예전 버전 보관함 정리 (아티스트 오판으로 잘못 저장된 커버가 섞여 있을 수 있음) */
 setTimeout(() => { try { if ('caches' in window) caches.delete('avp-art-v1');
   for (let i = localStorage.length - 1; i >= 0; i--) { const k = localStorage.key(i); if (k && (k.startsWith('avp.artHi.') || k.startsWith('avp.itArt2.') || k.startsWith('avp.itArt.'))) localStorage.removeItem(k); } } catch {} }, 5000);
