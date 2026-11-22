@@ -1184,6 +1184,9 @@ body.lyr-adj #lyrAdj { display: block; }
 #lyrAdj.drag { cursor: grabbing; background: rgba(255,255,255,.07); }
 #lyrAdj span { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; max-width: calc(100% - 20px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-size: 12.5px; line-height: 1.4; padding: 6px 12px; border-radius: 999px; background: rgba(18,18,22,.84); color: #fff; pointer-events: none; }
+#lyrAdj .rs { position: absolute; right: 10px; top: 10px; font: 600 12.5px/1.4 var(--sans); padding: 6px 12px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px;
+  background: rgba(18,18,22,.84); color: #fff; cursor: pointer; transition: background .2s; }
+#lyrAdj .rs:hover { background: rgba(40,40,46,.92); }
 #lyrGuide i { position: fixed; z-index: 59; pointer-events: none; opacity: 0; transition: opacity .7s ease; background: rgba(130,225,255,.85); box-shadow: 0 0 6px rgba(130,225,255,.55); }
 #lyrGuide .v { left: 50%; top: 0; bottom: 0; width: 1px; }
 #lyrGuide .h { top: 50%; left: 0; right: 0; height: 1px; }
@@ -1965,7 +1968,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !impor
       <div><b>P</b>플레이리스트 띄우기/숨기기 &nbsp; <b>A</b>앨범 선반 켜기/끄기</div>
       <div><b>E</b>분위기 이펙트 바꾸기</div>
       <div><b>[</b><b>]</b>가사 싱크 −0.5s / +0.5s</div>
-      <div><b>M</b>가사 위치 조정 모드 (끌어서 옮기기)</div>
+      <div><b>M</b>가사 위치 조정 모드 (끌기·방향키로 옮기기, 모드 안에서 <b>R</b> 초기화)</div>
       <div><b>Z</b>바로 Zen 모드 &nbsp; <b>S</b>설정</div>
     </div>
   </div></details>
@@ -2697,11 +2700,12 @@ const lyrPos = {
   make() {
     if (this.fr) return;
     this.fr = document.createElement('div'); this.fr.id = 'lyrAdj';
-    this.fr.innerHTML = '<span>끌어서 옮기기 · 가운데 근처에서 놓으면 자동 정렬 · M 또는 Esc로 끝내기</span>';
+    this.fr.innerHTML = '<span>끌거나 방향키(Shift: 크게)로 옮기기 · 가운데 근처에서 놓으면 자동 정렬 · R 초기화 · M/Esc 끝내기</span><button type="button" class="rs">↺ 기본 위치로</button>';
     this.gd = document.createElement('div'); this.gd.id = 'lyrGuide'; this.gd.innerHTML = '<i class="v"></i><i class="h"></i>';
     document.body.append(this.fr, this.gd);
     this.fr.addEventListener('pointerdown', e => this.down(e));
     this.fr.addEventListener('click', e => e.stopPropagation());
+    this.fr.querySelector('.rs').addEventListener('click', () => this.reset());
   },
   frame() {
     if (!this.on || !this.fr) return;
@@ -2717,10 +2721,10 @@ const lyrPos = {
     if (on === this.on) return;
     this.on = on; this.make(); body.classList.toggle('lyr-adj', on);
     if (on) { openSettings(false); wake(); this.frame(); }
-    else { this.drag = null; this.fr.classList.remove('drag'); toast('가사 위치를 저장했어요', 1400); }
+    else { this.drag = null; this.fr.classList.remove('drag'); if (this.nT) { clearTimeout(this.nT); this.nT = 0; this.save(this.cur[0], this.cur[1]); } toast('가사 위치를 저장했어요', 1400); }
   },
   down(e) {
-    if (!this.on || settings.lyrLock || e.button > 0) return; e.preventDefault(); e.stopPropagation();
+    if (!this.on || settings.lyrLock || e.button > 0 || e.target.closest('button')) return; e.preventDefault(); e.stopPropagation();
     const [sx, sy] = this.cur;
     this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, sx, sy, b: this.base() };
     this.fr.setPointerCapture(e.pointerId); this.fr.classList.add('drag');
@@ -2749,6 +2753,14 @@ const lyrPos = {
     else { if (Math.abs(f[0] - dx) > .5) sv = false; if (Math.abs(f[1] - dy) > .5) sh = false; }
     this.set(f[0], f[1]); this.save(f[0], f[1]); this.frame();
     if (sv || sh) this.guide(sv, sh);
+  },
+  /* 방향키로 조금씩: 화면 밖·시계·간판 쪽으로는 더 안 감. 저장은 키를 뗀 뒤 잠깐 있다가 한 번 */
+  nudge(ax, ay) {
+    if (!this.on || settings.lyrLock || this.drag) return;
+    const [cx, cy] = this.cur, f = this.fix(cx + ax, cy + ay);
+    if (!f || (Math.abs(f[0] - cx) < .5 && Math.abs(f[1] - cy) < .5)) return;
+    this.set(f[0], f[1]); this.frame();
+    clearTimeout(this.nT); this.nT = setTimeout(() => this.save(this.cur[0], this.cur[1]), 250);
   },
   save(dx, dy) {
     const all = { ...(settings.lyrPos || {}) };
@@ -4234,6 +4246,10 @@ addEventListener('keydown', e => {
     if (e.key === 'r' || e.key === 'R') { coverFull.nudge(0); return; }
   }
   if (e.key === 'Escape' && lyrPos.on) { lyrPos.toggle(false); return; }
+  if (lyrPos.on && !e.repeat && (e.code === 'KeyR' || /^[rRㄱ]$/.test(e.key))) { lyrPos.reset(); return; }   // M 모드에서 R = 기본 위치로
+  if (lyrPos.on && /^Arrow(Up|Down|Left|Right)$/.test(e.key)) {   // M 모드에서 방향키 = 4px씩, Shift = 20px씩 (곡 넘김 대신)
+    e.preventDefault(); e.stopPropagation(); const st = e.shiftKey ? 20 : 4;
+    lyrPos.nudge(e.key === 'ArrowLeft' ? -st : e.key === 'ArrowRight' ? st : 0, e.key === 'ArrowUp' ? -st : e.key === 'ArrowDown' ? st : 0); return; }
   if (e.key === 'Escape') { openSettings(false); if (!settings.listPin) lists.open(false); e.target.blur?.(); return; }
   if (e.target.closest('input, textarea')) return;
   if (e.repeat && (e.key === 'z' || e.key === 'Z' || e.code === 'KeyZ')) return;
