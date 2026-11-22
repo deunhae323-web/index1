@@ -1332,11 +1332,16 @@ body.lyr-type #lyrics:not(.plain) .line.past.near { opacity: .55 !important; }
 body.lyr-type #lyrics:not(.plain) .line.active { opacity: 1 !important; width: fit-content; clip-path: inset(-20% calc((1 - min(1, var(--p) * 2.6)) * 100%) -20% -2%); transition: --p .12s linear, opacity .3s !important; }
 body.lyr-type #lyrics:not(.plain) .line.active::after { content: '▍'; margin-left: .1em; animation: caret .9s steps(1) infinite; }
 @keyframes caret { 50% { opacity: 0; } }
-/* 시네마: 가운데 정렬, 지금 줄만 또렷하고 나머지는 초점이 나감 */
-body.lyr-cine #lyrics:not(.plain) .line { margin-left: auto !important; margin-right: auto !important; text-align: center; transform-origin: center !important;
-  filter: blur(calc(min(var(--ad), 4) * 1.4px)); opacity: calc(.75 - min(var(--ad), 4) * .14) !important; transform: scale(calc(1 - min(var(--ad), 4) * .04)) !important;
-  transition: filter .9s, opacity .9s, transform .9s !important; }
-body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !important; transform: scale(1.18) !important; letter-spacing: .02em; }
+/* 시네마: 가운데 정렬, 지금 줄만 또렷하고 나머지는 초점이 나감
+   부드럽게: ① 글자를 1.18배 크기로 그려 두고 나머지 줄을 줄여서 보여 줌(지금 줄은 scale 1 → 커질 때 흐릿해졌다 또렷해지는 현상 없음)
+   ② 줄마다 별도 레이어(will-change)라 흐림·크기 변화가 화면 다시 그리기 없이 진행 ③ 스크롤과 같은 곡선·시간 ④ 글자 간격은 바꾸지 않음(줄바꿈 튐 방지) */
+body.lyr-cine #lyrics:not(.plain) .line { margin-left: auto !important; margin-right: auto !important; text-align: center; transform-origin: center !important; line-height: 1.32 !important; padding: .3em 0 !important;
+  --cs: calc((1 - min(var(--ad), 4) * .04) / 1.18);
+  filter: blur(calc(min(var(--ad), 4) * 1.6px)); opacity: calc(.75 - min(var(--ad), 4) * .14) !important; transform: scale(var(--cs)) !important;
+  will-change: transform, opacity, filter; backface-visibility: hidden;
+  transition: filter .9s cubic-bezier(.22,.8,.24,1), opacity .9s cubic-bezier(.22,.8,.24,1), transform .9s cubic-bezier(.22,.8,.24,1) !important; }
+body.lyr-cine #lyrics:not(.plain) .line .lt { font-size: 1.18em; letter-spacing: .02em; }
+body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !important; transform: scale(1) !important; }
 /* 긴 제목: 본 제목은 최대 2줄(넘치면 …), feat 등 꼬리는 작은 한 줄 */
 #poster .ptitle, #clock .np .t, #coverFull .cf-meta b { overflow-wrap: anywhere; }
 #poster .ptitle { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
