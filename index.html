@@ -1182,15 +1182,29 @@ body.lyr-dm #coverFull .cf-lyr #lyrics .line { font-size: calc(clamp(16px, 1.35v
 @property --p { syntax: '<number>'; inherits: false; initial-value: 0; }
 #segLyrStyle { display: grid; grid-template-columns: repeat(3, 1fr); }
 #lyrics .line { --d: 0; --ad: 0; }
-/* Fisheye: 렌즈를 통해 보는 것처럼 가운데가 둥글게 부풀고 가장자리가 휘어짐 (가로·세로 모두) */
-body.lyr-fish #lyrics:not(.plain) { filter: url(#lyrFish); height: 52vh; border-radius: 50%;
-  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, rgba(0,0,0,.6) 80%, transparent 97%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 62%, rgba(0,0,0,.6) 80%, transparent 97%); }
-body.lyr-fish #lyrics:not(.plain)::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: 50%;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, transparent 58%, rgba(0,0,0,.28) 84%, rgba(0,0,0,.55) 100%), radial-gradient(ellipse 14% 10% at 76% 26%, rgba(255,255,255,.22), transparent 70%); }
-body.lyr-fish #lyrics:not(.plain) .line { margin-left: auto !important; margin-right: auto !important; text-align: center; transform-origin: center !important; max-width: 92% !important;
-  font-weight: 700 !important; letter-spacing: -.01em; opacity: calc(.95 - min(var(--ad), 4) * .17) !important; transform: scale(calc(1.06 - min(var(--ad), 4) * .03)) !important;
-  transition: opacity .8s, transform .8s !important; }
-body.lyr-fish #lyrics:not(.plain) .line.active { opacity: 1 !important; transform: scale(1.22) !important; }
+/* Fisheye: 지금 줄의 단어가 하나씩 크게 튀어나오고(잔상 꼬리), 가장자리 단어는 볼록 렌즈처럼 살짝 휘어 보임.
+   SVG 필터 대신 글자 자체의 CSS 변형만 써서 글씨가 뭉개지지 않음 */
+body.lyr-fish #lyrics:not(.plain) { height: 52vh; -webkit-mask-image: none; mask-image: none; }
+body.lyr-fish #lyrics:not(.plain) #lyricsInner { visibility: hidden; }
+#lyrFx { display: none; position: absolute; inset: 0; pointer-events: none; }
+body.lyr-fish #lyrics:not(.plain) #lyrFx { display: block; }
+#lyrFx .blk { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity .38s ease, transform .38s ease; }
+#lyrFx .blk.out { opacity: 0; transform: translateY(-.12em) scale(.97); }
+#lyrFx .row { display: flex; gap: .26em; white-space: nowrap; line-height: 1.04; }
+#lyrFx .w { --ry: 0deg; --rx: 0deg; --sc: 1; --x0: 0em; --y0: 0em; --ex: 0em; --ey: 0em; display: inline-block; opacity: 0;
+  font-weight: 700; letter-spacing: -.035em; color: #f7efdd; backface-visibility: hidden;
+  transform: perspective(9em) rotateY(var(--ry)) rotateX(var(--rx)) scale(var(--sc));
+  text-shadow: 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 .5em color-mix(in srgb, var(--c1) 40%, transparent); }
+#lyrFx .w.still { opacity: 1; }
+#lyrFx .w.on { animation: lfIn .62s cubic-bezier(.16,.84,.24,1) forwards; }
+#lyrFx .w.gap { opacity: .45; letter-spacing: .3em; font-weight: 500; }
+@keyframes lfIn {
+  0% { opacity: 0; transform: perspective(9em) translate(var(--x0), var(--y0)) rotateY(var(--ry)) rotateX(var(--rx)) scale(calc(var(--sc) * 1.22));
+       text-shadow: var(--ex) var(--ey) 0 rgba(247,239,221,.6), calc(var(--ex) * 2) calc(var(--ey) * 2) 0 rgba(247,239,221,.42), calc(var(--ex) * 3) calc(var(--ey) * 3) 0 rgba(247,239,221,.26), calc(var(--ex) * 4) calc(var(--ey) * 4) 0 rgba(247,239,221,.14), 0 0 .5em color-mix(in srgb, var(--c1) 40%, transparent); }
+  12% { opacity: 1; }
+  100% { opacity: 1; transform: perspective(9em) translate(0, 0) rotateY(var(--ry)) rotateX(var(--rx)) scale(var(--sc));
+       text-shadow: 0 0 0 rgba(247,239,221,0), 0 0 0 rgba(247,239,221,0), 0 0 0 rgba(247,239,221,0), 0 0 0 rgba(247,239,221,0), 0 0 .5em color-mix(in srgb, var(--c1) 40%, transparent); } }
+@media (prefers-reduced-motion: reduce) { #lyrFx .w.on { animation-duration: .01s; } }
 /* 노래방: 지금 줄만 크게, 진행에 맞춰 글자가 왼쪽부터 차오름 */
 body.lyr-kara #lyrics:not(.plain) .line { opacity: 0 !important; transform: scale(.9) !important; transition: opacity .5s, transform .5s !important; }
 body.lyr-kara #lyrics:not(.plain) .line.active { opacity: 1 !important; transform: scale(1.22) !important; font-weight: 700 !important; color: transparent !important; -webkit-text-fill-color: transparent !important;
@@ -1645,7 +1659,6 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: none; opacity: 1 !impor
 
 <div id="chip" class="glass"></div>
 <div id="toast" class="glass"></div>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lyrFish" x="0" y="0" width="1" height="1" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB"><feImage id="lyrFishMap" x="0" y="0" width="1" height="1" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="0.34" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 <div id="coverFull" aria-hidden="true"><div class="cf-blur"></div><div class="cf-img"></div><div class="cf-shade"></div><div class="cf-lyr"></div><div class="cf-meta"><b></b><span></span></div><div class="cf-hint">클릭·Esc 닫기 · ←→ 이전/다음 곡 · Ctrl+휠/↑↓ 위치 조정 · C 전체 보기 · R 자동</div></div>
 
 <aside id="lists" class="glass">
@@ -2170,6 +2183,61 @@ function onPlayState() {
 }
 
 /* ═══════════════ 싱크 가사 (LRCLIB) ═══════════════ */
+/* ═══════════════ Fisheye 가사: 단어 단위로 튀어나오는 큰 글씨 ═══════════════
+   LRC는 줄 단위 시간만 있어서, 줄 길이 안에서 단어 길이 비율로 등장 시각을 나눔 */
+const lyrFx = {
+  el: null, blk: null, idx: -9, words: [],
+  on() { return settings.lyrStyle === 'fish' && lyrics.synced; },
+  ensure() { if (!this.el) { this.el = document.createElement('div'); this.el.id = 'lyrFx'; } if (this.el.parentNode !== $('#lyrics')) $('#lyrics').appendChild(this.el); },
+  reset() { this.idx = -9; this.words = []; this.blk = null; if (this.el) this.el.innerHTML = ''; },
+  build(i, t) {
+    const old = this.blk; if (old) { old.classList.add('out'); setTimeout(() => old.remove(), 420); }
+    this.idx = i; this.words = []; this.blk = null;
+    if (i < 0 || !lyrics.lines[i]) return;
+    const L = lyrics.lines[i], a = L.t, b = lyrics.lines[i + 1]?.t ?? a + 4000;
+    const blk = document.createElement('div'); blk.className = 'blk'; this.el.appendChild(blk); this.blk = blk;
+    const text = (L.text || '').trim();
+    if (!text) { blk.innerHTML = '<div class="row"><span class="w gap still">· · ·</span></div>'; blk.style.fontSize = Math.round(this.el.clientHeight * .09) + 'px'; return; }
+    const R = k => { const x = Math.sin((i + 1) * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };   // 줄마다 늘 같은 배치
+    const toks = text.split(/\s+/), maxC = toks.length <= 3 ? 9 : 13, rows = [[]]; let len = 0;
+    for (const w of toks) { if (len > 0 && len + w.length > maxC) { rows.push([]); len = 0; } rows[rows.length - 1].push(w); len += w.length + 1; }
+    const W = this.el.clientWidth, H = this.el.clientHeight;
+    let fs = Math.min(W * .15, H * .2) * Math.min(1, 2.4 / rows.length) * (settings.ls || 1);
+    blk.style.fontSize = fs + 'px';
+    const wts = toks.map(w => w.length + 3), tot = wts.reduce((x, y) => x + y, 0);
+    const span = Math.min((b - a) * .85, 240 * toks.length + 30 * text.length);
+    let k = 0, cum = 0;
+    rows.forEach((r, ri) => {
+      const row = document.createElement('div'); row.className = 'row'; row.style.transform = `translateX(${((R(ri + 30) - .5) * 1.1).toFixed(2)}em)`;
+      for (const w of r) {
+        const el = document.createElement('span'); el.className = 'w'; el.textContent = w;
+        const sx = R(k + 50) < .5 ? -1 : 1, sy = (R(k + 90) - .5) * 2;
+        el.style.setProperty('--x0', (sx * .2).toFixed(2) + 'em'); el.style.setProperty('--y0', (sy * .08).toFixed(2) + 'em');
+        el.style.setProperty('--ex', (sx * .07).toFixed(3) + 'em'); el.style.setProperty('--ey', (sy * .03).toFixed(3) + 'em');
+        row.appendChild(el); this.words.push({ el, t: a + span * cum / tot }); cum += wts[k]; k++;
+      }
+      blk.appendChild(row);
+    });
+    /* 칸에 맞게 크기 조정 */
+    const rw = Math.max(...[...blk.children].map(r => r.scrollWidth)), bh = [...blk.children].reduce((h, r) => h + r.offsetHeight, 0);
+    const f = Math.min(1, W * .92 / Math.max(1, rw + fs * .6), H * .9 / Math.max(1, bh));
+    if (f < 1) { fs *= f; blk.style.fontSize = fs + 'px'; }
+    /* 볼록 렌즈: 가운데서 멀수록 바깥쪽이 멀어지며 살짝 작아짐 */
+    const br = blk.getBoundingClientRect(), cx = br.left + br.width / 2, cy = br.top + br.height / 2;
+    for (const w of this.words) { const r = w.el.getBoundingClientRect(), xn = clamp((r.left + r.width / 2 - cx) / (W / 2), -1, 1), yn = clamp((r.top + r.height / 2 - cy) / (H / 2), -1, 1);
+      w.el.style.setProperty('--ry', (xn * 34).toFixed(1) + 'deg'); w.el.style.setProperty('--rx', (-yn * 22).toFixed(1) + 'deg'); w.el.style.setProperty('--sc', (1 - (xn * xn + yn * yn) * .14).toFixed(3)); }
+    this.tick(t, true);
+  },
+  tick(t, quiet) {
+    for (const w of this.words) if (!w.shown && t >= w.t) { w.shown = true; w.el.classList.add(quiet && t - w.t > 500 ? 'still' : 'on'); }
+  },
+  update(i, t, force) {
+    if (!this.on()) { if (this.idx !== -9) this.reset(); return; }
+    this.ensure();
+    if (i !== this.idx || force) this.build(i, t); else this.tick(t);
+  },
+};
+
 const lyrics = {
   cache: new Map(), offsets: new Map(), lines: [], synced: false, idx: -1, token: 0,
   el: $('#lyricsInner'),
@@ -2238,7 +2306,7 @@ const lyrics = {
   },
   async load(t) {
     const my = ++this.token;
-    this.show(false); this.lines = []; this.idx = -1; this.el.innerHTML = ''; this.el.style.transform = 'translateY(0)';
+    this.show(false); this.lines = []; this.idx = -1; this.el.innerHTML = ''; this.el.style.transform = 'translateY(0)'; lyrFx.reset();
     let res = this.cache.get(t.id);
     if (res === undefined) { res = await this.fetchLrc(t); this.cache.set(t.id, res); }
     if (my !== this.token) return;
@@ -2280,6 +2348,7 @@ const lyrics = {
       const a = this.lines[i].t, b = this.lines[i + 1]?.t ?? a + 4000, pr = clamp((t - a) / Math.max(400, (b - a) * .9), 0, 1);
       this.nodes[i].style.setProperty('--p', pr.toFixed(3));
     }
+    lyrFx.update(i, t, force);
     if (i === this.idx && !force) return;
     const prev = this.idx; this.idx = i;
     this.nodes.forEach((n, k) => { n.classList.toggle('active', k === i); n.classList.toggle('near', Math.abs(k - i) === 1); n.classList.toggle('past', k < i);
@@ -3920,19 +3989,6 @@ const itunes = {
     const out = urls.slice(0, 4); this.cache.set(key, out); store.set(sk, { at: Date.now(), urls: out }); return out;
   },
 };
-
-/* Fisheye 가사용 변위 지도: 중심은 크게(볼록), 바깥으로 갈수록 압축되는 렌즈 */
-(function makeFishMap() {
-  const N = 256, S = .34, c = document.createElement('canvas'); c.width = c.height = N; const x = c.getContext('2d'), im = x.createImageData(N, N);
-  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-    const u = (i + .5) / N * 2 - 1, v = (j + .5) / N * 2 - 1, r = Math.hypot(u, v), k = (i + j * N) * 4;
-    let dx = 0, dy = 0;
-    if (r > 1e-4) { const rr = Math.min(r, 1.25), src = Math.pow(rr, 1.75) / Math.pow(1, .75), f = (src - rr) / rr; dx = u * f / 2; dy = v * f / 2; }
-    im.data[k] = Math.round(clamp(.5 + dx / S, 0, 1) * 255); im.data[k + 1] = Math.round(clamp(.5 + dy / S, 0, 1) * 255); im.data[k + 2] = 128; im.data[k + 3] = 255;
-  }
-  x.putImageData(im, 0, 0); const url = c.toDataURL(), m = document.getElementById('lyrFishMap');
-  m.setAttribute('href', url); m.setAttributeNS('http://www.w3.org/1999/xlink', 'href', url);
-})();
 
 /* ═══════════════ 얼굴 찾기: 브라우저 기본 FaceDetector가 있으면 그것, 없으면 pico 캐스케이드
    (pico / picojs — Copyright (c) 2013 Nenad Markus, MIT License, https://github.com/nenadmarkus/picojs) ═══════════════ */
