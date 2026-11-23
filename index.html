@@ -77,12 +77,22 @@ body.has-shelf #stage { gap: 3vh; }
   #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
   body.wallpaper #stage[data-theme="lp"], body.wallpaper #stage[data-theme="cd"], body.wallpaper #stage[data-theme="poster"] { transform: translateY(.5vh); }
   #stage[data-theme="lp"] > .visual, #stage[data-theme="cd"] > .visual, #stage[data-theme="poster"] > .visual { grid-row: 2; }
-  #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 2vh; }
+  /* 가사가 없으면(꺼짐·가사 없는 곡) 앨범을 화면 가로 정가운데로 부드럽게 옮기고, 시계는 오른쪽 끝에 맞춤 */
+  #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { transition: translate .9s cubic-bezier(.22,.8,.24,1); }
+  body.solo-stage #stage[data-theme="lp"], body.solo-stage #stage[data-theme="cd"], body.solo-stage #stage[data-theme="poster"] { translate: calc(44vw - (100vw - 16vw) * 1.05 / 2.05 / 2) 0; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side { align-items: flex-end; text-align: right; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np { justify-content: flex-end; margin-left: auto; max-width: 24vw; }
+  #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 1.2vh; }
   #stage[data-theme="poster"] #poster { position: relative; }
   #stage[data-theme="poster"] #poster .cap { position: absolute; left: 0; right: 0; top: 100%; }
   #stage[data-theme="poster"] > #shelf { margin-top: calc(1.5vh + 80px); }
-  body.has-shelf { --disc: min(30vw, 36vh); }
+  body.has-shelf { --disc: min(28vw, 32vh); }   /* 커버플로 카드가 재생 바 위에 들어가도록 */
   body.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(20vw, 22vh) * var(--ps)); }
+  #stage[data-theme="poster"] > #shelf { --cw: min(9vh, 7vw); }   /* 포스터는 캡션이 있어서 카드를 조금 작게 */
+  /* 작은 카드에선 옆 카드 글씨를 빼고, 가운데 카드만 이름(두 줄까지)·연도를 보여 줌 → 글씨가 잘리지 않게 */
+  #stage[data-theme="poster"] > #shelf .alb:not(.ctr) :is(.nm, .yr) { visibility: hidden; }
+  #stage[data-theme="poster"] > #shelf .alb.ctr .nm { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 10.5px; overflow-wrap: anywhere; }
+  #stage[data-theme="poster"] > #shelf .alb .yr { font-size: 9.5px; }
   body.has-shelf #stage[data-theme="poster"] #poster .ptitle { font-size: clamp(18px, 1.6vw, 28px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 #poster .pmeta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
@@ -95,17 +105,34 @@ body.has-shelf #shelf { display: block; }
 #shelf .head { display: flex; align-items: baseline; gap: .8em; margin-bottom: 1.3vh; font-size: clamp(9px, .7vw, 12px); letter-spacing: .3em; text-transform: uppercase; opacity: .75; }
 #shelf .head b { font-family: var(--serif); font-style: var(--title-style); font-weight: 500; letter-spacing: .02em; text-transform: none; font-size: clamp(13px, 1.05vw, 18px); opacity: 1; }
 #shelf .head .cap { margin-left: auto; letter-spacing: .06em; text-transform: none; font-size: clamp(10px, .8vw, 13px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
-#shelfRow { display: flex; gap: 1.1vmin; overflow-x: auto; overflow-y: visible; padding: 8px 2px 10px; scrollbar-width: none; scroll-behavior: smooth;
-  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
-#shelfRow::-webkit-scrollbar { display: none; }
-#shelfRow .alb { flex: 0 0 auto; width: 7.4vmin; aspect-ratio: 1; border-radius: .35vmin; cursor: pointer; position: relative;
-  box-shadow: 0 .8vmin 1.6vmin rgba(0,0,0,.35); opacity: 0;
-  transform: translateX(calc(var(--i) * -108%)) rotate(-7deg) scale(.82);
-  transition: transform .7s cubic-bezier(.2,.85,.25,1), opacity .5s ease, box-shadow .3s; }
-#shelf.show #shelfRow .alb { opacity: .9; transform: none; transition-delay: calc(var(--i) * 55ms); }
-#shelf.show #shelfRow .alb:hover { opacity: 1; transform: translateY(-.7vmin) scale(1.07); transition-delay: 0s; box-shadow: 0 1.4vmin 2.6vmin rgba(0,0,0,.45); }
-#shelfRow .alb.current { opacity: 1; box-shadow: 0 0 0 2px var(--accent), 0 .8vmin 1.6vmin rgba(0,0,0,.35); }
-#shelfRow .alb::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,.18), transparent 45%); }
+/* 커버플로: 가운데 카드는 크게, 양옆 두 장씩 비스듬히 뒤로. 카드 색은 앨범 커버에서 뽑은 색 */
+#shelf { --cw: min(10vh, 7.6vw); }
+/* 카드에 앨범 이름이 있으니 'MORE FROM' 줄은 불러오는 중·오류 안내가 있을 때만 */
+#shelf .head { margin-bottom: .6vh; }
+#shelf.cf-on .head:has(.cap:empty) { display: none; }
+#shelf .head { justify-content: center; }
+#shelf .head .cap { margin-left: 0; max-width: 60%; }
+#shelf .head .cap:empty { display: none; }
+#shelfRow { position: relative; height: calc(var(--cw) * 1.62 + 8px); perspective: calc(var(--cw) * 7); perspective-origin: 50% 40%; touch-action: pan-y; user-select: none; }
+#shelfRow .alb { --c: 70, 70, 78; position: absolute; left: 50%; top: 6px; width: var(--cw); margin-left: calc(var(--cw) / -2); box-sizing: border-box;
+  padding: calc(var(--cw) * .055) calc(var(--cw) * .055) calc(var(--cw) * .06); border-radius: calc(var(--cw) * .12); cursor: pointer; text-align: center; color: #fff; top: 3px;
+  background: linear-gradient(172deg, color-mix(in srgb, rgb(var(--c)) 80%, #fff) 0%, rgb(var(--c)) 42%, color-mix(in srgb, rgb(var(--c)) 72%, #000) 100%);
+  border: 1px solid rgba(255,255,255,.2); box-shadow: 0 1.4vh 3vh rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.28);
+  opacity: 0; transform: translateX(0) scale(.6); transform-origin: 50% 50%; will-change: transform, opacity; backface-visibility: hidden;
+  transition: transform .75s cubic-bezier(.22,.8,.24,1), opacity .5s ease, background .6s ease; transition-delay: calc(var(--a, 0) * 45ms); }
+#shelf.show #shelfRow .alb { opacity: var(--op, 1); }
+#shelfRow .alb.far { pointer-events: none; }
+#shelfRow .alb::before { content: ''; position: absolute; inset: -1px; border-radius: inherit; background: #000; opacity: calc(var(--a, 0) * .17); pointer-events: none; transition: opacity .6s; z-index: 2; }
+#shelfRow .alb .art { aspect-ratio: 1; border-radius: calc(var(--cw) * .075); background: #222 center / cover no-repeat; box-shadow: 0 2px 8px rgba(0,0,0,.28); position: relative; }
+#shelfRow .alb .art::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,.16), transparent 42%); }
+#shelfRow .alb .nm { display: block; margin-top: calc(var(--cw) * .07); font-family: var(--sans); font-weight: 700; font-size: max(11.5px, calc(var(--cw) * .1)); line-height: 1.28; padding-bottom: .1em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0,0,0,.35); }
+#shelfRow .alb .yr { display: block; font-family: var(--sans); font-weight: 500; font-size: max(10.5px, calc(var(--cw) * .078)); line-height: 1.3; padding-bottom: .1em; opacity: .8; white-space: nowrap; }
+#shelfRow .alb.ctr:hover .art { box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 2px 8px rgba(0,0,0,.28); }
+#shelfRow .alb.ctr { cursor: pointer; }
+#shelfRow .alb::before { opacity: calc(var(--a, 0) * .2); }
+#shelfRow .alb.current .yr::before { content: '♪ '; }
+@media (prefers-reduced-motion: reduce) { #shelfRow .alb { transition-duration: .01s; } }
 #side { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4.5vh; height: 100%; min-width: 0;
   transform: translate(var(--dx), var(--dy)); transition: transform 60s linear; }
 .drift { transform: translate(calc(var(--dx) * -1), var(--dy)); transition: transform 60s linear; }
@@ -1723,7 +1750,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
       <div id="flowStage"></div>
       <div id="flowDots"></div>
     </div>
-    <div id="shelf">
+    <div id="shelf" class="cf-on">
       <div class="head"><span>More from</span><b id="shelfArtist"></b><span class="cap" id="shelfCap"></span></div>
       <div id="shelfRow"></div>
     </div>
@@ -2527,10 +2554,10 @@ const lyrics = {
     if (res === undefined) { res = await this.fetchLrc(t); if (!t.lrc) this.save(t.id, res ?? null); }
     this.cache.set(t.id, res);
     if (my !== this.token) return;
-    if (!res || res.instrumental || (!res.synced && !res.plain)) return;
+    if (!res || res.instrumental || (!res.synced && !res.plain)) { this.solo(); return; }
     this.synced = !!res.synced;
     this.lines = this.synced ? this.parse(res.synced) : res.plain.split(/\r?\n/).map(text => ({ text: text.trim() })).filter((l, i, a) => l.text || (a[i - 1] && a[i - 1].text));
-    if (!this.lines.length) return;
+    if (!this.lines.length) { this.solo(); return; }
     const frag = document.createDocumentFragment();
     for (const l of this.lines) { const gap = !l.text || /^[.…·\s]+$/.test(l.text);   // 빈 줄이나 '...'만 있는 줄 = 간주
       const d = document.createElement('div'); d.className = 'line' + (gap ? ' gap' : ''); const sp = document.createElement('span'); sp.className = 'lt'; sp.textContent = l.text || '· · ·'; d.appendChild(sp);
@@ -2540,8 +2567,10 @@ const lyrics = {
     this.nodes = [...this.el.querySelectorAll('.line')];
     $('#lyrics').classList.toggle('plain', !this.synced);
     this.el.classList.toggle('plain-scroll', !this.synced);
-    this.show(true); this.update(S.pos(), true);
+    this.show(true); this.solo(); this.update(S.pos(), true);
   },
+  /* 앨범 정가운데 배치: 가사를 다 찾아본 뒤에만 바꿈(곡이 바뀌는 순간 좌우로 왔다 갔다 하지 않게) */
+  solo() { body.classList.toggle('solo-stage', !(settings.lyrics && this.has)); },
   /* DM 대화창 위쪽 헤더(아티스트 사진·이름·곡 제목): 스크롤되지 않게 #lyrics에 직접 붙임 */
   head(t) {
     let hd = $('#lyrics > .dmhead');
@@ -3185,29 +3214,76 @@ const shelf = {
     if (!list || list.length < 2 || !settings.shelf || !this.useShelf()) { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; return; }
     body.classList.add('has-shelf');
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = '';
-    const keepScroll = animate ? 0 : this.row.scrollLeft;
     this.row.innerHTML = '';
     list.forEach((a, i) => {
-      const d = document.createElement('div'); d.className = 'alb cover-art'; d.style.setProperty('--i', Math.min(i, 14));
-      d.style.backgroundImage = cssUrl(a.cover); d.style.backgroundSize = 'cover'; d.dataset.i = i;
-      d.title = `${a.name}${a.year ? ' · ' + a.year : ''}`;
+      const d = document.createElement('div'); d.className = 'alb'; d.dataset.i = i;
+      const art = document.createElement('div'); art.className = 'art cover-art'; art.style.backgroundImage = cssUrl(a.cover);
+      const nm = document.createElement('b'); nm.className = 'nm'; nm.textContent = a.name;
+      const yr = document.createElement('small'); yr.className = 'yr'; yr.textContent = [a.year, a.type === 'single' ? 'Single' : a.type === 'ep' ? 'EP' : a.type === 'compilation' ? 'Compilation' : 'Album'].filter(Boolean).join(' · ');
+      d.title = `${a.name}${a.year ? ' · ' + a.year : ''}`; d.append(art, nm, yr);
       this.row.appendChild(d);
+      albTint(a.cover).then(c => { if (c) d.style.setProperty('--c', c); });
     });
-    this.list = list; this.mark(t);
-    if (animate) { this.row.scrollLeft = 0; void this.row.offsetWidth; requestAnimationFrame(() => this.el.classList.add('show')); }   // '좌라락' 펼침
-    else { this.row.scrollLeft = keepScroll; this.el.classList.add('show'); }
+    this.list = list; this.focus = 0; this.mark(t);
+    if (animate) { this.layout(true); void this.row.offsetWidth; requestAnimationFrame(() => { this.el.classList.add('show'); this.layout(); }); }   // 가운데에서 양옆으로 펼침
+    else { this.layout(); this.el.classList.add('show'); }
   },
   mark(t) {
     if (!this.list) return;
     const idx = this.list.findIndex(a => a.id && a.id === t.albumId) >= 0 ? this.list.findIndex(a => a.id && a.id === t.albumId) : this.list.findIndex(a => sameAlbum(a, t));
     [...this.row.children].forEach((n, i) => n.classList.toggle('current', i === idx));
+    if (idx >= 0) { this.focus = idx; this.layout(); }
   },
+  /* 커버플로 배치: 가운데(focus) 카드는 정면, 양옆은 비스듬히 뒤로 겹쳐 쌓임. 양쪽 3장까지만 보임 */
+  layout(stacked) {
+    const n = this.row.children, f = this.focus || 0;
+    for (let i = 0; i < n.length; i++) {
+      const d = n[i], o = i - f, a = Math.abs(o), s = Math.sign(o);
+      d.style.setProperty('--a', Math.min(a, 4)); d.classList.toggle('ctr', o === 0); d.classList.toggle('far', a > 2);
+      d.style.setProperty('--op', a > 2 ? 0 : 1); d.style.zIndex = 20 - a;
+      if (stacked) { d.style.transform = 'translateX(0) scale(.6)'; continue; }
+      const x = a === 0 ? 0 : s * (0.86 + (Math.min(a, 3) - 1) * 0.6);   // 카드 폭 기준
+      d.style.transform = a === 0 ? 'translateX(0) translateZ(0) scale(1)'
+        : `translateX(calc(var(--cw) * ${x.toFixed(3)})) translateZ(calc(var(--cw) * ${(-0.3 - (Math.min(a, 3) - 1) * 0.2).toFixed(3)})) rotateY(${-s * 28}deg) scale(${(1 - Math.min(a, 3) * 0.07).toFixed(3)})`;
+    }
+  },
+  go(i) { if (!this.list) return; const f = clamp(i, 0, this.list.length - 1); if (f === this.focus) return; this.focus = f; this.layout(); },
   hide() { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; },
   refresh() { this.artistKey = ''; if (S.track) this.load(S.track); else this.hide(); },
 };
-$('#shelfRow').addEventListener('mouseover', e => { const n = e.target.closest('.alb'); if (n && shelf.list) { const a = shelf.list[n.dataset.i]; $('#shelfCap').textContent = `${a.name}${a.year ? ' · ' + a.year : ''}`; } });
-$('#shelfRow').addEventListener('mouseleave', () => $('#shelfCap').textContent = '');
-$('#shelfRow').addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) { e.currentTarget.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+/* 휠(세로·가로 모두)로 한 장씩 넘기기 */
+{ let acc = 0, last = 0;
+  $('#shelfRow').addEventListener('wheel', e => {
+    if (!shelf.list) return; e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY, now = performance.now();
+    if (now - last > 400) acc = 0; last = now; acc += d;
+    if (Math.abs(acc) >= 60) { shelf.go(shelf.focus + Math.sign(acc)); acc = 0; }
+  }, { passive: false }); }
+/* 앨범 카드 색: 커버를 아주 작게 줄여 평균색을 구하고, 흰 글씨가 잘 보이도록 밝기를 눌러 줌 */
+const tintCache = new Map();
+function albTint(url) {
+  if (!url) return Promise.resolve('');
+  if (tintCache.has(url)) return tintCache.get(url);
+  const p = new Promise(res => {
+    const im = new Image(); im.crossOrigin = 'anonymous'; im.decoding = 'async';
+    im.onload = () => { try {
+      const c = document.createElement('canvas'); c.width = c.height = 10; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0, 10, 10);
+      const d = x.getImageData(0, 0, 10, 10).data; let r = 0, g = 0, b = 0, w = 0;
+      for (let i = 0; i < d.length; i += 4) { const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]), k = .35 + (mx - mn) / 255; r += d[i] * k; g += d[i + 1] * k; b += d[i + 2] * k; w += k; }
+      r /= w; g /= w; b /= w;
+      /* HSL로 바꿔 밝기 0.24~0.46, 채도 최대 0.6 */
+      const R = r / 255, G = g / 255, B = b / 255, M = Math.max(R, G, B), m = Math.min(R, G, B); let h = 0, sat = 0, l = (M + m) / 2;
+      if (M !== m) { const dd = M - m; sat = l > .5 ? dd / (2 - M - m) : dd / (M + m); h = M === R ? (G - B) / dd + (G < B ? 6 : 0) : M === G ? (B - R) / dd + 2 : (R - G) / dd + 4; h /= 6; }
+      l = clamp(l * .8, .24, .46); sat = Math.min(sat * 1.05, .6);
+      const f = (p, q, t) => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
+      const q = l < .5 ? l * (1 + sat) : l + sat - l * sat, pp = 2 * l - q;
+      res([f(pp, q, h + 1 / 3), f(pp, q, h), f(pp, q, h - 1 / 3)].map(v => Math.round(v * 255)).join(', '));
+    } catch { res(''); } };
+    im.onerror = () => res('');
+    im.src = url;
+  });
+  tintCache.set(url, p); return p;
+}
 async function playShelfAlbum(a) {
   if (S.source === 'demo') { toast(`샘플 모드라 '${a.name}' 대신 다음 샘플 곡을 틀게요`); demo.next(); return; }
   if (S.source !== 'spotify') return;
@@ -3222,8 +3298,9 @@ async function playShelfAlbum(a) {
 }
 $('#shelfRow').addEventListener('click', e => {
   const n = e.target.closest('.alb'); if (!n || !shelf.list) return;
-  const a = shelf.list[n.dataset.i];
-  playShelfAlbum(a);
+  const i = +n.dataset.i;
+  if (i !== shelf.focus) { shelf.go(i); return; }   // 옆 카드 클릭 = 가운데로
+  playShelfAlbum(shelf.list[i]);                      // 가운데 카드 클릭 = 재생
 });
 
 /* ═══════════════ 앨범 플로우 (아티스트 앨범 입체 캐러셀) ═══════════════ */
@@ -4106,7 +4183,7 @@ function setTheme(t) {
 }
 function setLyricsOn(on) {
   settings.lyrics = on; saveSettings();
-  body.classList.toggle('no-lyrics', !(on && lyrics.has));
+  body.classList.toggle('no-lyrics', !(on && lyrics.has)); lyrics.solo();
   $('#bLyrics').classList.toggle('on', on);
   $('#sLyr').textContent = on ? '가사 끄기' : '가사 켜기';
 }
