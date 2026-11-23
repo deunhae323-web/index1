@@ -4371,7 +4371,7 @@ addEventListener('keydown', e => {
   else if (k === 'ArrowRight') ctl.next();
   else if (k === 'ArrowLeft') ctl.prev();
   else if (k === 't' || k === 'T') $('#bTheme').click();
-  else if (k === 'l' || k === 'L') setLyricsOn(!settings.lyrics);
+  else if (k === 'l' || k === 'L' || k === 'ㅣ' || e.code === 'KeyL') { if (!e.repeat) setLyricsOn(!settings.lyrics); }   // 한글 입력 상태도 인식
   else if (k === 'f' || k === 'F') toggleFull();
   else if (k === 's' || k === 'S') openSettings(!$('#settings').classList.contains('open'));
   else if (k === '[') lyrics.nudge(-.5);
@@ -4381,7 +4381,7 @@ addEventListener('keydown', e => {
   else if (k === 'm' || k === 'M' || k === 'ㅡ' || e.code === 'KeyM') { if (!e.repeat) lyrPos.toggle(); }   // M = 가사 위치 조정 모드 (한글 입력 상태도 인식)
   else if (k === 'e' || k === 'E') { const L = Object.keys(FX_NAMES), n = L[(L.indexOf(settings.fx) + 1) % L.length]; fx.set(n); toast('이펙트: ' + FX_NAMES[n], 1400); }
   else if (k === 'a' || k === 'A') { settings.shelf = !settings.shelf; saveSettings(); shelf.refresh(); toast(settings.shelf ? '앨범 선반 켜짐' : '앨범 선반 꺼짐', 1400); }
-  else if (k === 'z' || k === 'Z' || e.code === 'KeyZ') { setTimeout(() => body.classList.add('zen'), 50); return; }
+  else if (k === 'z' || k === 'Z' || k === 'ㅋ' || e.code === 'KeyZ') { setTimeout(() => body.classList.add('zen'), 50); return; }
 }, true);
 
 /* ═══════════════ Zen · 대기 화면 · 밤 모드 · 번인 방지 · 시계 ═══════════════ */
@@ -4389,8 +4389,8 @@ let zenTimer;
 function wake(e) {
   if (WALLPAPER) return;
   if (e && e.type === 'keydown' && (e.repeat || e.code === 'KeyZ' || e.key === 'z' || e.key === 'Z' || e.key === 'ㅋ')) return;
-  /* Z 모드(Zen)에서 ←→로 곡을 넘기거나 [ ]로 가사 싱크를 맞출 때는 풀지 않음. 커버 전체화면에선 ↑↓(자르는 위치)도 마찬가지 */
-  if (e && e.type === 'keydown' && body.classList.contains('zen') && !lyrPos.on && (/^Arrow(Left|Right)$/.test(e.key) || e.key === '[' || e.key === ']' || e.code === 'BracketLeft' || e.code === 'BracketRight' || ($('#coverFull').classList.contains('on') && /^Arrow(Up|Down)$/.test(e.key)))) return;
+  /* Z 모드(Zen)에서 ←→로 곡을 넘기거나 [ ]로 가사 싱크를 맞추거나 L로 가사를 껐다 켤 때는 풀지 않음. 커버 전체화면에선 ↑↓(자르는 위치)도 마찬가지 */
+  if (e && e.type === 'keydown' && body.classList.contains('zen') && !lyrPos.on && (/^Arrow(Left|Right)$/.test(e.key) || e.key === '[' || e.key === ']' || e.code === 'BracketLeft' || e.code === 'BracketRight' || /^[lLㅣ]$/.test(e.key) || e.code === 'KeyL' || ($('#coverFull').classList.contains('on') && /^Arrow(Up|Down)$/.test(e.key)))) return;
   body.classList.remove('zen'); clearTimeout(zenTimer);
   zenTimer = setTimeout(() => { if (!$('#settings').classList.contains('open') && !(lists.isOpen() && !settings.listPin) && !$('#gate').classList.contains('show')) body.classList.add('zen'); }, CONFIG.ZEN_DELAY_MS);
 }
