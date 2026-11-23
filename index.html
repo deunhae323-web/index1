@@ -2318,15 +2318,26 @@ function setTitleEl(el, title) {
   const { main, extra } = splitTitle(title); el.textContent = main; el.title = title || '';
   if (extra) { const sm = document.createElement('small'); sm.className = 'tx'; sm.textContent = extra; el.appendChild(sm); }
 }
+/* 가수 줄: 제목 꼬리(feat./with)에 이미 나온 피처링 가수는 빼고 보여 줌 (Mac Miller, Ty Dolla $ign + feat. Ty Dolla $ign → Mac Miller) */
+function artistLine(t) {
+  const all = (t.artists && t.artists.length ? t.artists : (t.artist || '').split(/\s*,\s*/)).filter(Boolean);
+  const norm = n => (n || '').toLowerCase().replace(/[^\p{L}\p{N}$]/gu, '');
+  const feat = new Set();
+  for (const part of splitTitle(t.title).extra.split(' · '))
+    { const m = part.match(/^(?:feat|ft|featuring|with)\.?\s+(.+)$/i); if (m) m[1].split(/\s*(?:,|&|\band\b|\sx\s)\s*/i).forEach(n => n && feat.add(norm(n))); }
+  const rest = feat.size ? all.filter(a => !feat.has(norm(a))) : all;
+  return (rest.length ? rest : all).join(', ') || t.artist || '';
+}
 function onTrack(t) {
   S.track = t;
   const kr = hasHangul(t.title);
   setTitleEl($('#npTitle'), t.title); $('#npTitle').classList.toggle('kr', kr);
-  $('#npArtist').textContent = t.artist;
+  const al = artistLine(t);
+  $('#npArtist').textContent = al;
   $('#plTitle').textContent = t.title;
-  $('#plSub').textContent = [t.artist, t.album].filter(Boolean).join(' · ');
+  $('#plSub').textContent = [al, t.album].filter(Boolean).join(' · ');
   setTitleEl($('#pTitle'), t.title); $('#pTitle').classList.toggle('kr', kr);
-  $('#pArtist').textContent = t.artist; $('#pAlbum').textContent = [t.album, t.year].filter(Boolean).join(' · ');
+  $('#pArtist').textContent = al; $('#pAlbum').textContent = [t.album, t.year].filter(Boolean).join(' · ');
   $('#pKick').textContent = t.kind === 'episode' ? 'Podcast' : (t.year ? 'No. ' + t.year : 'Side A');
   $('#tDur').textContent = fmt(t.durationMs);
   document.title = `${t.title} — ${t.artist}`;
@@ -4741,7 +4752,7 @@ const coverFull = {
     $('#coverFull .cf-shade').style.background = `linear-gradient(${right ? 'to left' : 'to right'}, rgba(0,0,0,.62), rgba(0,0,0,.35) 38%, transparent 62%)`;
   },
   meta() {
-    const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track?.title || ''); m.querySelector('span').textContent = S.track?.artist || '';
+    const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track?.title || ''); m.querySelector('span').textContent = S.track ? artistLine(S.track) : '';
     if ($('#coverFull').classList.contains('zq')) return;   // Z로 숨긴 동안엔 안내를 다시 띄우지 않음
     $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
     this.metaT = setTimeout(() => $('#coverFull .cf-hint').classList.remove('show'), 4000);
