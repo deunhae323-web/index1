@@ -63,7 +63,10 @@ body.paused #edge { --edgeO: .38; }
 body.paused #edge .glow { animation-play-state: paused; }
 
 /* ───────────────── 레이아웃 ───────────────── */
-#stage { view-transition-name: avp-stage; } #clockTime { view-transition-name: avp-time; } #clockDate { view-transition-name: avp-date; } #clock .np { view-transition-name: avp-np; }
+/* 가사 없음 ↔ 있음 전환: 앨범·선반·시계·날짜·제목이 각자 자리로 이동. 상자를 내용 크기에 맞춰야 늘어나 보이지 않음 */
+#stage > .visual { view-transition-name: avp-vis; } #shelf { view-transition-name: avp-shelf; }
+#clockTime { view-transition-name: avp-time; width: fit-content; } #clockDate { view-transition-name: avp-date; width: fit-content; } #clock .np { view-transition-name: avp-np; width: fit-content; }
+::view-transition-old(*), ::view-transition-new(*) { height: 100%; object-fit: contain; }
 ::view-transition-group(*) { animation-duration: .8s; animation-timing-function: cubic-bezier(.22,.8,.24,1); }
 ::view-transition-old(root) { display: none; } ::view-transition-new(root) { animation: none; }
 #scene { position: fixed; inset: 0; z-index: 4; display: grid; grid-template-columns: 1.05fr 1fr;
@@ -80,22 +83,21 @@ body.has-shelf #stage { gap: 3vh; }
   #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
   body.wallpaper #stage[data-theme="lp"], body.wallpaper #stage[data-theme="cd"], body.wallpaper #stage[data-theme="poster"] { transform: translateY(.5vh); }
   #stage[data-theme="lp"] > .visual, #stage[data-theme="cd"] > .visual, #stage[data-theme="poster"] > .visual { grid-row: 2; }
-  /* 가사가 없을 때(꺼짐·가사 없는 곡): 시계는 위 가운데, 앨범은 크게 화면 가운데, 곡 제목은 앨범 바로 아래 */
+  /* 가사가 없을 때(꺼짐·가사 없는 곡): 시계는 위 가운데, 앨범(LP·CD·포스터)은 크게 화면 정중앙, 곡 제목·가수는 앨범 바로 아래 */
   body.solo-stage #scene:has(> #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"])) { grid-template-columns: minmax(0, 1fr); }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side { position: fixed; inset: 0; z-index: 5; display: block; height: auto; pointer-events: none; }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock { position: absolute; top: 0; padding-top: 4.5vh; left: 0; right: 0; text-align: center; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock :is(.time, .date) { margin-inline: auto; }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .time { font-size: clamp(54px, 6.2vw, 120px); }
-  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np { position: absolute; left: 6vw; right: 6vw; top: var(--np-top, 80vh); margin: 0; max-width: none; justify-content: center; text-align: center; }
-  body.solo-stage #stage[data-theme="poster"] ~ #side #clock .np { display: none; }   /* 포스터는 캡션에 제목이 이미 있음 */
-  body.solo-stage:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(38vw, 54vh); }
-  body.solo-stage.has-shelf:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(30vw, 38vh); }
-  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"]) { transform: translateY(6vh); }
-  body.solo-stage.has-shelf #stage:is([data-theme="lp"], [data-theme="cd"]) { transform: translateY(-3vh); }
-  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"]) > #shelf { margin-top: 6.8vh; }   /* 앨범과 카드 사이에 곡 제목 자리 */
-  body.solo-stage #stage[data-theme="poster"] #poster { width: calc(min(34vw, 52vh) * var(--ps)); }
-  body.solo-stage #stage[data-theme="poster"] { transform: none; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np { position: absolute; left: 50%; top: var(--np-top, 80vh); margin: 0; max-width: 88vw; translate: -50% 0; justify-content: center; text-align: center; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np .t { font-size: clamp(22px, 2.1vw, 38px); }
+  body.solo-stage #stage[data-theme="poster"] #poster .cap { opacity: 0; }   /* 포스터 작은 캡션 대신 큰 제목 줄을 씀 */
+  body.solo-stage:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(38vw, 52vh); }
+  body.solo-stage.has-shelf:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(30vw, 34vh); }
+  body.solo-stage #stage[data-theme="poster"] #poster { width: calc(min(34vw, 48vh) * var(--ps)); }
   body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(26vw, 32vh) * var(--ps)); }
-  body.solo-stage.has-shelf #stage[data-theme="poster"] { transform: translateY(-4vh); }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) { transform: translateY(5vh); }   /* 앨범 중심 = 화면 세로 정중앙 */
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) > #shelf { margin-top: 6.8vh; --cw: min(8.5vh, 7vw); }   /* 앨범과 카드 사이에 곡 제목 자리 */
   #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 1.2vh; }
   #stage[data-theme="poster"] #poster { position: relative; }
   #stage[data-theme="poster"] #poster .cap { position: absolute; left: 0; right: 0; top: 100%; }
