@@ -2601,7 +2601,8 @@ const lyrics = {
     const v = !(settings.lyrics && this.has);
     if (body.classList.contains('solo-stage') === v) return soloPlace();
     const go = () => { body.classList.toggle('solo-stage', v); soloPlace(); };
-    if (document.startViewTransition && !REDUCED && !document.hidden && !body.classList.contains('wallpaper')) { try { document.startViewTransition(go); return; } catch {} }
+    /* 커버 전체화면이 덮고 있을 땐 전환 애니메이션 없이 바로(애니메이션 중엔 뒤쪽 시계·앨범이 커버 위로 비쳐 보임) */
+    if (document.startViewTransition && !REDUCED && !document.hidden && !body.classList.contains('wallpaper') && !$('#coverFull').classList.contains('on')) { try { document.startViewTransition(go); return; } catch {} }
     go();
   },
   /* DM 대화창 위쪽 헤더(아티스트 사진·이름·곡 제목): 스크롤되지 않게 #lyrics에 직접 붙임 */
