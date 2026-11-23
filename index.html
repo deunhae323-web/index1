@@ -63,6 +63,9 @@ body.paused #edge { --edgeO: .38; }
 body.paused #edge .glow { animation-play-state: paused; }
 
 /* ───────────────── 레이아웃 ───────────────── */
+#stage { view-transition-name: avp-stage; } #clockTime { view-transition-name: avp-time; } #clockDate { view-transition-name: avp-date; } #clock .np { view-transition-name: avp-np; }
+::view-transition-group(*) { animation-duration: .8s; animation-timing-function: cubic-bezier(.22,.8,.24,1); }
+::view-transition-old(root) { display: none; } ::view-transition-new(root) { animation: none; }
 #scene { position: fixed; inset: 0; z-index: 4; display: grid; grid-template-columns: 1.05fr 1fr;
   align-items: center; gap: 4vw; padding: 7vh 6vw 17vh; transition: opacity 1.2s ease; }
 body.wallpaper #scene { padding-bottom: 8vh; }
@@ -77,11 +80,22 @@ body.has-shelf #stage { gap: 3vh; }
   #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { display: grid; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); min-width: 0; justify-items: center; align-items: center; gap: 0; transform: translateY(5vh); }
   body.wallpaper #stage[data-theme="lp"], body.wallpaper #stage[data-theme="cd"], body.wallpaper #stage[data-theme="poster"] { transform: translateY(.5vh); }
   #stage[data-theme="lp"] > .visual, #stage[data-theme="cd"] > .visual, #stage[data-theme="poster"] > .visual { grid-row: 2; }
-  /* 가사가 없으면(꺼짐·가사 없는 곡) 앨범을 화면 가로 정가운데로 부드럽게 옮기고, 시계는 오른쪽 끝에 맞춤 */
-  #stage[data-theme="lp"], #stage[data-theme="cd"], #stage[data-theme="poster"] { transition: translate .9s cubic-bezier(.22,.8,.24,1); }
-  body.solo-stage #stage[data-theme="lp"], body.solo-stage #stage[data-theme="cd"], body.solo-stage #stage[data-theme="poster"] { translate: calc(44vw - (100vw - 16vw) * 1.05 / 2.05 / 2) 0; }
-  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side { align-items: flex-end; text-align: right; }
-  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np { justify-content: flex-end; margin-left: auto; max-width: 24vw; }
+  /* 가사가 없을 때(꺼짐·가사 없는 곡): 시계는 위 가운데, 앨범은 크게 화면 가운데, 곡 제목은 앨범 바로 아래 */
+  body.solo-stage #scene:has(> #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"])) { grid-template-columns: minmax(0, 1fr); }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side { position: fixed; inset: 0; z-index: 5; display: block; height: auto; pointer-events: none; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock { position: absolute; top: 0; padding-top: 4.5vh; left: 0; right: 0; text-align: center; }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .time { font-size: clamp(54px, 6.2vw, 120px); }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np { position: absolute; left: 6vw; right: 6vw; top: var(--np-top, 80vh); margin: 0; max-width: none; justify-content: center; text-align: center; }
+  body.solo-stage #stage[data-theme="poster"] ~ #side #clock .np { display: none; }   /* 포스터는 캡션에 제목이 이미 있음 */
+  body.solo-stage:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(38vw, 54vh); }
+  body.solo-stage.has-shelf:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(30vw, 38vh); }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"]) { transform: translateY(6vh); }
+  body.solo-stage.has-shelf #stage:is([data-theme="lp"], [data-theme="cd"]) { transform: translateY(-3vh); }
+  body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"]) > #shelf { margin-top: 6.8vh; }   /* 앨범과 카드 사이에 곡 제목 자리 */
+  body.solo-stage #stage[data-theme="poster"] #poster { width: calc(min(34vw, 52vh) * var(--ps)); }
+  body.solo-stage #stage[data-theme="poster"] { transform: none; }
+  body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(26vw, 32vh) * var(--ps)); }
+  body.solo-stage.has-shelf #stage[data-theme="poster"] { transform: translateY(-4vh); }
   #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 1.2vh; }
   #stage[data-theme="poster"] #poster { position: relative; }
   #stage[data-theme="poster"] #poster .cap { position: absolute; left: 0; right: 0; top: 100%; }
@@ -2570,7 +2584,13 @@ const lyrics = {
     this.show(true); this.solo(); this.update(S.pos(), true);
   },
   /* 앨범 정가운데 배치: 가사를 다 찾아본 뒤에만 바꿈(곡이 바뀌는 순간 좌우로 왔다 갔다 하지 않게) */
-  solo() { body.classList.toggle('solo-stage', !(settings.lyrics && this.has)); },
+  solo() {
+    const v = !(settings.lyrics && this.has);
+    if (body.classList.contains('solo-stage') === v) return soloPlace();
+    const go = () => { body.classList.toggle('solo-stage', v); soloPlace(); };
+    if (document.startViewTransition && !REDUCED && !document.hidden && !body.classList.contains('wallpaper')) { try { document.startViewTransition(go); return; } catch {} }
+    go();
+  },
   /* DM 대화창 위쪽 헤더(아티스트 사진·이름·곡 제목): 스크롤되지 않게 #lyrics에 직접 붙임 */
   head(t) {
     let hd = $('#lyrics > .dmhead');
@@ -2812,6 +2832,15 @@ const lyrPos = {
     requestAnimationFrame(() => { g.classList.add('show'); this.gT = setTimeout(() => g.classList.remove('show'), 700); });
   },
 };
+/* 가사가 없을 때: 곡 제목을 앨범 바로 아래에 (앨범 크기·선반 여부·테마에 따라 위치 계산) */
+function soloPlace() {
+  if (!body.classList.contains('solo-stage')) return;
+  const v = [...document.querySelectorAll('#stage > .visual')].find(e => e.offsetWidth); if (!v) return;
+  const r = v.getBoundingClientRect();   // 돌아가는 LP 원판 대신 고정된 바깥 상자로 잼(회전 중엔 상자가 커짐)
+  body.style.setProperty('--np-top', Math.round(r.bottom + innerHeight * .022) + 'px');
+}
+{ let t = 0; const ro = new ResizeObserver(() => { clearTimeout(t); t = setTimeout(soloPlace, 60); });
+  document.querySelectorAll('#stage > .visual').forEach(e => ro.observe(e)); addEventListener('resize', () => { clearTimeout(t); t = setTimeout(soloPlace, 160); }); }
 let lyrPosT = 0;
 addEventListener('resize', () => { clearTimeout(lyrPosT); lyrPosT = setTimeout(() => lyrPos.apply(), 160); });
 setTimeout(() => lyrPos.apply(), 400);
@@ -4179,7 +4208,7 @@ function setTheme(t) {
   if (t === 'jukebox' && typeof jbScene !== 'undefined') requestAnimationFrame(() => jbScene.build());
   if (t === 'jukebox' && typeof jukebox !== 'undefined') jukebox.ensure();
   if (typeof lyrics !== 'undefined') setTimeout(() => lyrics.update(S.pos(), true), 60);
-  setTimeout(() => { lyrPos.apply(); syncSettingsUI(); }, 120);   // 가사 위치는 테마마다 따로 기억
+  setTimeout(() => { lyrPos.apply(); syncSettingsUI(); soloPlace(); }, 120);   // 가사 위치는 테마마다 따로 기억
 }
 function setLyricsOn(on) {
   settings.lyrics = on; saveSettings();
