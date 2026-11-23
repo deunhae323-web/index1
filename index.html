@@ -1237,7 +1237,8 @@ body.lyr-adj #lyrAdj { display: block; }
 body.lyr-adj.zen #lyrics { opacity: 1 !important; }
 #coverFull #lyrics { translate: none !important; }   /* 커버 전체화면에선 가사 자리를 자동으로 정함 */
 /* ───── 커버 전체화면 안의 가사 ───── */
-#coverFull .cf-shade { position: absolute; inset: 0; pointer-events: none; transition: background 1s; }
+#coverFull .cf-shade { position: absolute; inset: 0; pointer-events: none; transition: background 1s, opacity .6s ease; }
+body.no-lyrics #coverFull .cf-shade { opacity: 0; }   /* 가사를 끄거나 가사 없는 곡이면 가사 쪽 어둡게 한 것도 걷어 냄 */
 #coverFull .cf-lyr { position: absolute; top: 0; bottom: 0; width: 46vw; display: flex; align-items: center; pointer-events: none; }
 #coverFull .cf-lyr.l { left: 5vw; } #coverFull .cf-lyr.r { right: 3vw; }
 #coverFull .cf-lyr #lyrics { height: 64vh; width: 100%; }
