@@ -2381,12 +2381,25 @@ function setTitleEl(el, title) {
   const { main, extra } = splitTitle(title); el.textContent = main; el.title = title || '';
   if (extra) { const sm = document.createElement('small'); sm.className = 'tx'; sm.textContent = extra; el.appendChild(sm); }
 }
+/* 제목에 feat./with가 있는데 거기 빠진 참여 가수가 있으면 꼬리에 채워 넣음
+   (Rich MF (feat. Lil Durk) + 가수 Trippie Redd, Lil Durk, Polo G → Rich MF (feat. Lil Durk & Polo G)) */
+function fullTitle(t) {
+  const title = t?.title || '', all = (t?.artists || []).filter(Boolean); if (all.length < 2) return title;
+  const norm = n => (n || '').toLowerCase().replace(/[^\p{L}\p{N}$]/gu, '');
+  let done = false;
+  return title.replace(/([\(\[]\s*)(feat|ft|featuring|with)(\.?\s+)([^\)\]]+)([\)\]])/i, (m, o, w, sp, names, c) => {
+    if (done) return m; done = true;
+    const list = names.split(/\s*(?:,|&|\band\b|\sx\s)\s*/i).filter(Boolean), have = new Set(list.map(norm));
+    const add = all.slice(1).filter(a => !have.has(norm(a))); if (!add.length) return m;
+    const L = list.concat(add); return o + w + sp + (L.length > 1 ? L.slice(0, -1).join(', ') + ' & ' + L[L.length - 1] : L[0]) + c;
+  });
+}
 /* 가수 줄: 제목 꼬리(feat./with)에 이미 나온 피처링 가수는 빼고 보여 줌 (Mac Miller, Ty Dolla $ign + feat. Ty Dolla $ign → Mac Miller) */
 function artistLine(t) {
   const all = (t.artists && t.artists.length ? t.artists : (t.artist || '').split(/\s*,\s*/)).filter(Boolean);
   const norm = n => (n || '').toLowerCase().replace(/[^\p{L}\p{N}$]/gu, '');
   const feat = new Set();
-  for (const part of splitTitle(t.title).extra.split(' · '))
+  for (const part of splitTitle(fullTitle(t)).extra.split(' · '))
     { const m = part.match(/^(?:feat|ft|featuring|with)\.?\s+(.+)$/i); if (m) m[1].split(/\s*(?:,|&|\band\b|\sx\s)\s*/i).forEach(n => n && feat.add(norm(n))); }
   const rest = feat.size ? all.filter(a => !feat.has(norm(a))) : all;
   return (rest.length ? rest : all).join(', ') || t.artist || '';
@@ -2394,12 +2407,12 @@ function artistLine(t) {
 function onTrack(t) {
   S.track = t;
   const kr = hasHangul(t.title);
-  setTitleEl($('#npTitle'), t.title); $('#npTitle').classList.toggle('kr', kr);
+  setTitleEl($('#npTitle'), fullTitle(t)); $('#npTitle').classList.toggle('kr', kr);
   const al = artistLine(t);
   $('#npArtist').textContent = al;
   $('#plTitle').textContent = t.title;
   $('#plSub').textContent = [al, t.album].filter(Boolean).join(' · ');
-  setTitleEl($('#pTitle'), t.title); $('#pTitle').classList.toggle('kr', kr);
+  setTitleEl($('#pTitle'), fullTitle(t)); $('#pTitle').classList.toggle('kr', kr);
   $('#pArtist').textContent = al; $('#pAlbum').textContent = [t.album, t.year].filter(Boolean).join(' · ');
   $('#pKick').textContent = t.kind === 'episode' ? 'Podcast' : (t.year ? 'No. ' + t.year : 'Side A');
   $('#tDur').textContent = fmt(t.durationMs);
@@ -4890,7 +4903,7 @@ const coverFull = {
     $('#coverFull .cf-shade').style.background = `linear-gradient(${right ? 'to left' : 'to right'}, rgba(0,0,0,.62), rgba(0,0,0,.35) 38%, transparent 62%)`;
   },
   meta() {
-    const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track?.title || ''); m.querySelector('span').textContent = S.track ? artistLine(S.track) : '';
+    const m = $('#coverFull .cf-meta'); setTitleEl(m.querySelector('b'), S.track ? fullTitle(S.track) : ''); m.querySelector('span').textContent = S.track ? artistLine(S.track) : '';
     if ($('#coverFull').classList.contains('zq')) return;   // Z로 숨긴 동안엔 안내를 다시 띄우지 않음
     $('#coverFull .cf-hint').classList.add('show'); clearTimeout(this.metaT);
     this.metaT = setTimeout(() => $('#coverFull .cf-hint').classList.remove('show'), 4000);
