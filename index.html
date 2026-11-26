@@ -94,22 +94,21 @@ body.has-shelf #stage { gap: 3vh; }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) ~ #side #clock .np .t { font-size: clamp(22px, 2.1vw, 38px); }
   body.solo-stage #stage[data-theme="poster"] #poster .cap { opacity: 0; }   /* 포스터 작은 캡션 대신 큰 제목 줄을 씀 */
   body.solo-stage:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(38vw, 52vh); }
-  body.solo-stage.has-shelf:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(30vw, 34vh); }
   body.solo-stage #stage[data-theme="poster"] #poster { width: calc(min(34vw, 48vh) * var(--ps)); }
-  body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(26vw, 32vh) * var(--ps)); }
+  body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(34vw, 48vh) * var(--ps)); }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) { transform: translateY(5vh); }   /* 앨범 중심 = 화면 세로 정중앙 */
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) > #shelf { margin-top: 6.8vh; --cw: min(8.5vh, 7vw); }   /* 앨범과 카드 사이에 곡 제목 자리 */
   #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 1.2vh; }
   #stage[data-theme="poster"] #poster { position: relative; }
   #stage[data-theme="poster"] #poster .cap { position: absolute; left: 0; right: 0; top: 100%; }
   #stage[data-theme="poster"] > #shelf { margin-top: calc(1.5vh + 80px); }
-  body.has-shelf { --disc: min(28vw, 32vh); }   /* 커버플로 카드가 재생 바 위에 들어가도록 */
-  body.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(20vw, 22vh) * var(--ps)); }
+  body.has-shelf { --disc: min(24vw, 44vh); }   /* 가사가 있을 때: 앨범 양옆에 다른 앨범 카드가 들어갈 자리 */
+  body.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(22vw, 40vh) * var(--ps)); }
   #stage[data-theme="poster"] > #shelf { --cw: min(9vh, 7vw); }   /* 포스터는 캡션이 있어서 카드를 조금 작게 */
   /* 작은 카드에선 옆 카드 글씨를 빼고, 가운데 카드만 이름(두 줄까지)·연도를 보여 줌 → 글씨가 잘리지 않게 */
-  #stage[data-theme="poster"] > #shelf .alb:not(.ctr) :is(.nm, .yr) { visibility: hidden; }
+  #stage[data-theme="poster"] > #shelf:not(.side) .alb:not(.ctr) :is(.nm, .yr) { visibility: hidden; }
   #stage[data-theme="poster"] > #shelf .alb.ctr .nm { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 10.5px; overflow-wrap: anywhere; }
-  #stage[data-theme="poster"] > #shelf .alb .yr { font-size: 9.5px; }
+  #stage[data-theme="poster"] > #shelf:not(.side) .alb .yr { font-size: 9.5px; }
   body.has-shelf #stage[data-theme="poster"] #poster .ptitle { font-size: clamp(18px, 1.6vw, 28px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 #poster .pmeta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
@@ -150,6 +149,14 @@ body.has-shelf #shelf { display: block; }
 #shelfRow .alb::before { opacity: calc(var(--a, 0) * .2); }
 #shelfRow .alb.current .yr::before { content: '♪ '; }
 @media (prefers-reduced-motion: reduce) { #shelfRow .alb { transition-duration: .01s; } }
+/* LP·CD·포스터(가로 화면): 선반을 따로 두지 않고, 지금 앨범(음반·케이스·포스터)이 커버플로 가운데 자리. 다른 앨범은 그 양옆으로 비스듬히 펼쳐짐 */
+#stage > #shelf.side { position: absolute !important; inset: 0 !important; width: auto !important; margin: 0 !important; z-index: 0; pointer-events: none; grid-row: auto !important; }
+#stage:has(> #shelf.side) > .visual { position: relative; z-index: 1; }
+#shelf.side .head { position: absolute; left: 0; right: 0; top: var(--sh-top, 0px); margin: 0; }
+#shelf.side #shelfRow { position: absolute; inset: 0; height: auto; }
+#shelf.side #shelfRow .alb { left: 0; top: 0; margin-left: 0; pointer-events: auto; }
+#shelf.side #shelfRow .alb.far, #shelf.side #shelfRow .alb.cur { pointer-events: none; }
+#shelf.side #shelfRow .alb:hover .art { box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 2px 8px rgba(0,0,0,.28); }
 #side { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4.5vh; height: 100%; min-width: 0;
   transform: translate(var(--dx), var(--dy)); transition: transform 60s linear; }
 .drift { transform: translate(calc(var(--dx) * -1), var(--dy)); transition: transform 60s linear; }
@@ -2854,13 +2861,14 @@ const lyrPos = {
 };
 /* 가사가 없을 때: 곡 제목을 앨범 바로 아래에 (앨범 크기·선반 여부·테마에 따라 위치 계산) */
 function soloPlace() {
+  if (typeof shelf !== 'undefined' && shelf.list) shelf.layout();   // 앨범 크기·자리가 바뀌면 양옆 카드도 따라감
   if (!body.classList.contains('solo-stage')) return;
   const v = [...document.querySelectorAll('#stage > .visual')].find(e => e.offsetWidth); if (!v) return;
   const r = v.getBoundingClientRect();   // 돌아가는 LP 원판 대신 고정된 바깥 상자로 잼(회전 중엔 상자가 커짐)
   body.style.setProperty('--np-top', Math.round(r.bottom + innerHeight * .022) + 'px');
 }
 { let t = 0; const ro = new ResizeObserver(() => { clearTimeout(t); t = setTimeout(soloPlace, 60); });
-  document.querySelectorAll('#stage > .visual').forEach(e => ro.observe(e)); addEventListener('resize', () => { clearTimeout(t); t = setTimeout(soloPlace, 160); }); }
+  document.querySelectorAll('#stage > .visual').forEach(e => ro.observe(e)); ro.observe($('#stage')); addEventListener('resize', () => { clearTimeout(t); t = setTimeout(soloPlace, 160); }); }
 let lyrPosT = 0;
 addEventListener('resize', () => { clearTimeout(lyrPosT); lyrPosT = setTimeout(() => lyrPos.apply(), 160); });
 setTimeout(() => lyrPos.apply(), 400);
@@ -3273,7 +3281,7 @@ const shelf = {
       this.row.appendChild(d);
       albTint(a.cover).then(c => { if (c) d.style.setProperty('--c', c); });
     });
-    this.list = list; this.focus = 0; this.mark(t);
+    this.list = list; this.focus = 0; this.curIdx = -1; this.sh = 0; this.mark(t);
     if (animate) { this.layout(true); void this.row.offsetWidth; requestAnimationFrame(() => { this.el.classList.add('show'); this.layout(); }); }   // 가운데에서 양옆으로 펼침
     else { this.layout(); this.el.classList.add('show'); }
   },
@@ -3281,11 +3289,54 @@ const shelf = {
     if (!this.list) return;
     const idx = this.list.findIndex(a => a.id && a.id === t.albumId) >= 0 ? this.list.findIndex(a => a.id && a.id === t.albumId) : this.list.findIndex(a => sameAlbum(a, t));
     [...this.row.children].forEach((n, i) => n.classList.toggle('current', i === idx));
-    if (idx >= 0) { this.focus = idx; this.layout(); }
+    this.curIdx = idx; this.sh = Math.max(idx, 0);
+    if (idx >= 0) this.focus = idx;
+    this.layout();
   },
   /* 커버플로 배치: 가운데(focus) 카드는 정면, 양옆은 비스듬히 뒤로 겹쳐 쌓임. 양쪽 3장까지만 보임 */
+  setSide() {
+    const on = ['lp', 'cd', 'poster'].includes(settings.theme) && matchMedia('(orientation: landscape)').matches;
+    this.el.classList.toggle('side', on);
+    if (!on) ['--cw', 'perspective', 'perspective-origin'].forEach(k => this.row.style.removeProperty(k));
+    return on;
+  },
+  /* 양옆 펼침: 지금 앨범 카드는 진짜 앨범 뒤에 숨기고, 나머지를 순서대로 왼쪽(앞 앨범)·오른쪽(뒤 앨범)에 배치 */
+  layoutSide(stacked) {
+    const n = this.row.children, stg = $('#stage'), vis = [...stg.querySelectorAll(':scope > .visual')].find(e => e.offsetWidth);
+    if (!vis) return;
+    const S0 = stg.getBoundingClientRect(), V = vis.getBoundingClientRect(); if (!V.width) return;
+    const solo = body.classList.contains('solo-stage');
+    const L = V.left, R = V.right + (settings.theme === 'lp' ? V.width * .12 : 0);   // LP는 톤암 자리까지
+    const cx = (V.left + V.right) / 2 - S0.left, cy = (V.top + V.bottom) / 2 - S0.top;
+    const availL = L - 14, availR = (solo ? innerWidth - 14 : S0.right + Math.min(innerWidth * .02, 30)) - R;
+    const STEP = .3, PROJ = .62, GAP = .12;
+    let cw = Math.min(V.height * .56, 230);
+    cw = Math.max(Math.min(cw, Math.min(availL, availR) / (GAP + PROJ + STEP * 2)), Math.min(V.height * .34, cw));
+    const cnt = a => clamp(Math.floor((a - GAP * cw - PROJ * cw) / (STEP * cw)) + 1, 0, 3), NL = cnt(availL), NR = cnt(availR);
+    this.row.style.setProperty('--cw', cw.toFixed(1) + 'px');
+    this.row.style.perspective = Math.round(cw * 5) + 'px';
+    this.row.style.perspectiveOrigin = `${Math.round(cx)}px ${Math.round(cy)}px`;
+    this.el.style.setProperty('--sh-top', Math.round(V.top - S0.top - 28) + 'px');
+    const cur = this.curIdx ?? -1, others = [];
+    for (let i = 0; i < n.length; i++) if (i !== cur) others.push(i);
+    this.sh = clamp(this.sh ?? 0, 0, others.length);
+    const top = cy - cw * .7, hide = d => { d.classList.add('far'); d.style.setProperty('--op', 0); d.style.setProperty('--a', 3); d.style.zIndex = 1;
+      d.style.transform = `translate3d(${(cx - cw / 2).toFixed(1)}px, 0, ${(-cw * .5).toFixed(1)}px) scale(.5)`; };
+    for (let i = 0; i < n.length; i++) { const d = n[i]; d.style.top = top.toFixed(1) + 'px'; d.classList.remove('ctr'); d.classList.toggle('cur', i === cur); if (stacked || i === cur) hide(d); }
+    if (stacked) return;
+    others.forEach((i, j) => {
+      const d = n[i], slot = j < this.sh ? j - this.sh : j - this.sh + 1, a = Math.abs(slot), sg = Math.sign(slot), lim = sg < 0 ? NL : NR;
+      const edge = (sg < 0 ? L : R) - S0.left, k = Math.min(a, lim + 1);
+      const x = edge + sg * (GAP * cw + PROJ * cw / 2 + (k - 1) * STEP * cw) - cw / 2;
+      const show = a <= lim;
+      d.classList.toggle('far', !show); d.style.setProperty('--op', show ? 1 : 0); d.style.setProperty('--a', Math.min(a, 4)); d.style.zIndex = 20 - a;
+      d.style.transform = `translate3d(${x.toFixed(1)}px, 0, ${(-cw * (.15 + .12 * (k - 1))).toFixed(1)}px) rotateY(${-sg * 48}deg) scale(${(1 - .05 * (k - 1)).toFixed(3)})`;
+    });
+  },
   layout(stacked) {
+    if (this.setSide()) return this.layoutSide(stacked);
     const n = this.row.children, f = this.focus || 0;
+    for (let i = 0; i < n.length; i++) { n[i].style.top = ''; n[i].classList.remove('cur'); }
     for (let i = 0; i < n.length; i++) {
       const d = n[i], o = i - f, a = Math.abs(o), s = Math.sign(o);
       d.style.setProperty('--a', Math.min(a, 4)); d.classList.toggle('ctr', o === 0); d.classList.toggle('far', a > 2);
@@ -3297,6 +3348,8 @@ const shelf = {
     }
   },
   go(i) { if (!this.list) return; const f = clamp(i, 0, this.list.length - 1); if (f === this.focus) return; this.focus = f; this.layout(); },
+  step(d) { if (!this.list) return; if (!this.el.classList.contains('side')) return this.go(this.focus + d);
+    const max = this.list.length - (this.curIdx >= 0 ? 1 : 0), v = clamp(this.sh + d, 0, max); if (v !== this.sh) { this.sh = v; this.layoutSide(); } },
   hide() { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; },
   refresh() { this.artistKey = ''; if (S.track) this.load(S.track); else this.hide(); },
 };
@@ -3306,7 +3359,7 @@ const shelf = {
     if (!shelf.list) return; e.preventDefault();
     const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY, now = performance.now();
     if (now - last > 400) acc = 0; last = now; acc += d;
-    if (Math.abs(acc) >= 60) { shelf.go(shelf.focus + Math.sign(acc)); acc = 0; }
+    if (Math.abs(acc) >= 60) { shelf.step(Math.sign(acc)); acc = 0; }
   }, { passive: false }); }
 /* 앨범 카드 색: 커버를 아주 작게 줄여 평균색을 구하고, 흰 글씨가 잘 보이도록 밝기를 눌러 줌 */
 const tintCache = new Map();
@@ -3348,6 +3401,7 @@ async function playShelfAlbum(a) {
 $('#shelfRow').addEventListener('click', e => {
   const n = e.target.closest('.alb'); if (!n || !shelf.list) return;
   const i = +n.dataset.i;
+  if (shelf.el.classList.contains('side')) { if (!n.classList.contains('far')) playShelfAlbum(shelf.list[i]); return; }   // 양옆 카드 클릭 = 바로 재생
   if (i !== shelf.focus) { shelf.go(i); return; }   // 옆 카드 클릭 = 가운데로
   playShelfAlbum(shelf.list[i]);                      // 가운데 카드 클릭 = 재생
 });
