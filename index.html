@@ -29,7 +29,7 @@ html { transition: --c1 2.5s, --c2 2.5s; }
 body.has-shelf { --lps: var(--lps-s, 1); --cds: var(--cds-s, 1); --ps: var(--ps-s, 1); }
 /* 가사가 켜져 있을 때(앨범이 옆으로 비켜 있을 때)도 따로 */
 body:not(.solo-stage) { --lps: var(--lps-l, 1); --cds: var(--cds-l, 1); --ps: var(--ps-l, 1); }
-body.has-shelf:not(.solo-stage) { --lps: var(--lps-ls, 1); --cds: var(--cds-ls, 1); --ps: var(--ps-ls, 1); }
+
 :root {
   --dx: 0px; --dy: 0px;           /* 번인 방지 이동량 */
   --nightDim: .45;
@@ -443,6 +443,7 @@ body.no-cap #poster .cap { display: none; }
 .szc { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
 .szc span { font-variant-numeric: tabular-nums; opacity: .8; font-size: 12px; }
 .szc input { width: 100%; margin: 0; }
+.szc.szw { grid-column: span 2; }   /* 가사 켬엔 다른 앨범이 안 나오니 한 칸 */
 #themeOpts[data-t="lp"] [data-for="lp"], #themeOpts[data-t="cd"] [data-for="cd"], #themeOpts[data-t="poster"] [data-for="poster"],
 #themeOpts[data-t="flow"] [data-for="flow"], #themeOpts[data-t="radio"] [data-for="radio"] { display: block; }
 .seg.small button { padding: 6px 0; font-size: 12px; }
@@ -1997,22 +1998,22 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
       <div class="szgrid" data-for="lp">
         <span></span><b>선반 끔</b><b>선반 켬</b>
         <b>가사 끔</b><label class="szc"><span id="vLps"></span><input type="range" id="rLps" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vLpsS"></span><input type="range" id="rLpsS" min="0.5" max="1.5" step="0.05"></label>
-        <b>가사 켬</b><label class="szc"><span id="vLpsL"></span><input type="range" id="rLpsL" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vLpsLS"></span><input type="range" id="rLpsLS" min="0.5" max="1.5" step="0.05"></label>
+        <b>가사 켬</b><label class="szc szw"><span id="vLpsL"></span><input type="range" id="rLpsL" min="0.5" max="1.5" step="0.05"></label>
       </div>
       <div class="szgrid" data-for="cd">
         <span></span><b>선반 끔</b><b>선반 켬</b>
         <b>가사 끔</b><label class="szc"><span id="vCds"></span><input type="range" id="rCds" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vCdsS"></span><input type="range" id="rCdsS" min="0.5" max="1.5" step="0.05"></label>
-        <b>가사 켬</b><label class="szc"><span id="vCdsL"></span><input type="range" id="rCdsL" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vCdsLS"></span><input type="range" id="rCdsLS" min="0.5" max="1.5" step="0.05"></label>
+        <b>가사 켬</b><label class="szc szw"><span id="vCdsL"></span><input type="range" id="rCdsL" min="0.5" max="1.5" step="0.05"></label>
       </div>
       <div class="szgrid" data-for="poster">
         <span></span><b>선반 끔</b><b>선반 켬</b>
         <b>가사 끔</b><label class="szc"><span id="vPs"></span><input type="range" id="rPs" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vPsS"></span><input type="range" id="rPsS" min="0.5" max="1.5" step="0.05"></label>
-        <b>가사 켬</b><label class="szc"><span id="vPsL"></span><input type="range" id="rPsL" min="0.5" max="1.5" step="0.05"></label><label class="szc"><span id="vPsLS"></span><input type="range" id="rPsLS" min="0.5" max="1.5" step="0.05"></label>
+        <b>가사 켬</b><label class="szc szw"><span id="vPsL"></span><input type="range" id="rPsL" min="0.5" max="1.5" step="0.05"></label>
       </div>
       <p class="note" data-for="other" style="margin-top:0">LP·CD·포스터 테마에서만 조절할 수 있어요.</p>
     </section>
     <h4>아티스트의 다른 앨범</h4>
-    <label class="switch"><span>다른 앨범 보이기 (A)</span><input type="checkbox" id="cShelf"></label>
+    <label class="switch"><span>다른 앨범 보이기 (A) · 가사를 껐을 때</span><input type="checkbox" id="cShelf"></label>
     <div class="slab"><span>양옆 앨범 카드 크기</span><span id="vSideS"></span></div>
     <input type="range" id="rSideS" min="0.6" max="1.6" step="0.05">
     <h4>커버 화질</h4>
@@ -2661,7 +2662,7 @@ const lyrics = {
     const want = () => !(settings.lyrics && this.has), v = want();
     if (this.pend) return;   // 전환 대기 중이면 그 전환이 실행될 때 최신 상태를 읽음(가사가 곧바로 도착해도 엇갈리지 않게)
     if (body.classList.contains('solo-stage') === v) return soloPlace();
-    const go = () => { this.pend = false; body.classList.toggle('solo-stage', want()); soloPlace(); };
+    const go = () => { this.pend = false; body.classList.toggle('solo-stage', want()); if (typeof shelf !== 'undefined' && S.track && shelf.artistKey) shelf.show(S.track, true); soloPlace(); };   // 가사를 끄면 다른 앨범이 펼쳐지고, 켜면 접힘
     this.pend = true; setTimeout(() => this.pend && go(), 1500);   // 혹시 전환이 실행되지 않으면 1.5초 뒤 직접
     /* 커버 전체화면이 덮고 있을 땐 전환 애니메이션 없이 바로(애니메이션 중엔 뒤쪽 시계·앨범이 커버 위로 비쳐 보임) */
     if (document.startViewTransition && !REDUCED && !document.hidden && !body.classList.contains('wallpaper') && !$('#coverFull').classList.contains('on')) { try { document.startViewTransition(go); return; } catch {} }
@@ -3306,7 +3307,7 @@ const shelf = {
     else { const pos = list.findIndex(a => (a.date || '') < cur.date); list.splice(pos < 0 ? list.length : pos, 0, cur); }
     return true;
   },
-  useShelf() { return !['flow', 'jukebox', 'car', 'city'].includes(settings.theme); },
+  useShelf() { return !['flow', 'jukebox', 'car', 'city'].includes(settings.theme) && body.classList.contains('solo-stage'); },   // 가사가 떠 있을 땐 다른 앨범을 안 보여 줌
   status(t, msg) {   // 불러오는 중·실패 이유를 선반 자리에 표시
     body.classList.add('has-shelf'); this.row.innerHTML = ''; this.list = null;
     $('#shelfArtist').textContent = t.artists?.[0] || t.artist; $('#shelfCap').textContent = msg; this.el.classList.add('show');
@@ -4384,7 +4385,7 @@ const BLUR_NAMES = ['형태 보임', '약하게', '보통', '완전히'];
 function applyVisualSettings() {
   const r = document.documentElement.style;
   r.setProperty('--edgeK', settings.edge); r.setProperty('--ls', settings.ls);
-  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); for (const k of ['ps', 'lps', 'cds']) { r.setProperty(`--${k}-l`, settings[k + 'L'] ?? settings[k]); r.setProperty(`--${k}-ls`, settings[k + 'LS'] ?? settings[k + 'S']); } r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
+  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); for (const k of ['ps', 'lps', 'cds']) { r.setProperty(`--${k}-l`, settings[k + 'L'] ?? settings[k]); } r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
   r.setProperty('--pl-size', settings.plSize); r.setProperty('--pl-dim', settings.plDim); r.setProperty('--pl-weight', settings.plW);
   body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
   body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
@@ -4402,7 +4403,7 @@ function syncSettingsUI() {
   $('#rCdRpm').value = settings.cdRpm; $('#vCdRpm').textContent = settings.cdRpm + ' rpm';
   $('#rRainbow').value = settings.rainbow; $('#vRainbow').textContent = Math.round(settings.rainbow * 100) + '%';
   $('#rPs').value = settings.ps; $('#vPs').textContent = '×' + (+settings.ps).toFixed(2); $('#rLps').value = settings.lps; $('#vLps').textContent = '×' + (+settings.lps).toFixed(2); $('#rCds').value = settings.cds; $('#vCds').textContent = '×' + (+settings.cds).toFixed(2);
-  for (const k of ['psS', 'lpsS', 'cdsS', 'psL', 'lpsL', 'cdsL', 'psLS', 'lpsLS', 'cdsLS']) { const id = k[0].toUpperCase() + k.slice(1), v = settings[k] ?? settings[k.replace(/L(S?)$/, '$1')]; $('#r' + id).value = v; $('#v' + id).textContent = '×' + (+v).toFixed(2); } $('#cCap').checked = settings.cap;
+  for (const k of ['psS', 'lpsS', 'cdsS', 'psL', 'lpsL', 'cdsL']) { const id = k[0].toUpperCase() + k.slice(1), v = settings[k] ?? settings[k.replace(/L(S?)$/, '$1')]; $('#r' + id).value = v; $('#v' + id).textContent = '×' + (+v).toFixed(2); } $('#cCap').checked = settings.cap;
   $('#rFs').value = settings.fs; $('#vFs').textContent = '×' + (+settings.fs).toFixed(2);
   $('#rTilt').value = settings.tilt; $('#vTilt').textContent = settings.tilt + '°';
   $('#rBack').value = settings.back; $('#vBack').textContent = settings.back ? settings.back + '초 뒤' : '안 돌아옴';
@@ -4451,7 +4452,7 @@ function renderFonts() {
 }
 const bindRange = (id, key, after) => $(id).oninput = e => { settings[key] = +e.target.value; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 'edge');
-bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rLpsS', 'lpsS'); bindRange('#rCdsS', 'cdsS'); bindRange('#rPsS', 'psS'); for (const k of ['psL', 'lpsL', 'cdsL', 'psLS', 'lpsLS', 'cdsLS']) bindRange('#r' + k[0].toUpperCase() + k.slice(1), k); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
+bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rLpsS', 'lpsS'); bindRange('#rCdsS', 'cdsS'); bindRange('#rPsS', 'psS'); for (const k of ['psL', 'lpsL', 'cdsL']) bindRange('#r' + k[0].toUpperCase() + k.slice(1), k); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
 bindRange('#rRes', 'radioRes', () => radio.redraw()); bindRange('#rPlSize', 'plSize', () => lists.markNow(false)); bindRange('#rPlDim', 'plDim');
 const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.target.checked; saveSettings(); applyVisualSettings(); after && after(); };
 bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
@@ -4524,7 +4525,7 @@ addEventListener('keydown', e => {
   else if (k === 'p' || k === 'P') lists.pin(!settings.listPin);   // P = 고정 플레이리스트 켜기/끄기
   else if (k === 'm' || k === 'M' || k === 'ㅡ' || e.code === 'KeyM') { if (!e.repeat) lyrPos.toggle(); }   // M = 가사 위치 조정 모드 (한글 입력 상태도 인식)
   else if (k === 'e' || k === 'E') { const L = Object.keys(FX_NAMES), n = L[(L.indexOf(settings.fx) + 1) % L.length]; fx.set(n); toast('이펙트: ' + FX_NAMES[n], 1400); }
-  else if (k === 'a' || k === 'A') { settings.shelf = !settings.shelf; saveSettings(); shelf.refresh(); toast(settings.shelf ? '앨범 선반 켜짐' : '앨범 선반 꺼짐', 1400); }
+  else if (k === 'a' || k === 'A') { settings.shelf = !settings.shelf; saveSettings(); shelf.refresh(); toast(settings.shelf ? (body.classList.contains('solo-stage') ? '다른 앨범 켜짐' : '다른 앨범 켜짐 · 가사를 끄면 보여요') : '다른 앨범 꺼짐', 1600); }
   else if (k === 'z' || k === 'Z' || k === 'ㅋ' || e.code === 'KeyZ') { setTimeout(() => body.classList.add('zen'), 50); return; }
 }, true);
 
