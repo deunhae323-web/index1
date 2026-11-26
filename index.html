@@ -1195,7 +1195,7 @@ body.cq-mid #cityBloom .bl { mix-blend-mode: normal; }
 body.cq-low #cityScene .room [filter], body.cq-low #cityScene .room g, body.cq-low #cityScene .room path { filter: none !important; }
 body.cq-low #cityScene .room rect[filter="url(#grain)"] { display: none; }
 body.cq-low #cityBloom .bl { mix-blend-mode: normal; filter: blur(10px); animation: none; }
-body.cq-low #cityScene .cityv .smog, body.cq-low #cityScene .cityv canvas.spn, body.cq-low #cityScene .vol .beams, body.cq-low #cityKoi { display: none; }
+body.cq-low #cityScene .cityv .smog, body.cq-low #cityScene .cityv canvas.spn, body.cq-low #cityScene .vol .beams { display: none; }
 body.cq-low #cityScene .cityv .had { animation: none; }
 body.cq-low #cityScene .cityv .had .sc, body.cq-low #cityScene .cityv .had .ring { animation: none; }
 body.no-citykoi #cityKoi { display: none; }
@@ -1933,7 +1933,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
       <label class="switch"><span>홀로그램 비단잉어</span><input type="checkbox" id="cCityKoi"></label>
       <div class="slab" style="margin-top:14px"><span>그래픽 품질</span></div>
       <div class="seg small" id="segCityQ"><button data-v="low">낮음</button><button data-v="mid">보통</button><button data-v="high">높음</button></div>
-      <p class="note" style="margin-top:4px">화면이 깜빡이거나 물건이 생겼다 없어지면 품질을 낮춰 보세요. 낮음은 그림자·발광 필터와 안개·스피너·잉어를 꺼요.</p>
+      <p class="note" style="margin-top:4px">화면이 깜빡이거나 물건이 생겼다 없어지면 품질을 낮춰 보세요. 낮음은 그림자·발광 필터와 안개·스피너를 끄고, 잉어는 가볍게 그려요.</p>
       <div class="slab" style="margin-top:12px"><span>빛 효과 세기</span><span id="vCityLight"></span></div>
       <input type="range" id="rCityLight" min="0" max="1" step="0.05">
       <div class="slab" style="margin-top:12px"><span>비행차·스피너 밀도</span><span id="vCityDen"></span></div>
@@ -3981,7 +3981,7 @@ const cityFx = {
   },
   spinner(x) { const R = Math.random, red = R() < .5; return { x, y: .2 + R() * .36, dir: R() < .5 ? 1 : -1, v: .012 + R() * .03, z: .3 + R() * .7, ph: R() * 6.283, dy: (R() - .5) * .012,
     col: red ? [255, 59, 74] : [74, 184, 255], len: .05 + R() * .1 }; },
-  draw(dt, t) { if (!this.kx) return; const lo = settings.cityQ === 'low'; if (settings.cityKoi && !lo) this.koi(t); if (settings.cityCars && this.sx && !lo) this.spin(dt, t); },
+  draw(dt, t) { if (!this.kx) return; const lo = settings.cityQ === 'low'; this.lo = lo; if (settings.cityKoi && !(lo && (this.fr = !this.fr))) this.koi(t); /* 낮음: 잉어는 남기되 한 프레임 걸러 그림 */ if (settings.cityCars && this.sx && !lo) this.spin(dt, t); },
   spin(dt, t) {
     const x = this.sx, W = x.canvas.width, H = x.canvas.height;
     x.clearRect(0, 0, W, H); x.globalCompositeOperation = 'lighter';
@@ -4040,7 +4040,7 @@ const cityFx = {
     // 등지느러미
     fin([[X(.24), Y(.24) - hw(.24) * .95], [X(.3), Y(.3) - hw(.3) - L * .13 + w1 * L * .015], [X(.4), Y(.4) - hw(.4) - L * .09 + w1 * L * .02], [X(.52), Y(.52) - hw(.52) - L * .05 + w1 * L * .02], [X(.62), Y(.62) - hw(.62) - L * .01], [X(.6), Y(.6) - hw(.6) * .9], [X(.4), Y(.4) - hw(.4) * .95]], .45, .1);
     // 몸통: 위는 밝고 배 쪽은 어두운 원통 음영 + 발광
-    x.save(); x.shadowColor = 'rgba(255,40,190,.55)'; x.shadowBlur = 14;
+    x.save(); if (!this.lo) { x.shadowColor = 'rgba(255,40,190,.55)'; x.shadowBlur = 14; }   // 낮음: 발광 그림자 생략
     const mh = L * .12, g = x.createLinearGradient(0, -mh, 0, mh);
     g.addColorStop(0, 'rgba(245,253,255,.95)'); g.addColorStop(.3, 'rgba(190,240,255,.8)'); g.addColorStop(.62, 'rgba(90,170,255,.5)'); g.addColorStop(1, 'rgba(60,70,200,.22)');
     body(); x.fillStyle = g; x.fill(); x.restore();
@@ -4051,7 +4051,7 @@ const cityFx = {
       gr.addColorStop(0, `rgba(${c},.85)`); gr.addColorStop(.65, `rgba(${c},.55)`); gr.addColorStop(1, `rgba(${c},0)`); x.fillStyle = gr; x.beginPath(); x.ellipse(cx, cy, L * r * 1.3, L * r * .8, 0, 0, 6.283); x.fill(); });
     // 비늘
     x.strokeStyle = 'rgba(255,255,255,.22)'; x.lineWidth = L * .0035;
-    for (let s = .13; s < .86; s += .042) for (let j = -2; j <= 2; j++) { const w = hw(s), cy = Y(s) + j * w * .38 + (Math.round(s / .042) % 2 ? w * .19 : 0); if (Math.abs(cy - Y(s)) > w * .85) continue;
+    if (!this.lo) for (let s = .13; s < .86; s += .042) for (let j = -2; j <= 2; j++) { const w = hw(s), cy = Y(s) + j * w * .38 + (Math.round(s / .042) % 2 ? w * .19 : 0); if (Math.abs(cy - Y(s)) > w * .85) continue;
       x.beginPath(); x.arc(X(s) + L * .012, cy, w * .22, 2.2, 4.1); x.stroke(); }
     // 등 쪽 하이라이트 · 배 쪽 반사광
     x.lineCap = 'round'; x.strokeStyle = 'rgba(255,255,255,.65)'; x.lineWidth = L * .012; x.beginPath();
