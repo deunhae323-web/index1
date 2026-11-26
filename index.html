@@ -95,7 +95,7 @@ body.has-shelf #stage { gap: 3vh; }
   body.solo-stage #stage[data-theme="poster"] #poster .cap { opacity: 0; }   /* 포스터 작은 캡션 대신 큰 제목 줄을 씀 */
   body.solo-stage:has(#stage:is([data-theme="lp"], [data-theme="cd"])) { --disc: min(38vw, 52vh); }
   body.solo-stage #stage[data-theme="poster"] #poster { width: calc(min(34vw, 48vh) * var(--ps)); }
-  body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { width: calc(min(34vw, 48vh) * var(--ps)); }
+  body.solo-stage.has-shelf #stage[data-theme="poster"] #poster { --pw: calc(min(34vw, 48vh) * var(--ps)); width: var(--pw); }
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) { transform: translateY(5vh); }   /* 앨범 중심 = 화면 세로 정중앙 */
   body.solo-stage #stage:is([data-theme="lp"], [data-theme="cd"], [data-theme="poster"]) > #shelf { margin-top: 6.8vh; --cw: min(8.5vh, 7vw); }   /* 앨범과 카드 사이에 곡 제목 자리 */
   #stage[data-theme="lp"] > #shelf, #stage[data-theme="cd"] > #shelf, #stage[data-theme="poster"] > #shelf { grid-row: 3; align-self: start; margin-top: 1.2vh; }
@@ -156,6 +156,15 @@ body.has-shelf #shelf { display: block; }
 #shelf.side #shelfRow { position: absolute; inset: 0; height: auto; }
 #shelf.side #shelfRow .alb { left: 0; top: 0; margin-left: 0; pointer-events: auto; }
 #shelf.side #shelfRow .alb.far, #shelf.side #shelfRow .alb.cur { pointer-events: none; }
+/* 가사 끈 포스터: 가운데 포스터도 카드 케이스 안에 (색은 커버에서 뽑은 색) */
+#poster .pcase { display: none; }
+body.solo-stage #stage[data-theme="poster"]:has(> #shelf.side.show) #poster { --c: 70, 70, 78; --k: calc(var(--pw, 400px) / 100); box-sizing: border-box; padding: calc(var(--k) * 5.5) calc(var(--k) * 5.5) calc(var(--k) * 6);
+  border-radius: calc(var(--k) * 12); color: #fff; text-align: center; border: 1px solid rgba(255,255,255,.2); box-shadow: 0 2.4vh 5vh rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.28);
+  background: linear-gradient(172deg, color-mix(in srgb, rgb(var(--c)) 80%, #fff) 0%, rgb(var(--c)) 42%, color-mix(in srgb, rgb(var(--c)) 72%, #000) 100%); transition: background .6s ease; }
+body.solo-stage #stage[data-theme="poster"]:has(> #shelf.side.show) #poster .art { border-radius: calc(var(--k) * 7.5); box-shadow: 0 2px 8px rgba(0,0,0,.28); }
+body.solo-stage #stage[data-theme="poster"]:has(> #shelf.side.show) #poster .pcase { display: block; }
+#poster .pcase .nm { display: block; margin-top: calc(var(--k) * 4.5); font-family: var(--sans); font-weight: 700; font-size: calc(var(--k) * 6); line-height: 1.28; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0,0,0,.35); }
+#poster .pcase .yr { display: block; font-family: var(--sans); font-weight: 500; font-size: calc(var(--k) * 4.2); line-height: 1.3; opacity: .8; white-space: nowrap; }
 #shelf.side #shelfRow .alb:hover .art { box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 2px 8px rgba(0,0,0,.28); }
 #side { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4.5vh; height: 100%; min-width: 0;
   transform: translate(var(--dx), var(--dy)); transition: transform 60s linear; }
@@ -1733,6 +1742,7 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
     </div>
     <div id="poster" class="visual">
       <div class="art cover-bg"></div>
+      <div class="pcase"><b class="nm"></b><small class="yr"></small></div>
       <div class="cap">
         <div class="kicker"><span>Now Playing</span><span id="pKick">Side A</span></div>
         <div class="ptitle" id="pTitle">—</div>
@@ -1969,6 +1979,8 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
   <details class="grp" name="sg" data-g="cover"><summary><span class="gi">🖼️</span>앨범 커버<i class="chev"></i></summary>
   <div class="gbody">
     <label class="switch"><span>아티스트의 다른 앨범 선반</span><input type="checkbox" id="cShelf"></label>
+    <div class="slab"><span>양옆 앨범 카드 크기 (LP·CD·포스터)</span><span id="vSideS"></span></div>
+    <input type="range" id="rSideS" min="0.6" max="1.6" step="0.05">
     <label class="switch"><span>iTunes 고화질 커버 쓰기 (커버 전체화면·포스터)</span><input type="checkbox" id="cItunes"></label>
     <p class="note" style="margin-top:4px">스포티파이 커버(640px) 대신 애플 뮤직 스토어에서 같은 앨범의 원본 크기 커버를 찾아 써요. 못 찾으면 스포티파이 커버 그대로예요. LP·CD·포스터에서 커버를 클릭하면 전체화면으로 볼 수 있어요.</p>
   </div></details>
@@ -2104,7 +2116,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, lps: 1, cds: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, itunesArt: true, lyrStyle: 'normal', lyrPos: {}, lyrLock: false, lyrSnap: 12, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, lps: 1, cds: 1, sideS: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, itunesArt: true, lyrStyle: 'normal', lyrPos: {}, lyrLock: false, lyrSnap: 12, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -2611,9 +2623,11 @@ const lyrics = {
   },
   /* 앨범 정가운데 배치: 가사를 다 찾아본 뒤에만 바꿈(곡이 바뀌는 순간 좌우로 왔다 갔다 하지 않게) */
   solo() {
-    const v = !(settings.lyrics && this.has);
+    const want = () => !(settings.lyrics && this.has), v = want();
+    if (this.pend) return;   // 전환 대기 중이면 그 전환이 실행될 때 최신 상태를 읽음(가사가 곧바로 도착해도 엇갈리지 않게)
     if (body.classList.contains('solo-stage') === v) return soloPlace();
-    const go = () => { body.classList.toggle('solo-stage', v); soloPlace(); };
+    const go = () => { this.pend = false; body.classList.toggle('solo-stage', want()); soloPlace(); };
+    this.pend = true; setTimeout(() => this.pend && go(), 1500);   // 혹시 전환이 실행되지 않으면 1.5초 뒤 직접
     /* 커버 전체화면이 덮고 있을 땐 전환 애니메이션 없이 바로(애니메이션 중엔 뒤쪽 시계·앨범이 커버 위로 비쳐 보임) */
     if (document.startViewTransition && !REDUCED && !document.hidden && !body.classList.contains('wallpaper') && !$('#coverFull').classList.contains('on')) { try { document.startViewTransition(go); return; } catch {} }
     go();
@@ -3289,11 +3303,19 @@ const shelf = {
     if (!this.list) return;
     const idx = this.list.findIndex(a => a.id && a.id === t.albumId) >= 0 ? this.list.findIndex(a => a.id && a.id === t.albumId) : this.list.findIndex(a => sameAlbum(a, t));
     [...this.row.children].forEach((n, i) => n.classList.toggle('current', i === idx));
-    this.curIdx = idx; this.sh = Math.max(idx, 0);
+    this.curIdx = idx; this.sh = 0;
+    const ca = idx >= 0 ? this.list[idx] : null; this.mainCase(ca);
     if (idx >= 0) this.focus = idx;
     this.layout();
   },
   /* 커버플로 배치: 가운데(focus) 카드는 정면, 양옆은 비스듬히 뒤로 겹쳐 쌓임. 양쪽 3장까지만 보임 */
+  /* 포스터(가사 끔): 가운데 진짜 포스터도 양옆 카드와 같은 케이스에 넣음 */
+  mainCase(a) {
+    const P = $('#poster'), c = P.querySelector('.pcase'); if (!c) return;
+    const t = S.track; c.querySelector('.nm').textContent = a?.name || t?.album || '';
+    c.querySelector('.yr').textContent = [a?.year || t?.year, a ? (a.type === 'single' ? 'Single' : a.type === 'ep' ? 'EP' : 'Album') : ''].filter(Boolean).join(' · ');
+    albTint(t?.cover || a?.cover).then(v => { if (v) P.style.setProperty('--c', v); });
+  },
   setSide() {
     const on = ['lp', 'cd', 'poster'].includes(settings.theme) && matchMedia('(orientation: landscape)').matches;
     this.el.classList.toggle('side', on);
@@ -3311,7 +3333,7 @@ const shelf = {
     const availL = L - 14, availR = (solo ? innerWidth - 14 : S0.right + Math.min(innerWidth * .02, 30)) - R;
     const STEP = .3, PROJ = .62, GAP = .12;
     let cw = Math.min(V.height * .56, 230);
-    cw = Math.max(Math.min(cw, Math.min(availL, availR) / (GAP + PROJ + STEP * 2)), Math.min(V.height * .34, cw));
+    cw = Math.max(Math.min(cw, Math.min(availL, availR) / (GAP + PROJ + STEP * 2)), Math.min(V.height * .34, cw)) * (+settings.sideS || 1);   // 크기 배율(설정)만큼 키우면 한쪽에 들어가는 장수가 줄어듦
     const cnt = a => clamp(Math.floor((a - GAP * cw - PROJ * cw) / (STEP * cw)) + 1, 0, 3), NL = cnt(availL), NR = cnt(availR);
     this.row.style.setProperty('--cw', cw.toFixed(1) + 'px');
     this.row.style.perspective = Math.round(cw * 5) + 'px';
@@ -3319,13 +3341,26 @@ const shelf = {
     this.el.style.setProperty('--sh-top', Math.round(V.top - S0.top - 28) + 'px');
     const cur = this.curIdx ?? -1, others = [];
     for (let i = 0; i < n.length; i++) if (i !== cur) others.push(i);
-    this.sh = clamp(this.sh ?? 0, 0, others.length);
+    /* 순서는 상관없이 정규 앨범·EP를 먼저, 모자라면 싱글로 채움. 가운데에 가까운 자리(오른쪽1·왼쪽1·오른쪽2…)부터 채운 뒤,
+       왼쪽 끝→오른쪽 끝 한 줄로 이어 붙여 휠을 굴리면 그 줄이 한 방향으로 돌아감 */
+    const single = i => this.list[i]?.type === 'single' ? 1 : 0;
+    const pri = others.slice().sort((x, y) => single(x) - single(y)), line = new Array(Math.min(NL + NR, pri.length));
+    const slots = []; for (let k = 1; k <= 3; k++) { if (k <= NR) slots.push(NL + k - 1); if (k <= NL) slots.push(NL - k); }
+    const used = slots.slice(0, line.length);
+    const pos = used.slice().sort((a, b) => a - b);   // 실제로 채울 자리(왼→오 순)
+    used.forEach((p, k) => { line[pos.indexOf(p)] = pri[k]; });
+    const ring = line.concat(pri.slice(line.length)), N = ring.length;
+    this.sh = N ? ((this.sh || 0) % N + N) % N : 0;
     const top = cy - cw * .7, hide = d => { d.classList.add('far'); d.style.setProperty('--op', 0); d.style.setProperty('--a', 3); d.style.zIndex = 1;
       d.style.transform = `translate3d(${(cx - cw / 2).toFixed(1)}px, 0, ${(-cw * .5).toFixed(1)}px) scale(.5)`; };
     for (let i = 0; i < n.length; i++) { const d = n[i]; d.style.top = top.toFixed(1) + 'px'; d.classList.remove('ctr'); d.classList.toggle('cur', i === cur); if (stacked || i === cur) hide(d); }
     if (stacked) return;
-    others.forEach((i, j) => {
-      const d = n[i], slot = j < this.sh ? j - this.sh : j - this.sh + 1, a = Math.abs(slot), sg = Math.sign(slot), lim = sg < 0 ? NL : NR;
+    const nv = line.length, offL = pos.filter(p => p < NL).length;   // 보이는 카드 중 왼쪽에 놓이는 장수
+    ring.forEach((_, q) => {
+      const i = ring[(q + this.sh) % N], d = n[i];
+      let slot; if (q < nv) slot = q < offL ? q - offL : q - offL + 1;
+      else slot = (q - nv) < (N - nv) / 2 ? NR + 1 : -(NL + 1);   // 안 보이는 카드는 양끝 바깥에 대기
+      const a = Math.abs(slot), sg = Math.sign(slot), lim = sg < 0 ? NL : NR;
       const edge = (sg < 0 ? L : R) - S0.left, k = Math.min(a, lim + 1);
       const x = edge + sg * (GAP * cw + PROJ * cw / 2 + (k - 1) * STEP * cw) - cw / 2;
       const show = a <= lim;
@@ -3349,7 +3384,7 @@ const shelf = {
   },
   go(i) { if (!this.list) return; const f = clamp(i, 0, this.list.length - 1); if (f === this.focus) return; this.focus = f; this.layout(); },
   step(d) { if (!this.list) return; if (!this.el.classList.contains('side')) return this.go(this.focus + d);
-    const max = this.list.length - (this.curIdx >= 0 ? 1 : 0), v = clamp(this.sh + d, 0, max); if (v !== this.sh) { this.sh = v; this.layoutSide(); } },
+    this.sh = (this.sh || 0) + d; this.layoutSide(); },
   hide() { body.classList.remove('has-shelf'); this.el.classList.remove('show'); this.list = null; },
   refresh() { this.artistKey = ''; if (S.track) this.load(S.track); else this.hide(); },
 };
@@ -4364,7 +4399,7 @@ function syncSettingsUI() {
   $('#cFxFollow').checked = settings.fxFollow;
   $$('#fxList button').forEach(b => b.classList.toggle('on', b.dataset.fx === settings.fx));
   $('#cItunes').checked = settings.itunesArt;
-  $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
+  $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#rSideS').value = settings.sideS; $('#vSideS').textContent = '×' + (+settings.sideS).toFixed(2); $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
 }
 function renderFonts() {
   const box = $('#fontList'); if (box.childElementCount) { $$('#fontList button').forEach(b => b.classList.toggle('on', b.dataset.f === settings.font)); return; }
@@ -4379,7 +4414,7 @@ function renderFonts() {
 }
 const bindRange = (id, key, after) => $(id).oninput = e => { settings[key] = +e.target.value; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 'edge');
-bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
+bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
 bindRange('#rRes', 'radioRes', () => radio.redraw()); bindRange('#rPlSize', 'plSize', () => lists.markNow(false)); bindRange('#rPlDim', 'plDim');
 const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.target.checked; saveSettings(); applyVisualSettings(); after && after(); };
 bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
