@@ -429,6 +429,7 @@ body.lists-pinned .note { font-size: 12px; }
 /* 테마별 옵션 */
 body.no-arm #lp .tonearm { display: none; }
 body.no-cap #poster .cap { display: none; }
+body.no-clock #clock :is(.time, .date) { display: none !important; }
 #themeOpts [data-for] { display: none; }
 #sizeOpts [data-for] { display: none !important; }
 #sizeOpts[data-t="lp"] [data-for="lp"], #sizeOpts[data-t="cd"] [data-for="cd"], #sizeOpts[data-t="poster"] [data-for="poster"],
@@ -1956,7 +1957,8 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
   <details class="grp" name="sg" data-g="clock"><summary><span class="gi">🕒</span>시계 · 글씨체<i class="chev"></i></summary>
   <div class="gbody">
     <div class="fonts" id="fontList"></div>
-    <label class="switch" style="margin-top:10px"><span>24시간제 시계</span><input type="checkbox" id="c24"></label>
+    <label class="switch" style="margin-top:10px"><span>시계·날짜 보이기</span><input type="checkbox" id="cClock"></label>
+    <label class="switch"><span>24시간제 시계</span><input type="checkbox" id="c24"></label>
   </div></details>
   <details class="grp" name="sg" data-g="lyrics"><summary><span class="gi">🎤</span>가사<i class="chev"></i></summary>
   <div class="gbody">
@@ -4383,6 +4385,7 @@ $('#segTheme').onclick = e => { const v = e.target.dataset.v; if (v) setTheme(v)
 $('#rBlur').oninput = e => { settings.blur = +e.target.value; saveSettings(); bg.dirty = true; syncSettingsUI(); };
 const BLUR_NAMES = ['형태 보임', '약하게', '보통', '완전히'];
 function applyVisualSettings() {
+  body.classList.toggle('no-clock', settings.showClock === false);   // 시계·날짜 숨김 (곡 제목은 그대로)
   const r = document.documentElement.style;
   r.setProperty('--edgeK', settings.edge); r.setProperty('--ls', settings.ls);
   r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); for (const k of ['ps', 'lps', 'cds']) { r.setProperty(`--${k}-l`, settings[k + 'L'] ?? settings[k]); } r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
@@ -4437,7 +4440,7 @@ function syncSettingsUI() {
   $('#cFxFollow').checked = settings.fxFollow;
   $$('#fxList button').forEach(b => b.classList.toggle('on', b.dataset.fx === settings.fx));
   $('#cItunes').checked = settings.itunesArt;
-  $('#c24').checked = settings.clock24; $('#cShelf').checked = settings.shelf; $('#rSideS').value = settings.sideS; $('#vSideS').textContent = '×' + (+settings.sideS).toFixed(2); $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
+  $('#c24').checked = settings.clock24; $('#cClock').checked = settings.showClock !== false; $('#cShelf').checked = settings.shelf; $('#rSideS').value = settings.sideS; $('#vSideS').textContent = '×' + (+settings.sideS).toFixed(2); $('#cListPin').checked = !!settings.listPin; $('#cNight').checked = settings.night;
 }
 function renderFonts() {
   const box = $('#fontList'); if (box.childElementCount) { $$('#fontList button').forEach(b => b.classList.toggle('on', b.dataset.f === settings.font)); return; }
@@ -4471,6 +4474,7 @@ $('#sLyrAdj').onclick = () => lyrPos.toggle(true);
 $('#sLyrReset').onclick = () => lyrPos.reset();
 bindCheck('#cLyrLock', 'lyrLock', () => { if (settings.lyrLock) lyrPos.toggle(false); syncSettingsUI(); });
 bindRange('#rLyrSnap', 'lyrSnap');
+$('#cClock').onchange = e => { settings.showClock = e.target.checked; saveSettings(); applyVisualSettings(); soloPlace(); };
 $('#c24').onchange = e => { settings.clock24 = e.target.checked; saveSettings(); applyVisualSettings(); };
 bindCheck('#cItunes', 'itunesArt');
 $('#cNight').onchange = e => { settings.night = e.target.checked; saveSettings(); applyVisualSettings(); };
