@@ -2410,7 +2410,7 @@ function onTrack(t) {
   setTitleEl($('#npTitle'), fullTitle(t)); $('#npTitle').classList.toggle('kr', kr);
   const al = artistLine(t);
   $('#npArtist').textContent = al;
-  $('#plTitle').textContent = t.title;
+  $('#plTitle').textContent = fullTitle(t);
   $('#plSub').textContent = [al, t.album].filter(Boolean).join(' · ');
   setTitleEl($('#pTitle'), fullTitle(t)); $('#pTitle').classList.toggle('kr', kr);
   $('#pArtist').textContent = al; $('#pAlbum').textContent = [t.album, t.year].filter(Boolean).join(' · ');
