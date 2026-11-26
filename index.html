@@ -27,6 +27,9 @@ html { transition: --c1 2.5s, --c2 2.5s; }
 }
 /* 다른 앨범 선반이 켜져 있을 땐 크기 배율을 따로 씀 */
 body.has-shelf { --lps: var(--lps-s, 1); --cds: var(--cds-s, 1); --ps: var(--ps-s, 1); }
+/* 가사가 켜져 있을 때(앨범이 옆으로 비켜 있을 때)도 따로 */
+body:not(.solo-stage) { --lps: var(--lps-l, 1); --cds: var(--cds-l, 1); --ps: var(--ps-l, 1); }
+body.has-shelf:not(.solo-stage) { --lps: var(--lps-ls, 1); --cds: var(--cds-ls, 1); --ps: var(--ps-ls, 1); }
 :root {
   --dx: 0px; --dy: 0px;           /* 번인 방지 이동량 */
   --nightDim: .45;
@@ -1869,29 +1872,41 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
     <div data-for="lp">
-      <div class="slab"><span>LP 크기 · 선반 끔</span><span id="vLps"></span></div>
+      <div class="slab"><span>LP 크기 · 가사 끔 · 선반 끔</span><span id="vLps"></span></div>
       <input type="range" id="rLps" min="0.5" max="1.5" step="0.05">
-      <div class="slab"><span>LP 크기 · 선반 켬</span><span id="vLpsS"></span></div>
+      <div class="slab"><span>LP 크기 · 가사 끔 · 선반 켬</span><span id="vLpsS"></span></div>
       <input type="range" id="rLpsS" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>LP 크기 · 가사 켬 · 선반 끔</span><span id="vLpsL"></span></div>
+      <input type="range" id="rLpsL" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>LP 크기 · 가사 켬 · 선반 켬</span><span id="vLpsLS"></span></div>
+      <input type="range" id="rLpsLS" min="0.5" max="1.5" step="0.05">
       <div class="slab"><span>LP 회전 속도</span><span id="vRpm"></span></div>
       <input type="range" id="rRpm" min="4" max="33" step="1">
       <label class="switch"><span>톤암 보이기</span><input type="checkbox" id="cArm"></label>
     </div>
     <div data-for="cd">
-      <div class="slab"><span>CD 크기 · 선반 끔</span><span id="vCds"></span></div>
+      <div class="slab"><span>CD 크기 · 가사 끔 · 선반 끔</span><span id="vCds"></span></div>
       <input type="range" id="rCds" min="0.5" max="1.5" step="0.05">
-      <div class="slab"><span>CD 크기 · 선반 켬</span><span id="vCdsS"></span></div>
+      <div class="slab"><span>CD 크기 · 가사 끔 · 선반 켬</span><span id="vCdsS"></span></div>
       <input type="range" id="rCdsS" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>CD 크기 · 가사 켬 · 선반 끔</span><span id="vCdsL"></span></div>
+      <input type="range" id="rCdsL" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>CD 크기 · 가사 켬 · 선반 켬</span><span id="vCdsLS"></span></div>
+      <input type="range" id="rCdsLS" min="0.5" max="1.5" step="0.05">
       <div class="slab"><span>CD 회전 속도</span><span id="vCdRpm"></span></div>
       <input type="range" id="rCdRpm" min="1" max="20" step="1">
       <div class="slab"><span>무지개 반사</span><span id="vRainbow"></span></div>
       <input type="range" id="rRainbow" min="0" max="1" step="0.05">
     </div>
     <div data-for="poster">
-      <div class="slab"><span>포스터 크기 · 선반 끔</span><span id="vPs"></span></div>
+      <div class="slab"><span>포스터 크기 · 가사 끔 · 선반 끔</span><span id="vPs"></span></div>
       <input type="range" id="rPs" min="0.5" max="1.5" step="0.05">
-      <div class="slab"><span>포스터 크기 · 선반 켬</span><span id="vPsS"></span></div>
+      <div class="slab"><span>포스터 크기 · 가사 끔 · 선반 켬</span><span id="vPsS"></span></div>
       <input type="range" id="rPsS" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>포스터 크기 · 가사 켬 · 선반 끔</span><span id="vPsL"></span></div>
+      <input type="range" id="rPsL" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>포스터 크기 · 가사 켬 · 선반 켬</span><span id="vPsLS"></span></div>
+      <input type="range" id="rPsLS" min="0.5" max="1.5" step="0.05">
       <label class="switch"><span>제목·아티스트 캡션</span><input type="checkbox" id="cCap"></label>
     </div>
     <div data-for="flow">
@@ -4358,7 +4373,7 @@ const BLUR_NAMES = ['형태 보임', '약하게', '보통', '완전히'];
 function applyVisualSettings() {
   const r = document.documentElement.style;
   r.setProperty('--edgeK', settings.edge); r.setProperty('--ls', settings.ls);
-  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
+  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); for (const k of ['ps', 'lps', 'cds']) { r.setProperty(`--${k}-l`, settings[k + 'L'] ?? settings[k]); r.setProperty(`--${k}-ls`, settings[k + 'LS'] ?? settings[k + 'S']); } r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
   r.setProperty('--pl-size', settings.plSize); r.setProperty('--pl-dim', settings.plDim); r.setProperty('--pl-weight', settings.plW);
   body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
   body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
@@ -4376,7 +4391,7 @@ function syncSettingsUI() {
   $('#rCdRpm').value = settings.cdRpm; $('#vCdRpm').textContent = settings.cdRpm + ' rpm';
   $('#rRainbow').value = settings.rainbow; $('#vRainbow').textContent = Math.round(settings.rainbow * 100) + '%';
   $('#rPs').value = settings.ps; $('#vPs').textContent = '×' + (+settings.ps).toFixed(2); $('#rLps').value = settings.lps; $('#vLps').textContent = '×' + (+settings.lps).toFixed(2); $('#rCds').value = settings.cds; $('#vCds').textContent = '×' + (+settings.cds).toFixed(2);
-  for (const k of ['psS', 'lpsS', 'cdsS']) { const id = k[0].toUpperCase() + k.slice(1); $('#r' + id).value = settings[k]; $('#v' + id).textContent = '×' + (+settings[k]).toFixed(2); } $('#cCap').checked = settings.cap;
+  for (const k of ['psS', 'lpsS', 'cdsS', 'psL', 'lpsL', 'cdsL', 'psLS', 'lpsLS', 'cdsLS']) { const id = k[0].toUpperCase() + k.slice(1), v = settings[k] ?? settings[k.replace(/L(S?)$/, '$1')]; $('#r' + id).value = v; $('#v' + id).textContent = '×' + (+v).toFixed(2); } $('#cCap').checked = settings.cap;
   $('#rFs').value = settings.fs; $('#vFs').textContent = '×' + (+settings.fs).toFixed(2);
   $('#rTilt').value = settings.tilt; $('#vTilt').textContent = settings.tilt + '°';
   $('#rBack').value = settings.back; $('#vBack').textContent = settings.back ? settings.back + '초 뒤' : '안 돌아옴';
@@ -4425,7 +4440,7 @@ function renderFonts() {
 }
 const bindRange = (id, key, after) => $(id).oninput = e => { settings[key] = +e.target.value; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 'edge');
-bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rLpsS', 'lpsS'); bindRange('#rCdsS', 'cdsS'); bindRange('#rPsS', 'psS'); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
+bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rLpsS', 'lpsS'); bindRange('#rCdsS', 'cdsS'); bindRange('#rPsS', 'psS'); for (const k of ['psL', 'lpsL', 'cdsL', 'psLS', 'lpsLS', 'cdsLS']) bindRange('#r' + k[0].toUpperCase() + k.slice(1), k); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
 bindRange('#rRes', 'radioRes', () => radio.redraw()); bindRange('#rPlSize', 'plSize', () => lists.markNow(false)); bindRange('#rPlDim', 'plDim');
 const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.target.checked; saveSettings(); applyVisualSettings(); after && after(); };
 bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
