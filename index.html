@@ -24,6 +24,10 @@ html { transition: --c1 2.5s, --c2 2.5s; }
   --sans: 'Noto Sans KR', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --disc: min(38vw, 62vh);
   --lps: 1; --cds: 1; --ps: 1;   /* LP·CD·포스터 크기 배율 (지금 크기 = ×1) */
+}
+/* 다른 앨범 선반이 켜져 있을 땐 크기 배율을 따로 씀 */
+body.has-shelf { --lps: var(--lps-s, 1); --cds: var(--cds-s, 1); --ps: var(--ps-s, 1); }
+:root {
   --dx: 0px; --dy: 0px;           /* 번인 방지 이동량 */
   --nightDim: .45;
   --edgeO: 1; --edgeK: 1;
@@ -1865,23 +1869,29 @@ body.lyr-cine #lyrics:not(.plain) .line.active { filter: blur(0px); opacity: 1 !
   <section id="themeOpts" data-t="lp">
     <h3 id="themeOptsTitle">LP 설정</h3>
     <div data-for="lp">
-      <div class="slab"><span>LP 크기</span><span id="vLps"></span></div>
+      <div class="slab"><span>LP 크기 · 선반 끔</span><span id="vLps"></span></div>
       <input type="range" id="rLps" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>LP 크기 · 선반 켬</span><span id="vLpsS"></span></div>
+      <input type="range" id="rLpsS" min="0.5" max="1.5" step="0.05">
       <div class="slab"><span>LP 회전 속도</span><span id="vRpm"></span></div>
       <input type="range" id="rRpm" min="4" max="33" step="1">
       <label class="switch"><span>톤암 보이기</span><input type="checkbox" id="cArm"></label>
     </div>
     <div data-for="cd">
-      <div class="slab"><span>CD 크기</span><span id="vCds"></span></div>
+      <div class="slab"><span>CD 크기 · 선반 끔</span><span id="vCds"></span></div>
       <input type="range" id="rCds" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>CD 크기 · 선반 켬</span><span id="vCdsS"></span></div>
+      <input type="range" id="rCdsS" min="0.5" max="1.5" step="0.05">
       <div class="slab"><span>CD 회전 속도</span><span id="vCdRpm"></span></div>
       <input type="range" id="rCdRpm" min="1" max="20" step="1">
       <div class="slab"><span>무지개 반사</span><span id="vRainbow"></span></div>
       <input type="range" id="rRainbow" min="0" max="1" step="0.05">
     </div>
     <div data-for="poster">
-      <div class="slab"><span>포스터 크기</span><span id="vPs"></span></div>
+      <div class="slab"><span>포스터 크기 · 선반 끔</span><span id="vPs"></span></div>
       <input type="range" id="rPs" min="0.5" max="1.5" step="0.05">
+      <div class="slab"><span>포스터 크기 · 선반 켬</span><span id="vPsS"></span></div>
+      <input type="range" id="rPsS" min="0.5" max="1.5" step="0.05">
       <label class="switch"><span>제목·아티스트 캡션</span><input type="checkbox" id="cCap"></label>
     </div>
     <div data-for="flow">
@@ -2116,7 +2126,7 @@ async function copy(text, okMsg) {
 
 /* ───────────────── 설정 상태 ───────────────── */
 const settings = Object.assign({ theme: CONFIG.DEFAULT_THEME, blur: CONFIG.BLUR_LEVEL, lyrics: true, rpm: CONFIG.LP_RPM, font: CONFIG.DEFAULT_FONT,
-  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, lps: 1, cds: 1, sideS: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, itunesArt: true, lyrStyle: 'normal', lyrPos: {}, lyrLock: false, lyrSnap: 12, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
+  ls: 1, clock24: CONFIG.CLOCK_24H, edge: 1, motion: 1, shelf: CONFIG.SHOW_SHELF, night: true, shuffle: false, listPin: false, listSel: null, fx: 'none', cdRpm: 6, arm: true, rainbow: .85, ps: 1, lps: 1, cds: 1, psS: 1, lpsS: 1, cdsS: 1, sideS: 1, cap: true, fs: 1, tilt: 32, back: 15, radioRes: 32, carSpd: 1, cityWx: 'snow', cityAmt: 1, cityCars: true, skyHolo: false, citySigns: true, itunesArt: true, lyrStyle: 'normal', lyrPos: {}, lyrLock: false, lyrSnap: 12, cityQ: 'mid', cityLight: 1, cityDen: 1, cityFog: 1, cityKoi: true, aeroBub: true, aeroFlare: true, aeroCity: true, aeroWind: 1, carVfd: 'green', carLamp: 'sodium', led: 'amber', rbody: 'wood', csColor: 'black', jbBulbs: true, csHand: true, reelRpm: 20, tvBody: 'wood', tvScan: .35, tvFish: .6, tvStatic: true, tvSnd: true, jbNeon: 'rainbow', jbBubbles: true, plSide: 'left', plW: 400, plSize: 1, plDim: .4, plCov: false, plNear: false, fxVol: .5, fxFollow: true }, store.get('settings', {}));
 
 /* ───────────────── 글씨체 프리셋 (고르면 그때 웹폰트를 불러옴) ───────────────── */
 const FONTS = {
@@ -4348,7 +4358,7 @@ const BLUR_NAMES = ['형태 보임', '약하게', '보통', '완전히'];
 function applyVisualSettings() {
   const r = document.documentElement.style;
   r.setProperty('--edgeK', settings.edge); r.setProperty('--ls', settings.ls);
-  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--fs', settings.fs);
+  r.setProperty('--rainbow', settings.rainbow); r.setProperty('--ps', settings.ps); r.setProperty('--lps', settings.lps); r.setProperty('--cds', settings.cds); r.setProperty('--ps-s', settings.psS); r.setProperty('--lps-s', settings.lpsS); r.setProperty('--cds-s', settings.cdsS); r.setProperty('--fs', settings.fs);
   r.setProperty('--pl-size', settings.plSize); r.setProperty('--pl-dim', settings.plDim); r.setProperty('--pl-weight', settings.plW);
   body.classList.toggle('no-arm', !settings.arm); body.classList.toggle('no-cap', !settings.cap);
   body.classList.toggle('pl-covers', !!settings.plCov); body.classList.toggle('pl-near', !!settings.plNear); body.classList.toggle('pl-right', settings.plSide === 'right');
@@ -4365,7 +4375,8 @@ function syncSettingsUI() {
   $('#cArm').checked = settings.arm;
   $('#rCdRpm').value = settings.cdRpm; $('#vCdRpm').textContent = settings.cdRpm + ' rpm';
   $('#rRainbow').value = settings.rainbow; $('#vRainbow').textContent = Math.round(settings.rainbow * 100) + '%';
-  $('#rPs').value = settings.ps; $('#vPs').textContent = '×' + (+settings.ps).toFixed(2); $('#rLps').value = settings.lps; $('#vLps').textContent = '×' + (+settings.lps).toFixed(2); $('#rCds').value = settings.cds; $('#vCds').textContent = '×' + (+settings.cds).toFixed(2); $('#cCap').checked = settings.cap;
+  $('#rPs').value = settings.ps; $('#vPs').textContent = '×' + (+settings.ps).toFixed(2); $('#rLps').value = settings.lps; $('#vLps').textContent = '×' + (+settings.lps).toFixed(2); $('#rCds').value = settings.cds; $('#vCds').textContent = '×' + (+settings.cds).toFixed(2);
+  for (const k of ['psS', 'lpsS', 'cdsS']) { const id = k[0].toUpperCase() + k.slice(1); $('#r' + id).value = settings[k]; $('#v' + id).textContent = '×' + (+settings[k]).toFixed(2); } $('#cCap').checked = settings.cap;
   $('#rFs').value = settings.fs; $('#vFs').textContent = '×' + (+settings.fs).toFixed(2);
   $('#rTilt').value = settings.tilt; $('#vTilt').textContent = settings.tilt + '°';
   $('#rBack').value = settings.back; $('#vBack').textContent = settings.back ? settings.back + '초 뒤' : '안 돌아옴';
@@ -4414,7 +4425,7 @@ function renderFonts() {
 }
 const bindRange = (id, key, after) => $(id).oninput = e => { settings[key] = +e.target.value; saveSettings(); syncSettingsUI(); applyVisualSettings(); after && after(); };
 bindRange('#rRpm', 'rpm'); bindRange('#rMotion', 'motion'); bindRange('#rEdge', 'edge');
-bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
+bindRange('#rCdRpm', 'cdRpm'); bindRange('#rRainbow', 'rainbow'); bindRange('#rPs', 'ps'); bindRange('#rLps', 'lps'); bindRange('#rLpsS', 'lpsS'); bindRange('#rCdsS', 'cdsS'); bindRange('#rPsS', 'psS'); bindRange('#rSideS', 'sideS', () => shelf.list && shelf.layout()); bindRange('#rCds', 'cds'); bindRange('#rFs', 'fs'); bindRange('#rTilt', 'tilt'); bindRange('#rBack', 'back');
 bindRange('#rRes', 'radioRes', () => radio.redraw()); bindRange('#rPlSize', 'plSize', () => lists.markNow(false)); bindRange('#rPlDim', 'plDim');
 const bindCheck = (id, key, after) => $(id).onchange = e => { settings[key] = e.target.checked; saveSettings(); applyVisualSettings(); after && after(); };
 bindCheck('#cArm', 'arm'); bindCheck('#cCap', 'cap'); bindCheck('#cPlCov', 'plCov', () => lists.markNow(false)); bindCheck('#cPlNear', 'plNear', () => lists.markNow(false));
